@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model subscription_plans {
+  id                  Int       @id @default(autoincrement())
+  name                String    @db.VarChar(50)
+  display_name        String    @db.VarChar(100)
+  max_created_leagues Int?
+  max_joined_leagues  Int?
+  can_create_leagues  Boolean   @default(false)
+  full_statistics     Boolean   @default(false)
+  custom_scoring      Boolean   @default(false)
+  price               Decimal   @db.Decimal(10, 2)
+  is_active           Boolean   @default(true)
+  users               users[]
+}
+
+model users {
+  id                   Int                 @id @default(autoincrement())
+  email                String              @unique @db.VarChar(255)
+  password_hash        String              @db.VarChar(255)
+  username             String              @db.VarChar(100)
+  avatar               String              @default("person") @db.VarChar(50)
+  role                 users_role           @default(user)
+  subscription_plan_id Int?
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
+  subscription_plan    subscription_plans? @relation(fields: [subscription_plan_id], references: [id], onDelete: SetNull)
+  owned_leagues        leagues[]
+  league_memberships   league_members[]
+  predictions          predictions[]
+
+  @@index([subscription_plan_id])
+}
+
+enum users_role {
+  admin
+  user
+}
+
+model leagues {
+  id                  Int              @id @default(autoincrement())
+  name                String           @db.VarChar(255)
+  owner_id            Int
+  invite_code         String           @unique @db.VarChar(20)
+  is_finished         Boolean          @default(false)
+  current_round_index Int              @default(0)
+  created_at          DateTime         @default(now())
+  owner               users            @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  members             league_members[]
+  teams               teams[]
+  rounds              rounds[]
+  scoring_rules       scoring_rules?
+
+  @@index([owner_id])
+}
+
+model league_members {
+  id           Int                  @id @default(autoincrement())
+  league_id    Int
+  user_id      Int
+  role         league_members_role  @default(member)
+  total_points Int                  @default(0)
+  joined_at    DateTime             @default(now())
+  league       leagues              @relation(fields: [league_id], references: [id], onDelete: Cascade)
+  user         users                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([league_id, user_id])
+  @@index([user_id])
+}
+
+enum league_members_role {
+  owner
+  member
+}
+
+model teams {
+  id           Int       @id @default(autoincrement())
+  name         String    @db.VarChar(100)
+  league_id    Int
+  league       leagues   @relation(fields: [league_id], references: [id], onDelete: Cascade)
+  home_matches matches[] @relation("home_team")
+  away_matches matches[] @relation("away_team")
+
+  @@index([league_id])
+}
+
+model rounds {
+  id           Int       @id @default(autoincrement())
+  league_id    Int
+  number       Int
+  is_completed Boolean   @default(false)
+  league       leagues   @relation(fields: [league_id], references: [id], onDelete: Cascade)
+  matches      matches[]
+
+  @@index([league_id])
+}
+
+model matches {
+  id           Int           @id @default(autoincrement())
+  round_id     Int
+  home_team_id Int
+  away_team_id Int
+  home_score   Int?
+  away_score   Int?
+  is_played    Boolean       @default(false)
+  round        rounds        @relation(fields: [round_id], references: [id], onDelete: Cascade)
+  home_team    teams         @relation("home_team", fields: [home_team_id], references: [id], onDelete: Cascade)
+  away_team    teams         @relation("away_team", fields: [away_team_id], references: [id], onDelete: Cascade)
+  predictions  predictions[]
+
+  @@index([round_id])
+  @@index([home_team_id])
+  @@index([away_team_id])
+}
+
+model predictions {
+  id            Int     @id @default(autoincrement())
+  match_id      Int
+  user_id       Int
+  home_score    Int?
+  away_score    Int?
+  points_earned Int     @default(0)
+  match         matches @relation(fields: [match_id], references: [id], onDelete: Cascade)
+  user          users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([match_id, user_id])
+  @@index([user_id])
+}
+
+model scoring_rules {
+  id                       Int     @id @default(autoincrement())
+  league_id                Int     @unique
+  exact_score_points       Int     @default(3)
+  correct_difference_points Int    @default(2)
+  correct_result_points    Int     @default(1)
+  wrong_points             Int     @default(0)
+  league                   leagues @relation(fields: [league_id], references: [id], onDelete: Cascade)
+}

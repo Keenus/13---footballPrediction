@@ -1,0 +1,13 @@
+node_modules
+# Keep environment variables out of version control
+.env
+
+/dist
+/src/generated/prisma
+
+# Compiled scraper files
+scraper-wip/**/*.js
+scraper-wip/**/*.js.map
+scraper-wip/**/*.d.ts
+core
+/src/generated/prisma/
