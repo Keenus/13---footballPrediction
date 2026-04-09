@@ -1,11 +1,12 @@
-import { Component, inject, OnInit, effect } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
-import { AuthService } from '../../services/auth.service';
 import { LeagueStateService } from '../../services/league-state.service';
+import { Subscription } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-ranking',
@@ -21,6 +22,11 @@ import { LeagueStateService } from '../../services/league-state.service';
           <p>Nie masz aktywnej ligi.</p>
           <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg">Przejdź do kokpitu</button>
         </div>
+      } @else if (loading) {
+        <div class="text-center text-zinc-400 py-10">
+          <mat-icon class="text-4xl mb-2 opacity-50 animate-spin">refresh</mat-icon>
+          <p>Ładowanie rankingu...</p>
+        </div>
       } @else {
         @if (isLimited) {
           <div class="mb-4 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-start gap-3">
@@ -32,7 +38,7 @@ import { LeagueStateService } from '../../services/league-state.service';
         }
 
         <div class="space-y-3">
-          @for (tipster of ranking; track tipster.user_id; let i = $index) {
+          @for (tipster of ranking; track tipster.user_id) {
             <div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-sm overflow-hidden flex items-center gap-4"
                  [ngClass]="{'border-blue-500/30 bg-blue-900/10': tipster.isUser}">
 
@@ -77,36 +83,47 @@ import { LeagueStateService } from '../../services/league-state.service';
               </div>
             </div>
           }
+
+          @if (ranking.length === 0) {
+            <div class="text-center text-zinc-500 py-6 text-sm">Brak danych rankingowych.</div>
+          }
         </div>
       }
     </div>
   `
 })
-export class RankingComponent implements OnInit {
+export class RankingComponent implements OnInit, OnDestroy {
   leagueState = inject(LeagueStateService);
   private api = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
   router = inject(Router);
 
   ranking: any[] = [];
   isLimited = false;
+  loading = false;
 
-  private leagueEffect = effect(() => {
-    const league = this.leagueState.activeLeague();
-    if (league) {
-      this.loadRanking(league.id);
-    }
+  private sub = toObservable(this.leagueState.activeLeagueId).subscribe((id) => {
+    if (id) this.loadRanking(id);
   });
 
-  async ngOnInit() {
-    const league = this.leagueState.activeLeague();
-    if (league) await this.loadRanking(league.id);
+  ngOnInit() {}
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
   }
 
   async loadRanking(leagueId: number) {
+    this.loading = true;
+    this.cdr.markForCheck();
     try {
       const data = await this.api.getRanking(leagueId);
       this.ranking = data.ranking;
       this.isLimited = data.isLimited;
-    } catch {}
+    } catch (e) {
+      console.error('loadRanking error:', e);
+    } finally {
+      this.loading = false;
+      this.cdr.markForCheck();
+    }
   }
 }

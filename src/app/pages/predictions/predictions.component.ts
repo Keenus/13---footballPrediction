@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
@@ -6,7 +6,8 @@ import { Router } from '@angular/router';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService } from '../../services/league-state.service';
-import { effect } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-predictions',
@@ -22,15 +23,26 @@ import { effect } from '@angular/core';
           <p>Nie masz aktywnej ligi.</p>
           <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg">Przejdź do kokpitu</button>
         </div>
-      } @else if (isFinished) {
+      } @else if (loading) {
+        <div class="text-center text-zinc-400 py-10">
+          <mat-icon class="text-4xl mb-2 opacity-50 animate-spin">refresh</mat-icon>
+          <p>Ładowanie kolejki...</p>
+        </div>
+      } @else if (error) {
+        <div class="text-center py-10">
+          <mat-icon class="text-4xl mb-2 text-red-400 opacity-50">error</mat-icon>
+          <p class="text-red-400 text-sm">{{ error }}</p>
+          <button (click)="reload()" class="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg">Spróbuj ponownie</button>
+        </div>
+      } @else if (isFinished && !round) {
         <div class="text-center text-zinc-400 py-10">
           <mat-icon class="text-4xl mb-2 opacity-50">done_all</mat-icon>
           <p>Liga zakończona.</p>
         </div>
       } @else if (!round) {
         <div class="text-center text-zinc-400 py-10">
-          <mat-icon class="text-4xl mb-2 opacity-50">hourglass_empty</mat-icon>
-          <p>Ładowanie...</p>
+          <mat-icon class="text-4xl mb-2 opacity-50">event_busy</mat-icon>
+          <p>Brak dostępnych kolejek.</p>
         </div>
       } @else {
         <div class="space-y-4">
@@ -56,11 +68,11 @@ import { effect } from '@angular/core';
                   } @else {
                     <div class="flex items-center gap-2">
                       <input type="number" min="0" [(ngModel)]="predictions[match.id].home" [disabled]="round.isCompleted"
-                             (ngModelChange)="onPredictionChange()" placeholder="-"
+                             (ngModelChange)="dirty = true" placeholder="-"
                              class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg font-bold text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all disabled:opacity-50 placeholder:text-zinc-600">
                       <span class="text-zinc-500">:</span>
                       <input type="number" min="0" [(ngModel)]="predictions[match.id].away" [disabled]="round.isCompleted"
-                             (ngModelChange)="onPredictionChange()" placeholder="-"
+                             (ngModelChange)="dirty = true" placeholder="-"
                              class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg font-bold text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all disabled:opacity-50 placeholder:text-zinc-600">
                     </div>
                   }
@@ -101,13 +113,29 @@ import { effect } from '@angular/core';
           @if (!round.isCompleted) {
             <button (click)="savePredictions()" [disabled]="saving"
                     class="w-full py-3 px-6 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mb-3 text-sm">
-              <mat-icon class="text-[18px] w-[18px] h-[18px]">save</mat-icon> Zapisz typy
+              @if (saving) {
+                <mat-icon class="animate-spin text-[18px] w-[18px] h-[18px]">refresh</mat-icon>
+              } @else {
+                <mat-icon class="text-[18px] w-[18px] h-[18px]">save</mat-icon>
+              }
+              Zapisz typy
             </button>
+
+            @if (saved) {
+              <div class="mb-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2 text-emerald-400 text-xs text-center">
+                Typy zapisane!
+              </div>
+            }
 
             @if (leagueState.activeLeague()?.isOwner) {
               <button (click)="simulateRound()" [disabled]="simulating"
-                      class="w-full py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95">
-                <mat-icon class="text-[20px] w-5 h-5">casino</mat-icon> Wylosuj Wyniki
+                      class="w-full py-4 px-6 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95">
+                @if (simulating) {
+                  <mat-icon class="animate-spin text-[20px] w-5 h-5">refresh</mat-icon>
+                } @else {
+                  <mat-icon class="text-[20px] w-5 h-5">casino</mat-icon>
+                }
+                Wylosuj Wyniki
               </button>
             } @else {
               <div class="text-center text-zinc-500 text-xs mt-2">Tylko właściciel ligi może wylosować wyniki.</div>
@@ -141,9 +169,10 @@ import { effect } from '@angular/core';
     </div>
   `
 })
-export class PredictionsComponent implements OnInit {
+export class PredictionsComponent implements OnInit, OnDestroy {
   leagueState = inject(LeagueStateService);
   private api = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
   router = inject(Router);
 
   round: any = null;
@@ -151,25 +180,43 @@ export class PredictionsComponent implements OnInit {
   roundNumber: string | number = '-';
   predictions: Record<number, { home: number | null; away: number | null }> = {};
   roundPoints = 0;
+  loading = false;
   saving = false;
+  saved = false;
   simulating = false;
   dirty = false;
+  error = '';
 
-  private leagueEffect = effect(() => {
-    const league = this.leagueState.activeLeague();
-    if (league) {
-      this.loadRound(league.id);
+  private lastLeagueId: number | null = null;
+
+  private sub = toObservable(this.leagueState.activeLeagueId).subscribe((id) => {
+    if (id && id !== this.lastLeagueId) {
+      this.lastLeagueId = id;
+      this.loadRound(id);
+    } else if (!id) {
+      this.round = null;
+      this.loading = false;
+      this.cdr.markForCheck();
     }
   });
 
-  async ngOnInit() {
+  ngOnInit() {}
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  reload() {
     const league = this.leagueState.activeLeague();
-    if (league) {
-      await this.loadRound(league.id);
-    }
+    if (league) this.loadRound(league.id);
   }
 
   async loadRound(leagueId: number) {
+    this.loading = true;
+    this.error = '';
+    this.round = null;
+    this.cdr.markForCheck();
+
     try {
       const data = await this.api.getCurrentRound(leagueId);
       this.round = data.round;
@@ -190,7 +237,13 @@ export class PredictionsComponent implements OnInit {
           );
         }
       }
-    } catch {}
+    } catch (e: any) {
+      console.error('loadRound error:', e);
+      this.error = e?.error?.error || 'Nie udało się załadować kolejki';
+    } finally {
+      this.loading = false;
+      this.cdr.markForCheck();
+    }
   }
 
   get allPredicted() {
@@ -203,14 +256,12 @@ export class PredictionsComponent implements OnInit {
     );
   }
 
-  onPredictionChange() {
-    this.dirty = true;
-  }
-
   async savePredictions() {
     const league = this.leagueState.activeLeague();
     if (!league || !this.round) return;
     this.saving = true;
+    this.saved = false;
+    this.cdr.markForCheck();
     try {
       const preds = this.round.matches.map((m: any) => ({
         matchId: m.id,
@@ -219,22 +270,33 @@ export class PredictionsComponent implements OnInit {
       }));
       await this.api.savePredictions(league.id, this.round.id, preds);
       this.dirty = false;
-    } catch {}
-    this.saving = false;
+      this.saved = true;
+      setTimeout(() => { this.saved = false; this.cdr.markForCheck(); }, 3000);
+    } catch (e: any) {
+      console.error('savePredictions error:', e);
+    } finally {
+      this.saving = false;
+      this.cdr.markForCheck();
+    }
   }
 
   async simulateRound() {
     const league = this.leagueState.activeLeague();
     if (!league) return;
     this.simulating = true;
+    this.cdr.markForCheck();
     try {
       if (this.dirty) await this.savePredictions();
       const result = await this.api.simulateRound(league.id);
       this.roundPoints = result.roundPoints;
       await this.loadRound(league.id);
       await this.leagueState.loadLeagues();
-    } catch {}
-    this.simulating = false;
+    } catch (e: any) {
+      console.error('simulateRound error:', e);
+    } finally {
+      this.simulating = false;
+      this.cdr.markForCheck();
+    }
   }
 
   async nextRound() {
@@ -245,6 +307,8 @@ export class PredictionsComponent implements OnInit {
       await this.leagueState.loadLeagues();
       await this.loadRound(league.id);
       window.scrollTo(0, 0);
-    } catch {}
+    } catch (e: any) {
+      console.error('nextRound error:', e);
+    }
   }
 }

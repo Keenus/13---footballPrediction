@@ -1,9 +1,11 @@
-import { Component, inject, OnInit, effect } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService } from '../../services/league-state.service';
+import { Subscription } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-table',
@@ -18,6 +20,11 @@ import { LeagueStateService } from '../../services/league-state.service';
           <mat-icon class="text-4xl mb-2 opacity-50">sports_soccer</mat-icon>
           <p>Nie masz aktywnej ligi.</p>
           <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg">Przejdź do kokpitu</button>
+        </div>
+      } @else if (loading) {
+        <div class="text-center text-zinc-400 py-10">
+          <mat-icon class="text-4xl mb-2 opacity-50 animate-spin">refresh</mat-icon>
+          <p>Ładowanie tabeli...</p>
         </div>
       } @else {
         @if (isLimited) {
@@ -65,31 +72,38 @@ import { LeagueStateService } from '../../services/league-state.service';
     </div>
   `
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnDestroy {
   leagueState = inject(LeagueStateService);
   private api = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
   router = inject(Router);
 
   table: any[] = [];
   isLimited = false;
+  loading = false;
 
-  private leagueEffect = effect(() => {
-    const league = this.leagueState.activeLeague();
-    if (league) {
-      this.loadTable(league.id);
-    }
+  private sub = toObservable(this.leagueState.activeLeagueId).subscribe((id) => {
+    if (id) this.loadTable(id);
   });
 
-  async ngOnInit() {
-    const league = this.leagueState.activeLeague();
-    if (league) await this.loadTable(league.id);
+  ngOnInit() {}
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
   }
 
   async loadTable(leagueId: number) {
+    this.loading = true;
+    this.cdr.markForCheck();
     try {
       const data = await this.api.getTable(leagueId);
       this.table = data.table;
       this.isLimited = data.isLimited;
-    } catch {}
+    } catch (e) {
+      console.error('loadTable error:', e);
+    } finally {
+      this.loading = false;
+      this.cdr.markForCheck();
+    }
   }
 }
