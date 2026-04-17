@@ -39,6 +39,11 @@ import { LeagueStateService, LeagueSummary } from '../../services/league-state.s
             <div>
               <div class="text-blue-200 text-xs font-medium uppercase tracking-wider mb-1">Aktywna Liga</div>
               <h2 class="text-2xl font-bold text-white leading-tight">{{ activeLeague.name }}</h2>
+              @if (activeLeague.competitions.length > 0) {
+                <div class="text-blue-200 text-[10px] mt-1">
+                  {{ activeLeague.competitions.map(c => c.name).join(', ') }}
+                </div>
+              }
             </div>
             <div class="bg-black/20 backdrop-blur-md rounded-xl px-3 py-1.5 text-center border border-white/10">
               <div class="text-white font-bold text-lg leading-none">{{ activeLeague.myPoints }}</div>
@@ -48,7 +53,7 @@ import { LeagueStateService, LeagueSummary } from '../../services/league-state.s
 
           @if (!activeLeague.isFinished) {
             <button (click)="goToPredictions()" class="w-full py-3.5 bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95">
-              <mat-icon class="text-[20px] w-5 h-5">play_arrow</mat-icon> Typuj Kolejkę {{ Math.min(activeLeague.currentRoundIndex + 1, activeLeague.totalRounds) }}
+              <mat-icon class="text-[20px] w-5 h-5">play_arrow</mat-icon> Typuj
             </button>
           } @else {
             <div class="w-full py-3.5 bg-black/20 text-white font-semibold rounded-xl text-center border border-white/10">
@@ -71,7 +76,7 @@ import { LeagueStateService, LeagueSummary } from '../../services/league-state.s
           <div class="flex justify-between items-center mb-3">
             <h3 class="text-zinc-100 font-semibold text-sm uppercase tracking-wider">Moje Ligi</h3>
             @if (auth.canCreateLeagues()) {
-              <button (click)="showCreateLeague = true" class="text-blue-400 text-xs font-semibold flex items-center bg-blue-500/10 px-2 py-1 rounded-lg hover:bg-blue-500/20 transition-colors">
+              <button (click)="openCreateLeague()" class="text-blue-400 text-xs font-semibold flex items-center bg-blue-500/10 px-2 py-1 rounded-lg hover:bg-blue-500/20 transition-colors">
                 <mat-icon class="text-[14px] w-3.5 h-3.5 mr-1">add</mat-icon> Nowa
               </button>
             }
@@ -83,7 +88,7 @@ import { LeagueStateService, LeagueSummary } from '../../services/league-state.s
                    [ngClass]="{'bg-blue-900/20 border-blue-500/30': leagueState.activeLeagueId() === league.id, 'bg-white/5 border-white/10': leagueState.activeLeagueId() !== league.id}">
                 <div class="flex-1 cursor-pointer" (click)="leagueState.setActiveLeague(league.id)">
                   <div class="font-semibold text-white text-sm">{{ league.name }}</div>
-                  <div class="text-[10px] text-zinc-400 mt-0.5">Kolejka {{ Math.min(league.currentRoundIndex + 1, league.totalRounds) }} / {{ league.totalRounds }} | {{ league.memberCount }} graczy</div>
+                  <div class="text-[10px] text-zinc-400 mt-0.5">{{ league.competitions.length }} rozgrywek | {{ league.memberCount }} graczy</div>
                 </div>
                 <div class="flex items-center gap-1">
                   <button (click)="showInviteCode(league)" class="p-2 text-zinc-500 hover:text-blue-400 transition-colors rounded-xl hover:bg-white/5" title="Kod zaproszenia">
@@ -121,7 +126,7 @@ import { LeagueStateService, LeagueSummary } from '../../services/league-state.s
                    [ngClass]="{'bg-blue-900/20 border-blue-500/30': leagueState.activeLeagueId() === league.id, 'bg-white/5 border-white/10': leagueState.activeLeagueId() !== league.id}">
                 <div class="flex-1 cursor-pointer" (click)="leagueState.setActiveLeague(league.id)">
                   <div class="font-semibold text-white text-sm">{{ league.name }}</div>
-                  <div class="text-[10px] text-zinc-400 mt-0.5">Kolejka {{ Math.min(league.currentRoundIndex + 1, league.totalRounds) }} / {{ league.totalRounds }} | {{ league.memberCount }} graczy</div>
+                  <div class="text-[10px] text-zinc-400 mt-0.5">{{ league.competitions.length }} rozgrywek | {{ league.memberCount }} graczy</div>
                 </div>
                 <button (click)="confirmLeave(league)" class="p-2 text-zinc-500 hover:text-red-400 transition-colors rounded-xl hover:bg-white/5" title="Opuść ligę">
                   <mat-icon class="text-[18px] w-[18px] h-[18px]">exit_to_app</mat-icon>
@@ -141,17 +146,38 @@ import { LeagueStateService, LeagueSummary } from '../../services/league-state.s
         <div class="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div class="bg-zinc-900/90 backdrop-blur-2xl p-6 rounded-2xl max-w-sm w-full border border-white/10 shadow-2xl">
             <h3 class="text-lg font-semibold text-white mb-4">Nowa Liga Typerska</h3>
-            <div class="mb-6">
+            <div class="mb-4">
               <label class="block text-zinc-400 text-xs font-medium mb-2">Nazwa ligi</label>
-              <input type="text" [(ngModel)]="newLeagueName" placeholder="np. Liga Mistrzów z kumplami"
+              <input type="text" [(ngModel)]="newLeagueName" placeholder="np. Liga firmowa"
                      class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+            </div>
+            <div class="mb-6">
+              <label class="block text-zinc-400 text-xs font-medium mb-2">Wybierz rozgrywki</label>
+              <div class="space-y-2 max-h-48 overflow-y-auto">
+                @for (comp of availableCompetitions; track comp.id) {
+                  <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all"
+                         [ngClass]="{'bg-blue-500/10 border-blue-500/30': selectedCompetitionIds.has(comp.id), 'bg-black/20 border-white/10 hover:border-white/20': !selectedCompetitionIds.has(comp.id)}">
+                    <input type="checkbox" [checked]="selectedCompetitionIds.has(comp.id)" (change)="toggleCompetition(comp.id)"
+                           class="w-4 h-4 rounded accent-blue-500">
+                    <div>
+                      <div class="text-white text-sm font-medium">{{ comp.name }}</div>
+                      @if (comp.season) {
+                        <div class="text-zinc-500 text-[10px]">{{ comp.season }}</div>
+                      }
+                    </div>
+                  </label>
+                }
+                @if (availableCompetitions.length === 0) {
+                  <div class="text-zinc-500 text-xs text-center py-3">Brak dostępnych rozgrywek</div>
+                }
+              </div>
             </div>
             @if (createError) {
               <div class="mb-4 bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-sm">{{ createError }}</div>
             }
             <div class="flex gap-3">
               <button (click)="showCreateLeague = false; createError = ''" class="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl transition-all border border-white/5">Anuluj</button>
-              <button (click)="createLeague()" [disabled]="!newLeagueName.trim()"
+              <button (click)="createLeague()" [disabled]="!newLeagueName.trim() || selectedCompetitionIds.size === 0"
                       class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-all shadow-sm">
                 Stwórz
               </button>
@@ -195,12 +221,13 @@ export class DashboardComponent implements OnInit {
   leagueState = inject(LeagueStateService);
   private api = inject(ApiService);
   private router = inject(Router);
-  Math = Math;
 
   stats: any = null;
   showCreateLeague = false;
   newLeagueName = '';
   createError = '';
+  availableCompetitions: any[] = [];
+  selectedCompetitionIds = new Set<number>();
   leagueToDelete: LeagueSummary | null = null;
   inviteCodeModal = false;
   inviteCodeValue = '';
@@ -213,14 +240,36 @@ export class DashboardComponent implements OnInit {
     await this.leagueState.loadLeagues();
   }
 
+  async openCreateLeague() {
+    this.showCreateLeague = true;
+    this.selectedCompetitionIds.clear();
+    try {
+      this.availableCompetitions = await this.api.getCompetitions();
+    } catch {
+      this.availableCompetitions = [];
+    }
+  }
+
+  toggleCompetition(id: number) {
+    if (this.selectedCompetitionIds.has(id)) {
+      this.selectedCompetitionIds.delete(id);
+    } else {
+      this.selectedCompetitionIds.add(id);
+    }
+  }
+
   async createLeague() {
-    if (!this.newLeagueName.trim()) return;
+    if (!this.newLeagueName.trim() || this.selectedCompetitionIds.size === 0) return;
     this.createError = '';
     try {
-      const result = await this.api.createLeague(this.newLeagueName.trim());
+      const result = await this.api.createLeague(
+        this.newLeagueName.trim(),
+        Array.from(this.selectedCompetitionIds)
+      );
       await this.leagueState.loadLeagues();
       this.leagueState.setActiveLeague(result.id);
       this.newLeagueName = '';
+      this.selectedCompetitionIds.clear();
       this.showCreateLeague = false;
     } catch (e: any) {
       this.createError = e?.error?.error || 'Nie udało się stworzyć ligi';

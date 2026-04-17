@@ -1,6 +1,15 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { ApiService } from './api.service';
 
+export interface CompetitionSummary {
+  id: number;
+  name: string;
+  type: string;
+  season: string | null;
+  isFinished: boolean;
+  currentRoundIndex: number;
+}
+
 export interface LeagueSummary {
   id: number;
   name: string;
@@ -8,10 +17,8 @@ export interface LeagueSummary {
   ownerName: string;
   inviteCode: string;
   isFinished: boolean;
-  currentRoundIndex: number;
   memberCount: number;
-  totalRounds: number;
-  completedRounds: number;
+  competitions: CompetitionSummary[];
   myRole: string;
   myPoints: number;
   isOwner: boolean;

@@ -3,14 +3,9 @@ import prisma from '../../config/prisma';
 import { authenticateToken } from '../../middleware/auth.middleware';
 import { requireLeagueMember, requireLeagueOwner } from '../../middleware/league-access.middleware';
 import { checkCanCreateLeague, checkCanJoinLeague } from '../../middleware/subscription.middleware';
-import { generateRoundRobinSchedule, generateInviteCode } from '../../utils/schedule.util';
+import { generateInviteCode } from '../../utils/schedule.util';
 
 const router = Router();
-
-const DEFAULT_TEAMS = [
-  'Orły Warszawa', 'Wilki Kraków', 'Tygrysy Gdańsk', 'Rekiny Wrocław',
-  'Lwy Poznań', 'Sokoły Łódź', 'Pantery Szczecin', 'Jastrzębie Lublin',
-];
 
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
@@ -21,7 +16,13 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
           include: {
             owner: { select: { id: true, username: true } },
             members: { select: { id: true } },
-            rounds: { select: { id: true, is_completed: true } },
+            league_competitions: {
+              include: {
+                competition: {
+                  select: { id: true, name: true, type: true, season: true, is_finished: true },
+                },
+              },
+            },
           },
         },
       },
@@ -34,10 +35,15 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
       ownerName: m.league.owner.username,
       inviteCode: m.league.invite_code,
       isFinished: m.league.is_finished,
-      currentRoundIndex: m.league.current_round_index,
       memberCount: m.league.members.length,
-      totalRounds: m.league.rounds.length,
-      completedRounds: m.league.rounds.filter((r) => r.is_completed).length,
+      competitions: m.league.league_competitions.map((lc) => ({
+        id: lc.competition.id,
+        name: lc.competition.name,
+        type: lc.competition.type,
+        season: lc.competition.season,
+        isFinished: lc.competition.is_finished,
+        currentRoundIndex: lc.current_round_index,
+      })),
       myRole: m.role,
       myPoints: m.total_points,
       isOwner: m.league.owner_id === req.user!.userId,
@@ -62,8 +68,19 @@ router.get('/:leagueId', authenticateToken, requireLeagueMember('leagueId'), asy
           include: { user: { select: { id: true, username: true, avatar: true } } },
           orderBy: { total_points: 'desc' },
         },
-        teams: { orderBy: { id: 'asc' } },
-        rounds: { orderBy: { number: 'asc' }, select: { id: true, number: true, is_completed: true } },
+        league_competitions: {
+          include: {
+            competition: {
+              include: {
+                teams: { orderBy: { id: 'asc' } },
+                rounds: {
+                  orderBy: { number: 'asc' },
+                  select: { id: true, number: true, name: true, is_completed: true },
+                },
+              },
+            },
+          },
+        },
         scoring_rules: true,
       },
     });
@@ -79,7 +96,6 @@ router.get('/:leagueId', authenticateToken, requireLeagueMember('leagueId'), asy
       owner: league.owner,
       inviteCode: league.invite_code,
       isFinished: league.is_finished,
-      currentRoundIndex: league.current_round_index,
       members: league.members.map((m) => ({
         userId: m.user.id,
         username: m.user.username,
@@ -87,8 +103,13 @@ router.get('/:leagueId', authenticateToken, requireLeagueMember('leagueId'), asy
         role: m.role,
         totalPoints: m.total_points,
       })),
-      teams: league.teams,
-      rounds: league.rounds,
+      competitions: league.league_competitions.map((lc) => ({
+        id: lc.competition.id,
+        name: lc.competition.name,
+        currentRoundIndex: lc.current_round_index,
+        teams: lc.competition.teams,
+        rounds: lc.competition.rounds,
+      })),
       scoringRules: league.scoring_rules,
       createdAt: league.created_at,
     });
@@ -100,17 +121,24 @@ router.get('/:leagueId', authenticateToken, requireLeagueMember('leagueId'), asy
 
 router.post('/', authenticateToken, checkCanCreateLeague, async (req: Request, res: Response) => {
   try {
-    const { name, teamNames } = req.body;
+    const { name, competitionIds } = req.body;
 
     if (!name || !name.trim()) {
       res.status(400).json({ error: 'Nazwa ligi jest wymagana' });
       return;
     }
 
-    const teams = teamNames && teamNames.length >= 4 ? teamNames : DEFAULT_TEAMS;
+    if (!competitionIds || !Array.isArray(competitionIds) || competitionIds.length === 0) {
+      res.status(400).json({ error: 'Wybierz przynajmniej jedne rozgrywki' });
+      return;
+    }
 
-    if (teams.length % 2 !== 0) {
-      res.status(400).json({ error: 'Liczba drużyn musi być parzysta' });
+    const competitions = await prisma.competitions.findMany({
+      where: { id: { in: competitionIds } },
+    });
+
+    if (competitions.length !== competitionIds.length) {
+      res.status(400).json({ error: 'Niektóre rozgrywki nie istnieją' });
       return;
     }
 
@@ -140,34 +168,13 @@ router.post('/', authenticateToken, checkCanCreateLeague, async (req: Request, r
         },
       });
 
-      const createdTeams = await Promise.all(
-        teams.map((teamName: string) =>
-          tx.teams.create({ data: { name: teamName, league_id: newLeague.id } })
-        )
-      );
-
-      const teamIds = createdTeams.map((t) => t.id);
-      const schedule = generateRoundRobinSchedule(teamIds);
-
-      for (const roundData of schedule) {
-        const round = await tx.rounds.create({
+      for (const compId of competitionIds) {
+        await tx.league_competitions.create({
           data: {
             league_id: newLeague.id,
-            number: roundData.number,
+            competition_id: compId,
           },
         });
-
-        await Promise.all(
-          roundData.matches.map((m) =>
-            tx.matches.create({
-              data: {
-                round_id: round.id,
-                home_team_id: m.homeTeamId,
-                away_team_id: m.awayTeamId,
-              },
-            })
-          )
-        );
       }
 
       await tx.scoring_rules.create({
@@ -184,6 +191,58 @@ router.post('/', authenticateToken, checkCanCreateLeague, async (req: Request, r
     });
   } catch (error) {
     console.error('Create league error:', error);
+    res.status(500).json({ error: 'Błąd serwera' });
+  }
+});
+
+router.post('/:leagueId/competitions', authenticateToken, requireLeagueOwner('leagueId'), async (req: Request, res: Response) => {
+  try {
+    const leagueId = parseInt(req.params.leagueId, 10);
+    const { competitionId } = req.body;
+
+    if (!competitionId) {
+      res.status(400).json({ error: 'ID rozgrywek jest wymagane' });
+      return;
+    }
+
+    const competition = await prisma.competitions.findUnique({ where: { id: competitionId } });
+    if (!competition) {
+      res.status(404).json({ error: 'Rozgrywki nie znalezione' });
+      return;
+    }
+
+    const existing = await prisma.league_competitions.findUnique({
+      where: { league_id_competition_id: { league_id: leagueId, competition_id: competitionId } },
+    });
+
+    if (existing) {
+      res.status(409).json({ error: 'Te rozgrywki są już dodane do ligi' });
+      return;
+    }
+
+    await prisma.league_competitions.create({
+      data: { league_id: leagueId, competition_id: competitionId },
+    });
+
+    res.json({ message: 'Rozgrywki dodane do ligi' });
+  } catch (error) {
+    console.error('Add competition to league error:', error);
+    res.status(500).json({ error: 'Błąd serwera' });
+  }
+});
+
+router.delete('/:leagueId/competitions/:competitionId', authenticateToken, requireLeagueOwner('leagueId'), async (req: Request, res: Response) => {
+  try {
+    const leagueId = parseInt(req.params.leagueId, 10);
+    const competitionId = parseInt(req.params.competitionId, 10);
+
+    await prisma.league_competitions.delete({
+      where: { league_id_competition_id: { league_id: leagueId, competition_id: competitionId } },
+    });
+
+    res.json({ message: 'Rozgrywki usunięte z ligi' });
+  } catch (error) {
+    console.error('Remove competition from league error:', error);
     res.status(500).json({ error: 'Błąd serwera' });
   }
 });

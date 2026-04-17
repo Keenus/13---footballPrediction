@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService } from '../../services/league-state.service';
-import { Subscription } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -15,7 +14,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
   imports: [FormsModule, MatIconModule, NgClass, PageHeaderComponent],
   template: `
     <div class="p-4 max-w-md mx-auto pb-24">
-      <app-page-header [title]="'Kolejka ' + roundNumber" subtitle="Wpisz swoje typy i wylosuj wyniki"></app-page-header>
+      <app-page-header [title]="roundName || 'Kolejka'" [subtitle]="competitionName"></app-page-header>
 
       @if (!leagueState.activeLeague()) {
         <div class="text-center text-zinc-400 py-10">
@@ -37,7 +36,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
       } @else if (isFinished && !round) {
         <div class="text-center text-zinc-400 py-10">
           <mat-icon class="text-4xl mb-2 opacity-50">done_all</mat-icon>
-          <p>Liga zakończona.</p>
+          <p>Rozgrywki zakończone.</p>
         </div>
       } @else if (!round) {
         <div class="text-center text-zinc-400 py-10">
@@ -48,6 +47,15 @@ import { toObservable } from '@angular/core/rxjs-interop';
         <div class="space-y-4">
           @for (match of round.matches; track match.id) {
             <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-sm">
+              @if (match.deadline && !match.isPlayed) {
+                <div class="flex items-center justify-center gap-1.5 mb-3">
+                  <mat-icon class="text-[14px] w-3.5 h-3.5" [ngClass]="{'text-red-400': match.deadlinePassed, 'text-zinc-400': !match.deadlinePassed}">schedule</mat-icon>
+                  <span class="text-[10px] font-medium" [ngClass]="{'text-red-400': match.deadlinePassed, 'text-zinc-400': !match.deadlinePassed}">
+                    {{ match.deadlinePassed ? 'Typowanie zamknięte' : formatDeadline(match.deadline) }}
+                  </span>
+                </div>
+              }
+
               <div class="flex justify-between items-center mb-4">
                 <div class="flex-1 text-right pr-3">
                   <div class="font-semibold text-white text-sm">{{ match.homeTeam.name }}</div>
@@ -67,18 +75,20 @@ import { toObservable } from '@angular/core/rxjs-interop';
                     </div>
                   } @else {
                     <div class="flex items-center gap-2">
-                      <input type="number" min="0" [(ngModel)]="predictions[match.id].home" [disabled]="round.isCompleted"
+                      <input type="number" min="0" [(ngModel)]="predictions[match.id].home"
+                             [disabled]="round.isCompleted || match.deadlinePassed"
                              (ngModelChange)="dirty = true" placeholder="-"
                              class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg font-bold text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all disabled:opacity-50 placeholder:text-zinc-600">
                       <span class="text-zinc-500">:</span>
-                      <input type="number" min="0" [(ngModel)]="predictions[match.id].away" [disabled]="round.isCompleted"
+                      <input type="number" min="0" [(ngModel)]="predictions[match.id].away"
+                             [disabled]="round.isCompleted || match.deadlinePassed"
                              (ngModelChange)="dirty = true" placeholder="-"
                              class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg font-bold text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all disabled:opacity-50 placeholder:text-zinc-600">
                     </div>
                   }
                 </div>
 
-                @if (round.isCompleted) {
+                @if (round.isCompleted || match.isPlayed) {
                   <div class="w-px h-12 bg-white/10"></div>
                   <div class="flex flex-col items-center">
                     <div class="text-[10px] text-zinc-400 mb-1 uppercase tracking-wider">Wynik</div>
@@ -91,7 +101,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
                 }
               </div>
 
-              @if (round.isCompleted && match.prediction) {
+              @if ((round.isCompleted || match.isPlayed) && match.prediction) {
                 <div class="mt-3 flex justify-center">
                   <div class="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1"
                        [ngClass]="{
@@ -111,15 +121,17 @@ import { toObservable } from '@angular/core/rxjs-interop';
 
         <div class="mt-8">
           @if (!round.isCompleted) {
-            <button (click)="savePredictions()" [disabled]="saving"
-                    class="w-full py-3 px-6 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mb-3 text-sm">
-              @if (saving) {
-                <mat-icon class="animate-spin text-[18px] w-[18px] h-[18px]">refresh</mat-icon>
-              } @else {
-                <mat-icon class="text-[18px] w-[18px] h-[18px]">save</mat-icon>
-              }
-              Zapisz typy
-            </button>
+            @if (hasOpenMatches) {
+              <button (click)="savePredictions()" [disabled]="saving"
+                      class="w-full py-3 px-6 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mb-3 text-sm active:scale-95">
+                @if (saving) {
+                  <mat-icon class="animate-spin text-[18px] w-[18px] h-[18px]">refresh</mat-icon>
+                } @else {
+                  <mat-icon class="text-[18px] w-[18px] h-[18px]">save</mat-icon>
+                }
+                Zapisz typy
+              </button>
+            }
 
             @if (saved) {
               <div class="mb-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2 text-emerald-400 text-xs text-center">
@@ -127,27 +139,17 @@ import { toObservable } from '@angular/core/rxjs-interop';
               </div>
             }
 
-            @if (leagueState.activeLeague()?.isOwner) {
-              <button (click)="simulateRound()" [disabled]="simulating"
-                      class="w-full py-4 px-6 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95">
-                @if (simulating) {
-                  <mat-icon class="animate-spin text-[20px] w-5 h-5">refresh</mat-icon>
-                } @else {
-                  <mat-icon class="text-[20px] w-5 h-5">casino</mat-icon>
-                }
-                Wylosuj Wyniki
-              </button>
-            } @else {
-              <div class="text-center text-zinc-500 text-xs mt-2">Tylko właściciel ligi może wylosować wyniki.</div>
-            }
-
-            @if (!allPredicted) {
+            @if (!allPredicted && hasOpenMatches) {
               <div class="mt-4 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-start gap-3">
                 <mat-icon class="text-amber-400 text-[20px] mt-0.5">warning</mat-icon>
                 <p class="text-xs text-amber-200/80 leading-relaxed">
                   Masz nieobstawione mecze. Za puste typy otrzymasz <strong class="text-amber-400">0 punktów</strong>.
                 </p>
               </div>
+            }
+
+            @if (!hasOpenMatches) {
+              <div class="text-center text-zinc-500 text-xs mt-2">Czekaj na wyniki meczy. Typowanie zamknięte.</div>
             }
           } @else {
             <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 text-center mb-4">
@@ -177,13 +179,13 @@ export class PredictionsComponent implements OnInit, OnDestroy {
 
   round: any = null;
   isFinished = false;
-  roundNumber: string | number = '-';
+  roundName = '';
+  competitionName = '';
   predictions: Record<number, { home: number | null; away: number | null }> = {};
   roundPoints = 0;
   loading = false;
   saving = false;
   saved = false;
-  simulating = false;
   dirty = false;
   error = '';
 
@@ -221,9 +223,10 @@ export class PredictionsComponent implements OnInit, OnDestroy {
       const data = await this.api.getCurrentRound(leagueId);
       this.round = data.round;
       this.isFinished = data.isFinished;
+      this.competitionName = data.competitionName || '';
 
       if (this.round) {
-        this.roundNumber = this.round.number;
+        this.roundName = this.round.name || `Kolejka ${this.round.number}`;
         this.predictions = {};
         for (const match of this.round.matches) {
           this.predictions[match.id] = {
@@ -246,14 +249,31 @@ export class PredictionsComponent implements OnInit, OnDestroy {
     }
   }
 
+  get hasOpenMatches() {
+    if (!this.round) return false;
+    return this.round.matches.some((m: any) => !m.deadlinePassed && !m.isPlayed);
+  }
+
   get allPredicted() {
     if (!this.round) return false;
-    return this.round.matches.every((m: any) =>
-      this.predictions[m.id]?.home !== null &&
-      this.predictions[m.id]?.home !== undefined &&
-      this.predictions[m.id]?.away !== null &&
-      this.predictions[m.id]?.away !== undefined
-    );
+    return this.round.matches
+      .filter((m: any) => !m.deadlinePassed)
+      .every((m: any) =>
+        this.predictions[m.id]?.home !== null &&
+        this.predictions[m.id]?.home !== undefined &&
+        this.predictions[m.id]?.away !== null &&
+        this.predictions[m.id]?.away !== undefined
+      );
+  }
+
+  formatDeadline(deadline: string): string {
+    const d = new Date(deadline);
+    const cutoff = new Date(d.getTime() - 15 * 60 * 1000);
+    const day = cutoff.getDate().toString().padStart(2, '0');
+    const month = (cutoff.getMonth() + 1).toString().padStart(2, '0');
+    const hours = cutoff.getHours().toString().padStart(2, '0');
+    const minutes = cutoff.getMinutes().toString().padStart(2, '0');
+    return `Typuj do ${day}.${month} ${hours}:${minutes}`;
   }
 
   async savePredictions() {
@@ -263,11 +283,13 @@ export class PredictionsComponent implements OnInit, OnDestroy {
     this.saved = false;
     this.cdr.markForCheck();
     try {
-      const preds = this.round.matches.map((m: any) => ({
-        matchId: m.id,
-        homeScore: this.predictions[m.id]?.home ?? null,
-        awayScore: this.predictions[m.id]?.away ?? null,
-      }));
+      const preds = this.round.matches
+        .filter((m: any) => !m.deadlinePassed)
+        .map((m: any) => ({
+          matchId: m.id,
+          homeScore: this.predictions[m.id]?.home ?? null,
+          awayScore: this.predictions[m.id]?.away ?? null,
+        }));
       await this.api.savePredictions(league.id, this.round.id, preds);
       this.dirty = false;
       this.saved = true;
@@ -276,25 +298,6 @@ export class PredictionsComponent implements OnInit, OnDestroy {
       console.error('savePredictions error:', e);
     } finally {
       this.saving = false;
-      this.cdr.markForCheck();
-    }
-  }
-
-  async simulateRound() {
-    const league = this.leagueState.activeLeague();
-    if (!league) return;
-    this.simulating = true;
-    this.cdr.markForCheck();
-    try {
-      if (this.dirty) await this.savePredictions();
-      const result = await this.api.simulateRound(league.id);
-      this.roundPoints = result.roundPoints;
-      await this.loadRound(league.id);
-      await this.leagueState.loadLeagues();
-    } catch (e: any) {
-      console.error('simulateRound error:', e);
-    } finally {
-      this.simulating = false;
       this.cdr.markForCheck();
     }
   }

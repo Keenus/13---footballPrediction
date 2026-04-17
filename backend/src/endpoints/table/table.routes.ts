@@ -22,15 +22,30 @@ interface TableRow {
 router.get('/', authenticateToken, requireLeagueMember('leagueId'), async (req: Request, res: Response) => {
   try {
     const leagueId = parseInt(req.params.leagueId, 10);
+    const competitionId = req.query.competitionId ? parseInt(req.query.competitionId as string, 10) : null;
+
+    const leagueComps = await prisma.league_competitions.findMany({
+      where: {
+        league_id: leagueId,
+        ...(competitionId ? { competition_id: competitionId } : {}),
+      },
+    });
+
+    if (leagueComps.length === 0) {
+      res.json({ table: [], isLimited: false });
+      return;
+    }
+
+    const compId = leagueComps[0].competition_id;
 
     const teams = await prisma.teams.findMany({
-      where: { league_id: leagueId },
+      where: { competition_id: compId },
     });
 
     const matches = await prisma.matches.findMany({
       where: {
         is_played: true,
-        round: { league_id: leagueId },
+        round: { competition_id: compId },
       },
     });
 
@@ -91,7 +106,7 @@ router.get('/', authenticateToken, requireLeagueMember('leagueId'), async (req: 
 
     const { table, isLimited } = filterTableBySubscription(sorted, req.user!);
 
-    res.json({ table, isLimited });
+    res.json({ table, isLimited, competitionId: compId });
   } catch (error) {
     console.error('Get table error:', error);
     res.status(500).json({ error: 'Błąd serwera' });

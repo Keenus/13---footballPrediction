@@ -43,7 +43,19 @@ CREATE TABLE users (
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------
--- Leagues
+-- Competitions (real-world leagues/tournaments)
+-- ---------------------------------------------
+CREATE TABLE competitions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  type ENUM('league', 'tournament', 'custom') NOT NULL DEFAULT 'tournament',
+  season VARCHAR(50) NULL,
+  is_finished BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------
+-- Leagues (typing leagues created by users)
 -- ---------------------------------------------
 CREATE TABLE leagues (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,11 +63,25 @@ CREATE TABLE leagues (
   owner_id INT NOT NULL,
   invite_code VARCHAR(20) NOT NULL,
   is_finished BOOLEAN NOT NULL DEFAULT FALSE,
-  current_round_index INT NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uq_leagues_invite_code (invite_code),
   CONSTRAINT fk_leagues_owner FOREIGN KEY (owner_id)
     REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------
+-- League Competitions (junction: typing league <-> competition)
+-- ---------------------------------------------
+CREATE TABLE league_competitions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  league_id INT NOT NULL,
+  competition_id INT NOT NULL,
+  current_round_index INT NOT NULL DEFAULT 0,
+  UNIQUE KEY uq_league_competition (league_id, competition_id),
+  CONSTRAINT fk_lc_league FOREIGN KEY (league_id)
+    REFERENCES leagues(id) ON DELETE CASCADE,
+  CONSTRAINT fk_lc_competition FOREIGN KEY (competition_id)
+    REFERENCES competitions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------
@@ -76,26 +102,27 @@ CREATE TABLE league_members (
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------
--- Teams (per league)
+-- Teams (per competition)
 -- ---------------------------------------------
 CREATE TABLE teams (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  league_id INT NOT NULL,
-  CONSTRAINT fk_teams_league FOREIGN KEY (league_id)
-    REFERENCES leagues(id) ON DELETE CASCADE
+  competition_id INT NOT NULL,
+  CONSTRAINT fk_teams_competition FOREIGN KEY (competition_id)
+    REFERENCES competitions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------
--- Rounds
+-- Rounds (per competition)
 -- ---------------------------------------------
 CREATE TABLE rounds (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  league_id INT NOT NULL,
+  competition_id INT NOT NULL,
   number INT NOT NULL,
+  name VARCHAR(100) NULL,
   is_completed BOOLEAN NOT NULL DEFAULT FALSE,
-  CONSTRAINT fk_rounds_league FOREIGN KEY (league_id)
-    REFERENCES leagues(id) ON DELETE CASCADE
+  CONSTRAINT fk_rounds_competition FOREIGN KEY (competition_id)
+    REFERENCES competitions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------
@@ -118,20 +145,23 @@ CREATE TABLE matches (
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------
--- Predictions
+-- Predictions (scoped per typing league)
 -- ---------------------------------------------
 CREATE TABLE predictions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   match_id INT NOT NULL,
   user_id INT NOT NULL,
+  league_id INT NOT NULL,
   home_score INT NULL,
   away_score INT NULL,
   points_earned INT NOT NULL DEFAULT 0,
-  UNIQUE KEY uq_predictions (match_id, user_id),
+  UNIQUE KEY uq_predictions (match_id, user_id, league_id),
   CONSTRAINT fk_predictions_match FOREIGN KEY (match_id)
     REFERENCES matches(id) ON DELETE CASCADE,
   CONSTRAINT fk_predictions_user FOREIGN KEY (user_id)
-    REFERENCES users(id) ON DELETE CASCADE
+    REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_predictions_league FOREIGN KEY (league_id)
+    REFERENCES leagues(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------
@@ -156,3 +186,10 @@ INSERT INTO subscription_plans (name, display_name, max_created_leagues, max_joi
   ('light',    'Light',    0,    3,    FALSE, FALSE, FALSE, 0.00),
   ('standard', 'Standard', 3,    NULL, TRUE,  TRUE,  FALSE, 19.99),
   ('gold',     'Gold',     NULL, NULL, TRUE,  TRUE,  TRUE,  39.99);
+
+-- =============================================
+-- Seed: Competitions
+-- =============================================
+INSERT INTO competitions (name, type, season) VALUES
+  ('Liga Mistrzów 2024/25 - Faza pucharowa', 'tournament', '2024/25'),
+  ('Mistrzostwa Świata 2026', 'tournament', '2026');

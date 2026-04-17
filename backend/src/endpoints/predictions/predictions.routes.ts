@@ -7,6 +7,7 @@ const router = Router({ mergeParams: true });
 
 router.get('/:roundId', authenticateToken, requireLeagueMember('leagueId'), async (req: Request, res: Response) => {
   try {
+    const leagueId = parseInt(req.params.leagueId, 10);
     const roundId = parseInt(req.params.roundId, 10);
 
     const round = await prisma.rounds.findUnique({
@@ -26,6 +27,7 @@ router.get('/:roundId', authenticateToken, requireLeagueMember('leagueId'), asyn
     const predictions = await prisma.predictions.findMany({
       where: {
         user_id: req.user!.userId,
+        league_id: leagueId,
         match_id: { in: round.matches.map((m) => m.id) },
       },
     });
@@ -39,19 +41,29 @@ router.get('/:roundId', authenticateToken, requireLeagueMember('leagueId'), asyn
       };
     }
 
+    const now = new Date();
+
     res.json({
       roundId: round.id,
       roundNumber: round.number,
+      roundName: round.name,
       isCompleted: round.is_completed,
-      matches: round.matches.map((m) => ({
-        id: m.id,
-        homeTeam: { id: m.home_team.id, name: m.home_team.name },
-        awayTeam: { id: m.away_team.id, name: m.away_team.name },
-        homeScore: m.home_score,
-        awayScore: m.away_score,
-        isPlayed: m.is_played,
-        prediction: predictionsMap[m.id] || null,
-      })),
+      matches: round.matches.map((m) => {
+        const deadline = m.deadline ? new Date(m.deadline) : null;
+        const deadlinePassed = deadline ? now >= new Date(deadline.getTime() - 15 * 60 * 1000) : false;
+
+        return {
+          id: m.id,
+          homeTeam: { id: m.home_team.id, name: m.home_team.name },
+          awayTeam: { id: m.away_team.id, name: m.away_team.name },
+          homeScore: m.home_score,
+          awayScore: m.away_score,
+          isPlayed: m.is_played,
+          deadline: m.deadline,
+          deadlinePassed,
+          prediction: predictionsMap[m.id] || null,
+        };
+      }),
     });
   } catch (error) {
     console.error('Get predictions error:', error);
@@ -61,6 +73,7 @@ router.get('/:roundId', authenticateToken, requireLeagueMember('leagueId'), asyn
 
 router.post('/:roundId', authenticateToken, requireLeagueMember('leagueId'), async (req: Request, res: Response) => {
   try {
+    const leagueId = parseInt(req.params.leagueId, 10);
     const roundId = parseInt(req.params.roundId, 10);
     const { predictions } = req.body;
 
@@ -84,22 +97,31 @@ router.post('/:roundId', authenticateToken, requireLeagueMember('leagueId'), asy
       return;
     }
 
-    const matchIds = round.matches.map((m) => m.id);
+    const now = new Date();
+    const matchMap = new Map(round.matches.map((m) => [m.id, m]));
 
     await prisma.$transaction(async (tx) => {
       for (const pred of predictions) {
-        if (!matchIds.includes(pred.matchId)) continue;
+        const match = matchMap.get(pred.matchId);
+        if (!match) continue;
+
+        if (match.deadline) {
+          const cutoff = new Date(new Date(match.deadline).getTime() - 15 * 60 * 1000);
+          if (now >= cutoff) continue;
+        }
 
         await tx.predictions.upsert({
           where: {
-            match_id_user_id: {
+            match_id_user_id_league_id: {
               match_id: pred.matchId,
               user_id: req.user!.userId,
+              league_id: leagueId,
             },
           },
           create: {
             match_id: pred.matchId,
             user_id: req.user!.userId,
+            league_id: leagueId,
             home_score: pred.homeScore ?? null,
             away_score: pred.awayScore ?? null,
           },

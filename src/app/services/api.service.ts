@@ -8,6 +8,63 @@ export class ApiService {
   private http = inject(HttpClient);
   private base = environment.apiUrl;
 
+  // ---- Competitions ----
+  getCompetitions() {
+    return firstValueFrom(this.http.get<any[]>(`${this.base}/competitions`));
+  }
+
+  getCompetition(id: number) {
+    return firstValueFrom(this.http.get<any>(`${this.base}/competitions/${id}`));
+  }
+
+  createCompetition(data: { name: string; type?: string; season?: string }) {
+    return firstValueFrom(this.http.post<any>(`${this.base}/competitions`, data));
+  }
+
+  updateCompetition(id: number, data: { name?: string; type?: string; season?: string; isFinished?: boolean }) {
+    return firstValueFrom(this.http.put<any>(`${this.base}/competitions/${id}`, data));
+  }
+
+  deleteCompetition(id: number) {
+    return firstValueFrom(this.http.delete<any>(`${this.base}/competitions/${id}`));
+  }
+
+  addCompetitionTeams(competitionId: number, teams: string[]) {
+    return firstValueFrom(this.http.post<any>(`${this.base}/competitions/${competitionId}/teams`, { teams }));
+  }
+
+  updateTeam(competitionId: number, teamId: number, name: string) {
+    return firstValueFrom(this.http.put<any>(`${this.base}/competitions/${competitionId}/teams/${teamId}`, { name }));
+  }
+
+  deleteTeam(competitionId: number, teamId: number) {
+    return firstValueFrom(this.http.delete<any>(`${this.base}/competitions/${competitionId}/teams/${teamId}`));
+  }
+
+  getMatches(competitionId: number) {
+    return firstValueFrom(this.http.get<any[]>(`${this.base}/competitions/${competitionId}/matches`));
+  }
+
+  addMatch(competitionId: number, data: { homeTeamId: number; awayTeamId: number; deadline?: string }) {
+    return firstValueFrom(this.http.post<any>(`${this.base}/competitions/${competitionId}/matches`, data));
+  }
+
+  updateMatch(competitionId: number, matchId: number, data: { homeTeamId?: number; awayTeamId?: number; deadline?: string | null }) {
+    return firstValueFrom(this.http.put<any>(`${this.base}/competitions/${competitionId}/matches/${matchId}`, data));
+  }
+
+  deleteMatch(competitionId: number, matchId: number) {
+    return firstValueFrom(this.http.delete<any>(`${this.base}/competitions/${competitionId}/matches/${matchId}`));
+  }
+
+  addCompetitionRound(competitionId: number, data: { number: number; name?: string; matches?: { homeTeamId: number; awayTeamId: number }[] }) {
+    return firstValueFrom(this.http.post<any>(`${this.base}/competitions/${competitionId}/rounds`, data));
+  }
+
+  updateRoundResults(competitionId: number, roundId: number, results: { matchId: number; homeScore: number; awayScore: number }[]) {
+    return firstValueFrom(this.http.put<any>(`${this.base}/competitions/${competitionId}/rounds/${roundId}/results`, { results }));
+  }
+
   // ---- Leagues ----
   getLeagues() {
     return firstValueFrom(this.http.get<any[]>(`${this.base}/leagues`));
@@ -17,8 +74,16 @@ export class ApiService {
     return firstValueFrom(this.http.get<any>(`${this.base}/leagues/${id}`));
   }
 
-  createLeague(name: string, teamNames?: string[]) {
-    return firstValueFrom(this.http.post<any>(`${this.base}/leagues`, { name, teamNames }));
+  createLeague(name: string, competitionIds: number[]) {
+    return firstValueFrom(this.http.post<any>(`${this.base}/leagues`, { name, competitionIds }));
+  }
+
+  addCompetitionToLeague(leagueId: number, competitionId: number) {
+    return firstValueFrom(this.http.post<any>(`${this.base}/leagues/${leagueId}/competitions`, { competitionId }));
+  }
+
+  removeCompetitionFromLeague(leagueId: number, competitionId: number) {
+    return firstValueFrom(this.http.delete<any>(`${this.base}/leagues/${leagueId}/competitions/${competitionId}`));
   }
 
   joinLeague(inviteCode: string) {
@@ -38,16 +103,17 @@ export class ApiService {
   }
 
   // ---- Rounds ----
-  getCurrentRound(leagueId: number) {
-    return firstValueFrom(this.http.get<any>(`${this.base}/leagues/${leagueId}/rounds/current`));
+  getRounds(leagueId: number) {
+    return firstValueFrom(this.http.get<any>(`${this.base}/leagues/${leagueId}/rounds`));
   }
 
-  simulateRound(leagueId: number) {
-    return firstValueFrom(this.http.post<any>(`${this.base}/leagues/${leagueId}/rounds/simulate`, {}));
+  getCurrentRound(leagueId: number, competitionId?: number) {
+    const params = competitionId ? `?competitionId=${competitionId}` : '';
+    return firstValueFrom(this.http.get<any>(`${this.base}/leagues/${leagueId}/rounds/current${params}`));
   }
 
-  nextRound(leagueId: number) {
-    return firstValueFrom(this.http.post<any>(`${this.base}/leagues/${leagueId}/rounds/next`, {}));
+  nextRound(leagueId: number, competitionId?: number) {
+    return firstValueFrom(this.http.post<any>(`${this.base}/leagues/${leagueId}/rounds/next`, { competitionId }));
   }
 
   // ---- Predictions ----
@@ -65,13 +131,15 @@ export class ApiService {
   }
 
   // ---- Table ----
-  getTable(leagueId: number) {
-    return firstValueFrom(this.http.get<any>(`${this.base}/leagues/${leagueId}/table`));
+  getTable(leagueId: number, competitionId?: number) {
+    const params = competitionId ? `?competitionId=${competitionId}` : '';
+    return firstValueFrom(this.http.get<any>(`${this.base}/leagues/${leagueId}/table${params}`));
   }
 
   // ---- History ----
-  getHistory(leagueId: number) {
-    return firstValueFrom(this.http.get<any[]>(`${this.base}/leagues/${leagueId}/history`));
+  getHistory(leagueId: number, competitionId?: number) {
+    const params = competitionId ? `?competitionId=${competitionId}` : '';
+    return firstValueFrom(this.http.get<any[]>(`${this.base}/leagues/${leagueId}/history${params}`));
   }
 
   // ---- Scoring ----
@@ -107,5 +175,26 @@ export class ApiService {
   // ---- Subscription Plans ----
   getSubscriptionPlans() {
     return firstValueFrom(this.http.get<any[]>(`${this.base}/subscription-plans`));
+  }
+
+  // ---- Payments ----
+  getPaymentStatus() {
+    return firstValueFrom(this.http.get<{ configured: boolean }>(`${this.base}/payments/status`));
+  }
+
+  createCheckout(planId: number) {
+    return firstValueFrom(this.http.post<{ url: string }>(`${this.base}/payments/create-checkout`, { planId }));
+  }
+
+  createPortalSession() {
+    return firstValueFrom(this.http.post<{ url: string }>(`${this.base}/payments/create-portal`, {}));
+  }
+
+  getPaymentHistory() {
+    return firstValueFrom(this.http.get<any[]>(`${this.base}/payments/history`));
+  }
+
+  setupStripe() {
+    return firstValueFrom(this.http.post<any>(`${this.base}/payments/setup-stripe`, {}));
   }
 }

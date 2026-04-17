@@ -24,12 +24,42 @@ export const adminGuard: CanActivateFn = () => {
   return router.createUrlTree(['/dashboard']);
 };
 
+export const userGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (!auth.isAdmin()) {
+    return true;
+  }
+
+  return router.createUrlTree(['/admin']);
+};
+
 export const guestGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
   if (!auth.isLoggedIn()) {
     return true;
+  }
+
+  if (auth.isAdmin()) {
+    return router.createUrlTree(['/admin']);
+  }
+
+  return router.createUrlTree(['/dashboard']);
+};
+
+export const roleRedirectGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (!auth.isLoggedIn()) {
+    return router.createUrlTree(['/login']);
+  }
+
+  if (auth.isAdmin()) {
+    return router.createUrlTree(['/admin']);
   }
 
   return router.createUrlTree(['/dashboard']);

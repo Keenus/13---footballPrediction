@@ -15,8 +15,20 @@ router.post('/register', async (req: Request, res: Response) => {
       return;
     }
 
-    if (password.length < 6) {
-      res.status(400).json({ error: 'Hasło musi mieć minimum 6 znaków' });
+    if (username.length < 5) {
+      res.status(400).json({ error: 'Nazwa użytkownika musi mieć minimum 5 znaków' });
+      return;
+    }
+
+    const passwordErrors: string[] = [];
+    if (password.length < 8) passwordErrors.push('minimum 8 znaków');
+    if (!/[A-Z]/.test(password)) passwordErrors.push('wielką literę');
+    if (!/[a-z]/.test(password)) passwordErrors.push('małą literę');
+    if (!/[0-9]/.test(password)) passwordErrors.push('cyfrę');
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) passwordErrors.push('znak specjalny');
+
+    if (passwordErrors.length > 0) {
+      res.status(400).json({ error: `Hasło musi zawierać: ${passwordErrors.join(', ')}` });
       return;
     }
 
@@ -128,7 +140,7 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
     const memberships = await prisma.league_members.findMany({
       where: { user_id: user.id },
       include: {
-        league: { select: { id: true, name: true, is_finished: true, current_round_index: true } },
+        league: { select: { id: true, name: true, is_finished: true } },
       },
     });
 

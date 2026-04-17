@@ -9,33 +9,39 @@ datasource db {
 }
 
 model subscription_plans {
-  id                  Int       @id @default(autoincrement())
-  name                String    @db.VarChar(50)
-  display_name        String    @db.VarChar(100)
+  id                  Int        @id @default(autoincrement())
+  name                String     @db.VarChar(50)
+  display_name        String     @db.VarChar(100)
   max_created_leagues Int?
   max_joined_leagues  Int?
-  can_create_leagues  Boolean   @default(false)
-  full_statistics     Boolean   @default(false)
-  custom_scoring      Boolean   @default(false)
-  price               Decimal   @db.Decimal(10, 2)
-  is_active           Boolean   @default(true)
+  can_create_leagues  Boolean    @default(false)
+  full_statistics     Boolean    @default(false)
+  custom_scoring      Boolean    @default(false)
+  price               Decimal    @db.Decimal(10, 2)
+  stripe_price_id     String?    @db.VarChar(100)
+  is_active           Boolean    @default(true)
   users               users[]
+  payments            payments[]
 }
 
 model users {
-  id                   Int                 @id @default(autoincrement())
-  email                String              @unique @db.VarChar(255)
-  password_hash        String              @db.VarChar(255)
-  username             String              @db.VarChar(100)
-  avatar               String              @default("person") @db.VarChar(50)
-  role                 users_role           @default(user)
-  subscription_plan_id Int?
-  created_at           DateTime            @default(now())
-  updated_at           DateTime            @updatedAt
-  subscription_plan    subscription_plans? @relation(fields: [subscription_plan_id], references: [id], onDelete: SetNull)
-  owned_leagues        leagues[]
-  league_memberships   league_members[]
-  predictions          predictions[]
+  id                      Int                 @id @default(autoincrement())
+  email                   String              @unique @db.VarChar(255)
+  password_hash           String              @db.VarChar(255)
+  username                String              @db.VarChar(100)
+  avatar                  String              @default("person") @db.VarChar(50)
+  role                    users_role          @default(user)
+  subscription_plan_id    Int?
+  stripe_customer_id      String?             @db.VarChar(100)
+  stripe_subscription_id  String?             @db.VarChar(100)
+  subscription_expires_at DateTime?
+  created_at              DateTime            @default(now())
+  updated_at              DateTime            @updatedAt
+  subscription_plan       subscription_plans? @relation(fields: [subscription_plan_id], references: [id], onDelete: SetNull)
+  owned_leagues           leagues[]
+  league_memberships      league_members[]
+  predictions             predictions[]
+  payments                payments[]
 
   @@index([subscription_plan_id])
 }
@@ -45,21 +51,50 @@ enum users_role {
   user
 }
 
+model competitions {
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @db.VarChar(255)
+  type                 competitions_type      @default(tournament)
+  season               String?                @db.VarChar(50)
+  is_finished          Boolean                @default(false)
+  created_at           DateTime               @default(now())
+  teams                teams[]
+  rounds               rounds[]
+  league_competitions  league_competitions[]
+}
+
+enum competitions_type {
+  league
+  tournament
+  custom
+}
+
 model leagues {
-  id                  Int              @id @default(autoincrement())
-  name                String           @db.VarChar(255)
+  id                  Int                    @id @default(autoincrement())
+  name                String                 @db.VarChar(255)
   owner_id            Int
-  invite_code         String           @unique @db.VarChar(20)
-  is_finished         Boolean          @default(false)
-  current_round_index Int              @default(0)
-  created_at          DateTime         @default(now())
-  owner               users            @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  invite_code         String                 @unique @db.VarChar(20)
+  is_finished         Boolean                @default(false)
+  created_at          DateTime               @default(now())
+  owner               users                  @relation(fields: [owner_id], references: [id], onDelete: Cascade)
   members             league_members[]
-  teams               teams[]
-  rounds              rounds[]
+  league_competitions league_competitions[]
+  predictions         predictions[]
   scoring_rules       scoring_rules?
 
   @@index([owner_id])
+}
+
+model league_competitions {
+  id                  Int          @id @default(autoincrement())
+  league_id           Int
+  competition_id      Int
+  current_round_index Int          @default(0)
+  league              leagues      @relation(fields: [league_id], references: [id], onDelete: Cascade)
+  competition         competitions @relation(fields: [competition_id], references: [id], onDelete: Cascade)
+
+  @@unique([league_id, competition_id])
+  @@index([competition_id])
 }
 
 model league_members {
@@ -82,25 +117,26 @@ enum league_members_role {
 }
 
 model teams {
-  id           Int       @id @default(autoincrement())
-  name         String    @db.VarChar(100)
-  league_id    Int
-  league       leagues   @relation(fields: [league_id], references: [id], onDelete: Cascade)
-  home_matches matches[] @relation("home_team")
-  away_matches matches[] @relation("away_team")
+  id             Int          @id @default(autoincrement())
+  name           String       @db.VarChar(100)
+  competition_id Int
+  competition    competitions @relation(fields: [competition_id], references: [id], onDelete: Cascade)
+  home_matches   matches[]    @relation("home_team")
+  away_matches   matches[]    @relation("away_team")
 
-  @@index([league_id])
+  @@index([competition_id])
 }
 
 model rounds {
-  id           Int       @id @default(autoincrement())
-  league_id    Int
-  number       Int
-  is_completed Boolean   @default(false)
-  league       leagues   @relation(fields: [league_id], references: [id], onDelete: Cascade)
-  matches      matches[]
+  id             Int          @id @default(autoincrement())
+  competition_id Int
+  number         Int
+  name           String?      @db.VarChar(100)
+  is_completed   Boolean      @default(false)
+  competition    competitions @relation(fields: [competition_id], references: [id], onDelete: Cascade)
+  matches        matches[]
 
-  @@index([league_id])
+  @@index([competition_id])
 }
 
 model matches {
@@ -111,6 +147,7 @@ model matches {
   home_score   Int?
   away_score   Int?
   is_played    Boolean       @default(false)
+  deadline     DateTime?
   round        rounds        @relation(fields: [round_id], references: [id], onDelete: Cascade)
   home_team    teams         @relation("home_team", fields: [home_team_id], references: [id], onDelete: Cascade)
   away_team    teams         @relation("away_team", fields: [away_team_id], references: [id], onDelete: Cascade)
@@ -125,14 +162,17 @@ model predictions {
   id            Int     @id @default(autoincrement())
   match_id      Int
   user_id       Int
+  league_id     Int
   home_score    Int?
   away_score    Int?
   points_earned Int     @default(0)
   match         matches @relation(fields: [match_id], references: [id], onDelete: Cascade)
   user          users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  league        leagues @relation(fields: [league_id], references: [id], onDelete: Cascade)
 
-  @@unique([match_id, user_id])
+  @@unique([match_id, user_id, league_id])
   @@index([user_id])
+  @@index([league_id])
 }
 
 model scoring_rules {
@@ -143,4 +183,28 @@ model scoring_rules {
   correct_result_points    Int     @default(1)
   wrong_points             Int     @default(0)
   league                   leagues @relation(fields: [league_id], references: [id], onDelete: Cascade)
+}
+
+model payments {
+  id                    Int                @id @default(autoincrement())
+  user_id               Int
+  subscription_plan_id  Int
+  stripe_session_id     String?            @db.VarChar(255)
+  stripe_payment_intent_id String?         @db.VarChar(255)
+  amount                Decimal            @db.Decimal(10, 2)
+  currency              String             @default("pln") @db.VarChar(10)
+  status                payments_status    @default(pending)
+  created_at            DateTime           @default(now())
+  user                  users              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  subscription_plan     subscription_plans @relation(fields: [subscription_plan_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([subscription_plan_id])
+}
+
+enum payments_status {
+  pending
+  completed
+  failed
+  refunded
 }
