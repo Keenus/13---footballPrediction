@@ -5,7 +5,6 @@ import { Router, RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService } from '../../services/league-state.service';
-import { Subscription } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -119,8 +118,8 @@ export class RankingComponent implements OnInit, OnDestroy {
       const data = await this.api.getRanking(leagueId);
       this.ranking = data.ranking;
       this.isLimited = data.isLimited;
-    } catch (e) {
-      console.error('loadRanking error:', e);
+    } catch {
+      this.ranking = [];
     } finally {
       this.loading = false;
       this.cdr.markForCheck();

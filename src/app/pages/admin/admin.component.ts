@@ -3,6 +3,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 
 type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
@@ -481,6 +482,7 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
 })
 export class AdminComponent implements OnInit {
   private api = inject(ApiService);
+  private toast = inject(ToastService);
 
   tabs: { id: AdminTab; label: string; icon: string }[] = [
     { id: 'competitions', label: 'Rozgrywki', icon: 'emoji_events' },
@@ -533,7 +535,9 @@ export class AdminComponent implements OnInit {
     this.loadingComps = true;
     try {
       this.competitions = await this.api.getCompetitions();
-    } catch {} finally {
+    } catch {
+      this.competitions = [];
+    } finally {
       this.loadingComps = false;
     }
   }
@@ -557,6 +561,7 @@ export class AdminComponent implements OnInit {
         season: this.newComp.season.trim() || undefined,
       });
       this.newComp = { name: '', type: 'tournament', season: '' };
+      this.toast.success('Rozgrywki utworzone');
       await this.loadCompetitions();
     } catch {}
   }
@@ -575,20 +580,22 @@ export class AdminComponent implements OnInit {
         isFinished: this.editComp.isFinished,
       });
       this.editingCompId = null;
+      this.toast.success('Rozgrywki zaktualizowane');
       await this.loadCompetitions();
     } catch {}
   }
 
   async deleteCompetition() {
     if (!this.confirmDeleteComp) return;
+    const deletedId = this.confirmDeleteComp.id;
     try {
-      await this.api.deleteCompetition(this.confirmDeleteComp.id);
-      this.confirmDeleteComp = null;
-      if (this.selectedCompId === this.confirmDeleteComp?.id) {
+      await this.api.deleteCompetition(deletedId);
+      if (this.selectedCompId === deletedId) {
         this.selectedCompId = null;
         this.selectedCompTeams = [];
         this.selectedCompMatches = [];
       }
+      this.toast.success('Rozgrywki usunięte');
       await this.loadCompetitions();
     } catch {}
     this.confirmDeleteComp = null;
@@ -632,6 +639,7 @@ export class AdminComponent implements OnInit {
     try {
       await this.api.addCompetitionTeams(this.selectedCompId, names);
       this.newTeamsText = '';
+      this.toast.success(`Dodano ${names.length} drużyn`);
       await this.loadTeamsAndMatches();
       await this.loadCompetitions();
     } catch {}
@@ -642,6 +650,7 @@ export class AdminComponent implements OnInit {
     try {
       await this.api.updateTeam(this.selectedCompId, teamId, this.editTeamName.trim());
       this.editingTeamId = null;
+      this.toast.success('Drużyna zaktualizowana');
       await this.loadTeamsAndMatches();
       await this.loadCompetitions();
     } catch {}
@@ -653,6 +662,7 @@ export class AdminComponent implements OnInit {
     this.confirmDeleteTeam = null;
     try {
       await this.api.deleteTeam(this.selectedCompId, teamId);
+      this.toast.success('Drużyna usunięta');
       await this.loadTeamsAndMatches();
       await this.loadCompetitions();
     } catch {}
@@ -671,6 +681,7 @@ export class AdminComponent implements OnInit {
         awayTeamId: this.newMatch.awayTeamId,
         deadline: this.newMatch.deadline || undefined,
       });
+      this.toast.success('Mecz dodany');
       this.matchSuccess = 'Mecz dodany!';
       this.newMatch = { homeTeamId: null, awayTeamId: null, deadline: '' };
       await this.loadTeamsAndMatches();
@@ -686,6 +697,7 @@ export class AdminComponent implements OnInit {
     this.confirmDeleteMatch = null;
     try {
       await this.api.deleteMatch(this.selectedCompId, matchId);
+      this.toast.success('Mecz usunięty');
       await this.loadTeamsAndMatches();
     } catch {}
   }
@@ -711,7 +723,9 @@ export class AdminComponent implements OnInit {
           };
         }
       }
-    } catch {}
+    } catch {
+      this.resultsComp = null;
+    }
   }
 
   toggleRound(roundId: number) {
@@ -747,6 +761,7 @@ export class AdminComponent implements OnInit {
     try {
       await this.api.updateRoundResults(compId, round.id, results);
       this.savedRoundId = round.id;
+      this.toast.success('Wyniki zapisane i punkty naliczone');
       await this.loadResults(compId);
       this.expandedRoundId = round.id;
       setTimeout(() => { this.savedRoundId = null; }, 5000);

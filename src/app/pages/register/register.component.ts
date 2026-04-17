@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-register',
@@ -81,6 +82,7 @@ import { AuthService } from '../../services/auth.service';
 export class RegisterComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private toast = inject(ToastService);
 
   username = signal('');
   email = signal('');
@@ -107,6 +109,7 @@ export class RegisterComponent {
     this.loading = true;
     try {
       await this.auth.register(this.email(), this.password(), this.username());
+      this.toast.success('Konto utworzone pomyślnie');
       this.router.navigate(['/dashboard']);
     } catch (e: any) {
       this.error = e?.error?.error || 'Błąd rejestracji';

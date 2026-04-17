@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService } from '../../services/league-state.service';
+import { ToastService } from '../../services/toast.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -175,6 +176,7 @@ export class PredictionsComponent implements OnInit, OnDestroy {
   leagueState = inject(LeagueStateService);
   private api = inject(ApiService);
   private cdr = inject(ChangeDetectorRef);
+  private toast = inject(ToastService);
   router = inject(Router);
 
   round: any = null;
@@ -241,7 +243,6 @@ export class PredictionsComponent implements OnInit, OnDestroy {
         }
       }
     } catch (e: any) {
-      console.error('loadRound error:', e);
       this.error = e?.error?.error || 'Nie udało się załadować kolejki';
     } finally {
       this.loading = false;
@@ -293,9 +294,10 @@ export class PredictionsComponent implements OnInit, OnDestroy {
       await this.api.savePredictions(league.id, this.round.id, preds);
       this.dirty = false;
       this.saved = true;
+      this.toast.success('Typy zapisane!');
       setTimeout(() => { this.saved = false; this.cdr.markForCheck(); }, 3000);
-    } catch (e: any) {
-      console.error('savePredictions error:', e);
+    } catch {
+      // error toast shown by interceptor
     } finally {
       this.saving = false;
       this.cdr.markForCheck();
@@ -309,9 +311,10 @@ export class PredictionsComponent implements OnInit, OnDestroy {
       await this.api.nextRound(league.id);
       await this.leagueState.loadLeagues();
       await this.loadRound(league.id);
+      this.toast.success('Przejście do następnej kolejki');
       window.scrollTo(0, 0);
-    } catch (e: any) {
-      console.error('nextRound error:', e);
+    } catch {
+      // error toast shown by interceptor
     }
   }
 }

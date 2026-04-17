@@ -4,6 +4,7 @@ import { NgClass, UpperCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 
 @Component({
@@ -165,6 +166,7 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 })
 export class SubscriptionComponent implements OnInit {
   private api = inject(ApiService);
+  private toast = inject(ToastService);
   auth = inject(AuthService);
 
   plans: any[] = [];
@@ -185,8 +187,8 @@ export class SubscriptionComponent implements OnInit {
       if (this.auth.isLoggedIn()) {
         this.paymentHistory = await this.api.getPaymentHistory();
       }
-    } catch (e) {
-      console.error('Load subscription data error:', e);
+    } catch {
+      this.plans = [];
     }
   }
 

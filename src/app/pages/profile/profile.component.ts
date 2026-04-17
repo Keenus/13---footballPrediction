@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 
 @Component({
@@ -98,6 +99,7 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 export class ProfileComponent implements OnInit {
   auth = inject(AuthService);
   private api = inject(ApiService);
+  private toast = inject(ToastService);
 
   stats: any = null;
   editing = false;
@@ -120,6 +122,7 @@ export class ProfileComponent implements OnInit {
       const result = await this.api.updateProfile({ username: this.editUsername });
       this.auth.currentUser.set(result);
       this.editing = false;
+      this.toast.success('Profil zaktualizowany');
     } catch {}
   }
 }

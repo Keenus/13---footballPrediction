@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService } from '../../services/league-state.service';
+import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 
 @Component({
@@ -40,6 +41,7 @@ export class JoinLeagueComponent {
   private api = inject(ApiService);
   private leagueState = inject(LeagueStateService);
   private router = inject(Router);
+  private toast = inject(ToastService);
 
   inviteCode = '';
   error = '';
@@ -53,6 +55,7 @@ export class JoinLeagueComponent {
     try {
       const result = await this.api.joinLeague(this.inviteCode.trim());
       this.success = `Dołączyłeś do ligi "${result.name}"!`;
+      this.toast.success(`Dołączono do ligi "${result.name}"`);
       await this.leagueState.loadLeagues();
       this.leagueState.setActiveLeague(result.id);
       setTimeout(() => this.router.navigate(['/dashboard']), 1500);

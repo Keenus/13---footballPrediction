@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService } from '../../services/league-state.service';
-import { Subscription } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -105,8 +104,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
     try {
       this.history = await this.api.getHistory(leagueId);
-    } catch (e) {
-      console.error('loadHistory error:', e);
+    } catch {
+      this.history = [];
     } finally {
       this.loading = false;
       this.cdr.markForCheck();

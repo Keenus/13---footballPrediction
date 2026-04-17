@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -55,6 +56,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private toast = inject(ToastService);
 
   email = '';
   password = '';
@@ -66,6 +68,7 @@ export class LoginComponent {
     this.loading = true;
     try {
       await this.auth.login(this.email, this.password);
+      this.toast.success('Zalogowano pomyślnie');
       this.router.navigate(['/dashboard']);
     } catch (e: any) {
       this.error = e?.error?.error || 'Błąd logowania';

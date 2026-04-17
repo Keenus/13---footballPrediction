@@ -2,13 +2,16 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { GlobalHeaderComponent } from './components/global-header/global-header.component';
+import { ToastComponent } from './components/toast/toast.component';
 import { AuthService } from './services/auth.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
-  imports: [RouterOutlet, NavBarComponent, GlobalHeaderComponent],
+  imports: [RouterOutlet, NavBarComponent, GlobalHeaderComponent, ToastComponent],
   template: `
+    <app-toast />
+
     <div class="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-blue-500/30 relative flex flex-col">
       <div class="fixed inset-0 z-0 pointer-events-none">
         <img

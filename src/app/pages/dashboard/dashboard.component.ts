@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService, LeagueSummary } from '../../services/league-state.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -221,6 +222,7 @@ export class DashboardComponent implements OnInit {
   leagueState = inject(LeagueStateService);
   private api = inject(ApiService);
   private router = inject(Router);
+  private toast = inject(ToastService);
 
   stats: any = null;
   showCreateLeague = false;
@@ -268,6 +270,7 @@ export class DashboardComponent implements OnInit {
       );
       await this.leagueState.loadLeagues();
       this.leagueState.setActiveLeague(result.id);
+      this.toast.success('Liga utworzona pomyślnie');
       this.newLeagueName = '';
       this.selectedCompetitionIds.clear();
       this.showCreateLeague = false;
@@ -286,13 +289,15 @@ export class DashboardComponent implements OnInit {
 
   async executeDeleteOrLeave() {
     if (!this.leagueToDelete) return;
+    const wasOwner = this.leagueToDelete.isOwner;
     try {
-      if (this.leagueToDelete.isOwner) {
+      if (wasOwner) {
         await this.api.deleteLeague(this.leagueToDelete.id);
       } else {
         await this.api.leaveLeague(this.leagueToDelete.id);
       }
       await this.leagueState.loadLeagues();
+      this.toast.success(wasOwner ? 'Liga usunięta' : 'Opuszczono ligę');
     } catch {}
     this.leagueToDelete = null;
   }
@@ -302,7 +307,9 @@ export class DashboardComponent implements OnInit {
       const result = await this.api.getInviteCode(league.id);
       this.inviteCodeValue = result.inviteCode;
       this.inviteCodeModal = true;
-    } catch {}
+    } catch {
+      // error toast shown by interceptor
+    }
   }
 
   goToPredictions() {
