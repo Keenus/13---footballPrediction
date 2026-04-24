@@ -9,15 +9,15 @@ import { AuthService } from '../../services/auth.service';
   imports: [MatIconModule],
   template: `
     <div class="flex flex-col items-center justify-center min-h-screen p-6 text-center">
-      <div class="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mb-6">
+      <div class="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center mb-6">
         <mat-icon class="text-emerald-400 text-[48px] w-12 h-12">check_circle</mat-icon>
       </div>
-      <h1 class="text-2xl font-bold text-white mb-2">Płatność zakończona!</h1>
-      <p class="text-zinc-400 mb-8 max-w-sm">
+      <h1 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">Płatność zakończona!</h1>
+      <p class="text-white/50 mb-8 max-w-sm text-sm">
         Twoja subskrypcja została aktywowana. Dziękujemy za zakup!
       </p>
       <button (click)="goToDashboard()"
-              class="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold rounded-xl transition-all">
+              class="px-8 py-3 bg-[#FEF400] hover:bg-[#e5dc00] text-[#1E1A17] font-bold uppercase tracking-wider rounded-xl transition-all">
         Przejdź do aplikacji
       </button>
     </div>

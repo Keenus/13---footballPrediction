@@ -14,66 +14,69 @@ import { ToastService } from '../../services/toast.service';
     <div class="min-h-screen flex items-center justify-center p-4">
       <div class="w-full max-w-sm">
         <div class="text-center mb-8">
-          <div class="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center mx-auto mb-4 border border-blue-500/30">
-            <mat-icon class="text-blue-400 text-[32px] w-8 h-8">sports_soccer</mat-icon>
+          <div class="w-16 h-16 rounded-2xl bg-[#FEF400]/[0.08] flex items-center justify-center mx-auto mb-4 border border-[#FEF400]/15">
+            <mat-icon class="text-[#FEF400]/70 text-[32px] w-8 h-8">sports_soccer</mat-icon>
           </div>
-          <h1 class="text-2xl font-bold text-white">Typer 2026</h1>
-          <p class="text-zinc-400 text-sm mt-1">Stwórz konto i zacznij typować</p>
+          <h1 class="text-2xl font-black text-white uppercase tracking-tight">Typ<span class="text-[#FEF400]">Liga</span></h1>
+          <p class="text-white/35 text-sm mt-1 tracking-wide">Stwórz konto i zacznij typować</p>
         </div>
 
-        <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
-          @if (error) {
-            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-sm">{{ error }}</div>
-          }
-
-          <div>
-            <label class="block text-zinc-400 text-xs font-medium mb-1.5">Nazwa użytkownika</label>
-            <input type="text" [(ngModel)]="username" placeholder="Min. 5 znaków"
-                   class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
-            @if (username().length > 0 && username().length < 5) {
-              <p class="text-red-400 text-[11px] mt-1.5 flex items-center gap-1">
-                <mat-icon class="text-[12px] w-3 h-3">close</mat-icon>
-                Minimum 5 znaków ({{ username().length }}/5)
-              </p>
+        <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-3xl p-6 space-y-4">
+          <mat-icon class="absolute right-[-10px] bottom-[-10px] text-[120px] w-[120px] h-[120px] opacity-[0.03] pointer-events-none text-white">sports_soccer</mat-icon>
+          <div class="relative z-[1] space-y-4">
+            @if (error) {
+              <div class="bg-red-500/10 border border-red-500/15 rounded-xl p-3 text-red-400 text-sm">{{ error }}</div>
             }
+
+            <div>
+              <label class="block text-white/35 text-[10px] font-bold uppercase tracking-widest mb-1.5">Nazwa użytkownika</label>
+              <input type="text" [(ngModel)]="username" placeholder="Min. 5 znaków"
+                     class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 placeholder:text-white/20 transition-all">
+              @if (username().length > 0 && username().length < 5) {
+                <p class="text-red-400 text-[11px] mt-1.5 flex items-center gap-1">
+                  <mat-icon class="text-[12px] w-3 h-3">close</mat-icon>
+                  Minimum 5 znaków ({{ username().length }}/5)
+                </p>
+              }
+            </div>
+
+            <div>
+              <label class="block text-white/35 text-[10px] font-bold uppercase tracking-widest mb-1.5">Email</label>
+              <input type="email" [(ngModel)]="email" placeholder="twoj&#64;email.pl"
+                     class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 placeholder:text-white/20 transition-all">
+            </div>
+
+            <div>
+              <label class="block text-white/35 text-[10px] font-bold uppercase tracking-widest mb-1.5">Hasło</label>
+              <input type="password" [(ngModel)]="password" placeholder="Silne hasło"
+                     class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 placeholder:text-white/20 transition-all">
+
+              @if (password().length > 0) {
+                <div class="mt-2 space-y-1">
+                  @for (rule of passwordRules(); track rule.label) {
+                    <div class="flex items-center gap-1.5">
+                      <mat-icon class="text-[12px] w-3 h-3" [ngClass]="{'text-emerald-400': rule.ok, 'text-white/20': !rule.ok}">
+                        {{ rule.ok ? 'check_circle' : 'radio_button_unchecked' }}
+                      </mat-icon>
+                      <span class="text-[11px]" [ngClass]="{'text-emerald-400': rule.ok, 'text-white/25': !rule.ok}">{{ rule.label }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <button (click)="register()" [disabled]="loading || !isFormValid()"
+                    class="w-full py-3.5 bg-[#FEF400] hover:bg-[#e5dc00] disabled:opacity-50 text-[#1E1A17] font-bold uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+              @if (loading) {
+                <mat-icon class="animate-spin text-[20px] w-5 h-5">refresh</mat-icon>
+              }
+              Zarejestruj się
+            </button>
+
+            <p class="text-center text-zinc-400 text-sm mt-4">
+              Masz konto? <a routerLink="/login" class="text-[#FEF400]/70 font-semibold hover:underline">Zaloguj się</a>
+            </p>
           </div>
-
-          <div>
-            <label class="block text-zinc-400 text-xs font-medium mb-1.5">Email</label>
-            <input type="email" [(ngModel)]="email" placeholder="twoj&#64;email.pl"
-                   class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
-          </div>
-
-          <div>
-            <label class="block text-zinc-400 text-xs font-medium mb-1.5">Hasło</label>
-            <input type="password" [(ngModel)]="password" placeholder="Silne hasło"
-                   class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
-
-            @if (password().length > 0) {
-              <div class="mt-2 space-y-1">
-                @for (rule of passwordRules(); track rule.label) {
-                  <div class="flex items-center gap-1.5">
-                    <mat-icon class="text-[12px] w-3 h-3" [ngClass]="{'text-emerald-400': rule.ok, 'text-zinc-600': !rule.ok}">
-                      {{ rule.ok ? 'check_circle' : 'radio_button_unchecked' }}
-                    </mat-icon>
-                    <span class="text-[11px]" [ngClass]="{'text-emerald-400': rule.ok, 'text-zinc-500': !rule.ok}">{{ rule.label }}</span>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-
-          <button (click)="register()" [disabled]="loading || !isFormValid()"
-                  class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-            @if (loading) {
-              <mat-icon class="animate-spin text-[20px] w-5 h-5">refresh</mat-icon>
-            }
-            Zarejestruj się
-          </button>
-
-          <p class="text-center text-zinc-400 text-sm mt-4">
-            Masz konto? <a routerLink="/login" class="text-blue-400 font-medium hover:underline">Zaloguj się</a>
-          </p>
         </div>
       </div>
     </div>

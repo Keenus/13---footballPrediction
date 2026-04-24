@@ -16,13 +16,13 @@ import { toObservable } from '@angular/core/rxjs-interop';
       <app-page-header title="Rozgrywki" subtitle="Tabela formy drużyn"></app-page-header>
 
       @if (!leagueState.activeLeague()) {
-        <div class="text-center text-zinc-400 py-10">
+        <div class="text-center text-white/50 py-10">
           <mat-icon class="text-4xl mb-2 opacity-50">sports_soccer</mat-icon>
-          <p>Nie masz aktywnej ligi.</p>
-          <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg">Przejdź do kokpitu</button>
+          <p>Nie masz aktywnej typligi.</p>
+          <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-2 bg-[#FEF400]/20 text-[#FEF400] rounded-xl font-bold uppercase tracking-wider">Przejdź do kokpitu</button>
         </div>
       } @else if (loading) {
-        <div class="text-center text-zinc-400 py-10">
+        <div class="text-center text-white/50 py-10">
           <mat-icon class="text-4xl mb-2 opacity-50 animate-spin">refresh</mat-icon>
           <p>Ładowanie tabeli...</p>
         </div>
@@ -36,10 +36,10 @@ import { toObservable } from '@angular/core/rxjs-interop';
           </div>
         }
 
-        <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-sm">
+        <div class="bg-[#262220] border border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
-              <thead class="text-[10px] text-zinc-400 bg-black/20 uppercase tracking-wider">
+              <thead class="text-[10px] text-white/35 bg-black/15 uppercase tracking-wider">
                 <tr>
                   <th class="px-3 py-4 text-center w-8">#</th>
                   <th class="px-2 py-4">Drużyna</th>
@@ -48,20 +48,20 @@ import { toObservable } from '@angular/core/rxjs-interop';
                   <th class="px-2 py-4 text-center" title="Remisy">R</th>
                   <th class="px-2 py-4 text-center" title="Porażki">P</th>
                   <th class="px-2 py-4 text-center" title="Bramki">B</th>
-                  <th class="px-3 py-4 text-center font-bold text-blue-400">PKT</th>
+                  <th class="px-3 py-4 text-center font-bold text-[#FEF400]/70">PKT</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-white/5">
+              <tbody class="divide-y divide-white/[0.06]">
                 @for (row of table; track row.teamId; let i = $index) {
                   <tr class="hover:bg-white/5 transition-colors">
-                    <td class="px-3 py-3 text-center font-medium text-zinc-500">{{ i + 1 }}</td>
+                    <td class="px-3 py-3 text-center font-medium text-white/35">{{ i + 1 }}</td>
                     <td class="px-2 py-3 font-semibold text-white whitespace-nowrap">{{ row.teamName }}</td>
-                    <td class="px-2 py-3 text-center text-zinc-400">{{ row.matchesPlayed }}</td>
-                    <td class="px-2 py-3 text-center text-zinc-400">{{ row.won }}</td>
-                    <td class="px-2 py-3 text-center text-zinc-400">{{ row.drawn }}</td>
-                    <td class="px-2 py-3 text-center text-zinc-400">{{ row.lost }}</td>
-                    <td class="px-2 py-3 text-center text-zinc-400 text-xs">{{ row.goalsFor }}:{{ row.goalsAgainst }}</td>
-                    <td class="px-3 py-3 text-center font-bold text-blue-400">{{ row.points }}</td>
+                    <td class="px-2 py-3 text-center text-white/50">{{ row.matchesPlayed }}</td>
+                    <td class="px-2 py-3 text-center text-white/50">{{ row.won }}</td>
+                    <td class="px-2 py-3 text-center text-white/50">{{ row.drawn }}</td>
+                    <td class="px-2 py-3 text-center text-white/50">{{ row.lost }}</td>
+                    <td class="px-2 py-3 text-center text-white/50 text-xs">{{ row.goalsFor }}:{{ row.goalsAgainst }}</td>
+                    <td class="px-3 py-3 text-center font-bold text-[#FEF400]/70">{{ row.points }}</td>
                   </tr>
                 }
               </tbody>

@@ -82,7 +82,7 @@ export class StorageService {
         if (!parsed.leagues) {
           const defaultLeague: TyperLeague = {
             id: 'league-default',
-            name: 'Moja pierwsza liga',
+            name: 'Moja pierwsza typliga',
             ownerId: 'user',
             rounds: parsed.rounds || [],
             predictions: parsed.predictions || {},

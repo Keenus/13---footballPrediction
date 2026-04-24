@@ -18,104 +18,119 @@ import { toObservable } from '@angular/core/rxjs-interop';
       <app-page-header [title]="roundName || 'Kolejka'" [subtitle]="competitionName"></app-page-header>
 
       @if (!leagueState.activeLeague()) {
-        <div class="text-center text-zinc-400 py-10">
-          <mat-icon class="text-4xl mb-2 opacity-50">sports_soccer</mat-icon>
-          <p>Nie masz aktywnej ligi.</p>
-          <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg">Przejdź do kokpitu</button>
+        <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-2xl text-center text-white/50 py-10 px-4">
+          <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">sports_soccer</mat-icon>
+          <div class="relative z-[1]">
+            <mat-icon class="text-4xl mb-2 opacity-50">sports_soccer</mat-icon>
+            <p class="font-black uppercase tracking-tight">Nie masz aktywnej typligi.</p>
+            <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-3 bg-[#FEF400] hover:bg-[#e5dc00] text-[#1E1A17] rounded-xl font-black uppercase tracking-wider text-sm">Przejdź do kokpitu</button>
+          </div>
         </div>
       } @else if (loading) {
-        <div class="text-center text-zinc-400 py-10">
+        <div class="text-center text-white/50 py-10">
           <mat-icon class="text-4xl mb-2 opacity-50 animate-spin">refresh</mat-icon>
           <p>Ładowanie kolejki...</p>
         </div>
       } @else if (error) {
-        <div class="text-center py-10">
-          <mat-icon class="text-4xl mb-2 text-red-400 opacity-50">error</mat-icon>
-          <p class="text-red-400 text-sm">{{ error }}</p>
-          <button (click)="reload()" class="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg">Spróbuj ponownie</button>
+        <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-2xl text-center py-10 px-4">
+          <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">error</mat-icon>
+          <div class="relative z-[1]">
+            <mat-icon class="text-4xl mb-2 text-red-400 opacity-50">error</mat-icon>
+            <p class="text-red-400 text-sm">{{ error }}</p>
+            <button (click)="reload()" class="mt-4 px-4 py-3 bg-[#FEF400] hover:bg-[#e5dc00] text-[#1E1A17] rounded-xl font-black uppercase tracking-wider text-sm">Spróbuj ponownie</button>
+          </div>
         </div>
       } @else if (isFinished && !round) {
-        <div class="text-center text-zinc-400 py-10">
-          <mat-icon class="text-4xl mb-2 opacity-50">done_all</mat-icon>
-          <p>Rozgrywki zakończone.</p>
+        <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-2xl text-center text-white/50 py-10 px-4">
+          <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">done_all</mat-icon>
+          <div class="relative z-[1]">
+            <mat-icon class="text-4xl mb-2 opacity-50">done_all</mat-icon>
+            <p class="font-black uppercase tracking-tight">Rozgrywki zakończone.</p>
+          </div>
         </div>
       } @else if (!round) {
-        <div class="text-center text-zinc-400 py-10">
-          <mat-icon class="text-4xl mb-2 opacity-50">event_busy</mat-icon>
-          <p>Brak dostępnych kolejek.</p>
+        <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-2xl text-center text-white/50 py-10 px-4">
+          <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">event_busy</mat-icon>
+          <div class="relative z-[1]">
+            <mat-icon class="text-4xl mb-2 opacity-50">event_busy</mat-icon>
+            <p class="font-black uppercase tracking-tight">Brak dostępnych kolejek.</p>
+          </div>
         </div>
       } @else {
         <div class="space-y-4">
           @for (match of round.matches; track match.id) {
-            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-sm">
-              @if (match.deadline && !match.isPlayed) {
-                <div class="flex items-center justify-center gap-1.5 mb-3">
-                  <mat-icon class="text-[14px] w-3.5 h-3.5" [ngClass]="{'text-red-400': match.deadlinePassed, 'text-zinc-400': !match.deadlinePassed}">schedule</mat-icon>
-                  <span class="text-[10px] font-medium" [ngClass]="{'text-red-400': match.deadlinePassed, 'text-zinc-400': !match.deadlinePassed}">
-                    {{ match.deadlinePassed ? 'Typowanie zamknięte' : formatDeadline(match.deadline) }}
-                  </span>
-                </div>
-              }
+            <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-2xl p-4">
+              <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">sports_soccer</mat-icon>
+              <div class="relative z-[1]">
+                @if (match.deadline && !match.isPlayed) {
+                  <div class="flex items-center justify-center gap-1.5 mb-3">
+                    <mat-icon class="text-[14px] w-3.5 h-3.5" [ngClass]="{'text-red-400': match.deadlinePassed, 'text-white/35': !match.deadlinePassed}">schedule</mat-icon>
+                    <span class="text-[9px] font-black uppercase tracking-widest" [ngClass]="{'text-red-400': match.deadlinePassed, 'text-white/35': !match.deadlinePassed}">
+                      {{ match.deadlinePassed ? 'Typowanie zamknięte' : formatDeadline(match.deadline) }}
+                    </span>
+                  </div>
+                }
 
-              <div class="flex justify-between items-center mb-4">
-                <div class="flex-1 text-right pr-3">
-                  <div class="font-semibold text-white text-sm">{{ match.homeTeam.name }}</div>
+                <div class="flex justify-between items-center mb-4">
+                  <div class="flex-1 text-right pr-3">
+                    <div class="font-black text-white text-sm">{{ match.homeTeam.name }}</div>
+                  </div>
+                  <div class="w-6 h-[2px] bg-[#FEF400]/20 mx-auto"></div>
+                  <div class="flex-1 text-left pl-3">
+                    <div class="font-black text-white text-sm">{{ match.awayTeam.name }}</div>
+                  </div>
                 </div>
-                <div class="px-2 text-zinc-500 text-xs font-bold">VS</div>
-                <div class="flex-1 text-left pl-3">
-                  <div class="font-semibold text-white text-sm">{{ match.awayTeam.name }}</div>
-                </div>
-              </div>
 
-              <div class="flex justify-center items-center gap-4 bg-black/20 p-3 rounded-xl border border-white/5">
-                <div class="flex flex-col items-center">
-                  <div class="text-[10px] text-zinc-400 mb-1 uppercase tracking-wider">Twój typ</div>
-                  @if (round.isCompleted && predictions[match.id]?.home === null) {
-                    <div class="h-12 flex items-center justify-center text-zinc-500 text-xs font-medium bg-white/5 border border-white/10 rounded-xl px-4">
-                      Brak typu (0 pkt)
-                    </div>
-                  } @else {
-                    <div class="flex items-center gap-2">
-                      <input type="number" min="0" [(ngModel)]="predictions[match.id].home"
-                             [disabled]="round.isCompleted || match.deadlinePassed"
-                             (ngModelChange)="dirty = true" placeholder="-"
-                             class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg font-bold text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all disabled:opacity-50 placeholder:text-zinc-600">
-                      <span class="text-zinc-500">:</span>
-                      <input type="number" min="0" [(ngModel)]="predictions[match.id].away"
-                             [disabled]="round.isCompleted || match.deadlinePassed"
-                             (ngModelChange)="dirty = true" placeholder="-"
-                             class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg font-bold text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all disabled:opacity-50 placeholder:text-zinc-600">
+                <div class="flex justify-center items-center gap-4 bg-black/20 p-3 rounded-xl border border-white/[0.06]">
+                  <div class="flex flex-col items-center">
+                    <div class="text-[10px] text-white/35 mb-1 uppercase tracking-widest font-bold">Twój typ</div>
+                    @if (round.isCompleted && predictions[match.id]?.home === null) {
+                      <div class="h-12 flex items-center justify-center text-white/35 text-xs font-medium bg-white/5 border border-white/10 rounded-xl px-4">
+                        Brak typu (0 pkt)
+                      </div>
+                    } @else {
+                      <div class="flex items-center gap-2">
+                        <input type="number" min="0" [(ngModel)]="predictions[match.id].home"
+                               [disabled]="round.isCompleted || match.deadlinePassed"
+                               (ngModelChange)="dirty = true" placeholder="-"
+                               class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg font-bold text-white focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 outline-none transition-all disabled:opacity-50 placeholder:text-white/20">
+                        <span class="text-white/35">:</span>
+                        <input type="number" min="0" [(ngModel)]="predictions[match.id].away"
+                               [disabled]="round.isCompleted || match.deadlinePassed"
+                               (ngModelChange)="dirty = true" placeholder="-"
+                               class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg font-bold text-white focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 outline-none transition-all disabled:opacity-50 placeholder:text-white/20">
+                      </div>
+                    }
+                  </div>
+
+                  @if (round.isCompleted || match.isPlayed) {
+                    <div class="w-px h-12 bg-white/10"></div>
+                    <div class="flex flex-col items-center">
+                      <div class="text-[10px] text-white/35 mb-1 uppercase tracking-widest font-bold">Wynik</div>
+                      <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 flex items-center justify-center bg-[#FEF400]/10 text-[#FEF400] font-bold rounded-xl text-lg">{{ match.homeScore }}</div>
+                        <span class="text-white/35">:</span>
+                        <div class="w-10 h-10 flex items-center justify-center bg-[#FEF400]/10 text-[#FEF400] font-bold rounded-xl text-lg">{{ match.awayScore }}</div>
+                      </div>
                     </div>
                   }
                 </div>
 
-                @if (round.isCompleted || match.isPlayed) {
-                  <div class="w-px h-12 bg-white/10"></div>
-                  <div class="flex flex-col items-center">
-                    <div class="text-[10px] text-zinc-400 mb-1 uppercase tracking-wider">Wynik</div>
-                    <div class="flex items-center gap-2">
-                      <div class="w-10 h-10 flex items-center justify-center bg-blue-500/10 text-blue-400 font-bold rounded-lg text-lg">{{ match.homeScore }}</div>
-                      <span class="text-zinc-500">:</span>
-                      <div class="w-10 h-10 flex items-center justify-center bg-blue-500/10 text-blue-400 font-bold rounded-lg text-lg">{{ match.awayScore }}</div>
+                @if ((round.isCompleted || match.isPlayed) && match.prediction) {
+                  <div class="mt-3 flex justify-center">
+                    <div class="px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1"
+                         [ngClass]="{
+                           'bg-emerald-500/20 text-emerald-400': match.prediction.pointsEarned === 3,
+                           'bg-[#FEF400]/20 text-[#FEF400]': match.prediction.pointsEarned === 2,
+                           'bg-amber-500/20 text-amber-400': match.prediction.pointsEarned === 1,
+                           'bg-white/[0.06] text-white/35': match.prediction.pointsEarned === 0
+                         }">
+                      <mat-icon class="text-[14px] w-[14px] h-[14px]">stars</mat-icon>
+                      +{{ match.prediction.pointsEarned }} pkt
                     </div>
                   </div>
                 }
               </div>
-
-              @if ((round.isCompleted || match.isPlayed) && match.prediction) {
-                <div class="mt-3 flex justify-center">
-                  <div class="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1"
-                       [ngClass]="{
-                         'bg-emerald-500/20 text-emerald-400': match.prediction.pointsEarned === 3,
-                         'bg-blue-500/20 text-blue-400': match.prediction.pointsEarned === 2,
-                         'bg-amber-500/20 text-amber-400': match.prediction.pointsEarned === 1,
-                         'bg-zinc-800 text-zinc-400': match.prediction.pointsEarned === 0
-                       }">
-                    <mat-icon class="text-[14px] w-[14px] h-[14px]">stars</mat-icon>
-                    +{{ match.prediction.pointsEarned }} pkt
-                  </div>
-                </div>
-              }
             </div>
           }
         </div>
@@ -124,7 +139,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
           @if (!round.isCompleted) {
             @if (hasOpenMatches) {
               <button (click)="savePredictions()" [disabled]="saving"
-                      class="w-full py-3 px-6 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mb-3 text-sm active:scale-95">
+                      class="w-full py-3 px-6 bg-[#FEF400] hover:bg-[#e5dc00] disabled:opacity-50 text-[#1E1A17] font-black uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mb-3 text-sm active:scale-95">
                 @if (saving) {
                   <mat-icon class="animate-spin text-[18px] w-[18px] h-[18px]">refresh</mat-icon>
                 } @else {
@@ -150,21 +165,24 @@ import { toObservable } from '@angular/core/rxjs-interop';
             }
 
             @if (!hasOpenMatches) {
-              <div class="text-center text-zinc-500 text-xs mt-2">Czekaj na wyniki meczy. Typowanie zamknięte.</div>
+              <div class="text-center text-white/35 text-xs mt-2">Czekaj na wyniki meczy. Typowanie zamknięte.</div>
             }
           } @else {
-            <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 text-center mb-4">
-              <h3 class="text-blue-400 text-sm font-medium mb-1">Zdobyte punkty w kolejce</h3>
-              <div class="text-4xl font-bold text-white">{{ roundPoints }}</div>
+            <div class="relative overflow-hidden bg-[#262220] border border-[#FEF400]/20 rounded-2xl p-6 text-center mb-4">
+              <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">emoji_events</mat-icon>
+              <div class="relative z-[1]">
+                <h3 class="text-[#FEF400] text-[10px] font-black uppercase tracking-widest mb-2">Zdobyte punkty w kolejce</h3>
+                <div class="text-4xl font-black text-white">{{ roundPoints }}</div>
+              </div>
             </div>
 
             @if (leagueState.activeLeague()?.isOwner) {
               <button (click)="nextRound()"
-                      class="w-full py-4 px-6 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95">
+                      class="w-full py-4 px-6 bg-white/10 hover:bg-white/20 text-white font-black uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95">
                 Następna Kolejka <mat-icon class="text-[20px] w-5 h-5">arrow_forward</mat-icon>
               </button>
             } @else {
-              <div class="text-center text-zinc-500 text-xs">Czekaj aż właściciel przejdzie do następnej kolejki.</div>
+              <div class="text-center text-white/35 text-xs">Czekaj aż właściciel przejdzie do następnej kolejki.</div>
             }
           }
         </div>

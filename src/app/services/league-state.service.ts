@@ -34,6 +34,8 @@ export class LeagueStateService {
 
   activeLeague = computed(() => {
     const id = this.activeLeagueId();
+      console.log(id)
+      console.log(this.leagues())
     return this.leagues().find(l => l.id === id) || null;
   });
 

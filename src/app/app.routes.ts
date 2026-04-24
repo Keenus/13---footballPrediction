@@ -3,6 +3,7 @@ import { authGuard, adminGuard, userGuard, guestGuard, roleRedirectGuard } from 
 
 export const routes: Routes = [
   { path: '', canActivate: [roleRedirectGuard], children: [] },
+  { path: 'landing', loadComponent: () => import('./pages/landing/landing.component').then(m => m.LandingComponent), canActivate: [guestGuard] },
   { path: 'login', loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent), canActivate: [guestGuard] },
   { path: 'register', loadComponent: () => import('./pages/register/register.component').then(m => m.RegisterComponent), canActivate: [guestGuard] },
 

@@ -55,7 +55,7 @@ export const roleRedirectGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   if (!auth.isLoggedIn()) {
-    return router.createUrlTree(['/login']);
+    return router.createUrlTree(['/landing']);
   }
 
   if (auth.isAdmin()) {

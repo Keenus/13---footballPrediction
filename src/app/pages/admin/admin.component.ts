@@ -17,13 +17,13 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
       <app-page-header title="Panel Admina" subtitle="Zarządzaj rozgrywkami, drużynami i meczami"></app-page-header>
 
       <!-- Tabs -->
-      <div class="flex gap-1 mb-6 bg-white/5 p-1 rounded-xl border border-white/10">
+      <div class="flex gap-1.5 mb-6">
         @for (tab of tabs; track tab.id) {
           <button (click)="activeTab = tab.id; onTabChange()"
-                  class="flex-1 py-2.5 px-2 rounded-lg text-[11px] font-semibold transition-all flex flex-col items-center gap-1"
-                  [ngClass]="{'bg-blue-600 text-white shadow-lg': activeTab === tab.id, 'text-zinc-400 hover:text-white hover:bg-white/5': activeTab !== tab.id}">
-            <mat-icon class="text-[16px] w-4 h-4">{{ tab.icon }}</mat-icon>
-            {{ tab.label }}
+                  class="flex-1 py-3 px-2 rounded-xl transition-all flex flex-col items-center gap-1.5 border"
+                  [ngClass]="{'bg-[#FEF400]/[0.08] border-[#FEF400]/15 text-[#FEF400]/80': activeTab === tab.id, 'bg-[#262220] border-white/[0.06] text-white/35 hover:text-white/50': activeTab !== tab.id}">
+            <mat-icon class="text-[18px] w-[18px] h-[18px]">{{ tab.icon }}</mat-icon>
+            <span class="text-[10px] font-black uppercase tracking-widest">{{ tab.label }}</span>
           </button>
         }
       </div>
@@ -31,69 +31,70 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
       <!-- COMPETITIONS TAB -->
       @if (activeTab === 'competitions') {
         <div class="space-y-4">
-          <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
-            <h3 class="text-white font-semibold text-sm mb-3 flex items-center gap-2">
-              <mat-icon class="text-blue-400 text-[18px] w-[18px] h-[18px]">add_circle</mat-icon>
+          <div class="bg-[#262220] border border-white/[0.06] rounded-2xl p-4">
+            <h3 class="text-white font-black uppercase tracking-tight text-sm mb-3 flex items-center gap-2">
+              <mat-icon class="text-[#FEF400] text-[18px] w-[18px] h-[18px]">add_circle</mat-icon>
               Nowe rozgrywki
             </h3>
             <div class="space-y-3">
               <input type="text" [(ngModel)]="newComp.name" placeholder="Nazwa rozgrywek"
-                     class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-zinc-600">
+                     class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all placeholder:text-white/20">
               <div class="flex gap-2">
                 <select [(ngModel)]="newComp.type"
-                        class="flex-1 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-all">
+                        class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
                   <option value="tournament">Turniej</option>
                   <option value="league">Liga</option>
                   <option value="custom">Własne</option>
                 </select>
                 <input type="text" [(ngModel)]="newComp.season" placeholder="Sezon np. 2025/26"
-                       class="flex-1 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-all placeholder-zinc-600">
+                       class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all placeholder:text-white/20">
               </div>
               <button (click)="createCompetition()" [disabled]="!newComp.name.trim()"
-                      class="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95">
+                      class="w-full py-3 bg-[#FEF400] hover:bg-[#e5dc00] disabled:opacity-40 text-[#1E1A17] text-sm font-bold uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95">
                 <mat-icon class="text-[18px] w-[18px] h-[18px]">add</mat-icon> Utwórz
               </button>
             </div>
           </div>
 
           @if (loadingComps) {
-            <div class="text-center text-zinc-400 py-6">
+            <div class="text-center text-white/50 py-6">
               <mat-icon class="text-3xl mb-1 opacity-50 animate-spin">refresh</mat-icon>
               <p class="text-xs">Ładowanie...</p>
             </div>
           }
 
           @for (comp of competitions; track comp.id) {
-            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
+            <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-2xl p-4">
+              <mat-icon class="absolute -right-2 -bottom-2 text-[80px] w-20 h-20 text-white opacity-[0.04] pointer-events-none">emoji_events</mat-icon>
               @if (editingCompId === comp.id) {
-                <div class="space-y-3">
+                <div class="space-y-3 relative z-10">
                   <input type="text" [(ngModel)]="editComp.name"
-                         class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-all">
+                         class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
                   <div class="flex gap-2">
                     <select [(ngModel)]="editComp.type"
-                            class="flex-1 bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-all">
+                            class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
                       <option value="tournament">Turniej</option>
                       <option value="league">Liga</option>
                       <option value="custom">Własne</option>
                     </select>
                     <input type="text" [(ngModel)]="editComp.season" placeholder="Sezon"
-                           class="flex-1 bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-all placeholder-zinc-600">
+                           class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all placeholder:text-white/20">
                   </div>
-                  <label class="flex items-center gap-2 text-zinc-400 text-xs cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="editComp.isFinished" class="accent-blue-500">
+                  <label class="flex items-center gap-2 text-[10px] font-bold text-white/35 uppercase tracking-widest cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="editComp.isFinished" class="accent-[#FEF400]">
                     Zakończone
                   </label>
                   <div class="flex gap-2">
-                    <button (click)="saveCompetition(comp.id)" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl transition-all">Zapisz</button>
-                    <button (click)="editingCompId = null" class="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white text-xs font-medium rounded-xl transition-all border border-white/5">Anuluj</button>
+                    <button (click)="saveCompetition(comp.id)" class="flex-1 py-2.5 bg-[#FEF400] hover:bg-[#e5dc00] text-[#1E1A17] text-xs font-bold uppercase tracking-wider rounded-xl transition-all">Zapisz</button>
+                    <button (click)="editingCompId = null" class="flex-1 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all">Anuluj</button>
                   </div>
                 </div>
               } @else {
-                <div class="flex items-start justify-between">
+                <div class="flex items-start justify-between relative z-10">
                   <div>
-                    <div class="font-semibold text-white text-sm">{{ comp.name }}</div>
-                    <div class="text-[10px] text-zinc-500 mt-0.5 flex items-center gap-2">
-                      <span class="px-1.5 py-0.5 bg-white/5 rounded">{{ comp.type === 'tournament' ? 'Turniej' : comp.type === 'league' ? 'Liga' : 'Własne' }}</span>
+                    <div class="font-black text-white text-sm">{{ comp.name }}</div>
+                    <div class="text-[10px] text-white/35 mt-0.5 flex items-center gap-2">
+                      <span class="px-1.5 py-0.5 bg-white/5 rounded-lg">{{ comp.type === 'tournament' ? 'Turniej' : comp.type === 'league' ? 'Liga' : 'Własne' }}</span>
                       @if (comp.season) { <span>{{ comp.season }}</span> }
                       <span>{{ comp.teams?.length || 0 }} drużyn</span>
                       @if (comp.isFinished) {
@@ -102,10 +103,10 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
                     </div>
                   </div>
                   <div class="flex gap-1">
-                    <button (click)="startEditComp(comp)" class="p-2 text-zinc-500 hover:text-blue-400 transition-colors rounded-xl hover:bg-white/5">
+                    <button (click)="startEditComp(comp)" class="p-2 text-white/25 hover:text-[#FEF400]/70 transition-colors rounded-lg">
                       <mat-icon class="text-[16px] w-4 h-4">edit</mat-icon>
                     </button>
-                    <button (click)="confirmDeleteComp = comp" class="p-2 text-zinc-500 hover:text-red-400 transition-colors rounded-xl hover:bg-white/5">
+                    <button (click)="confirmDeleteComp = comp" class="p-2 text-white/25 hover:text-red-400 transition-colors rounded-lg">
                       <mat-icon class="text-[16px] w-4 h-4">delete</mat-icon>
                     </button>
                   </div>
@@ -115,7 +116,7 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
           }
 
           @if (!loadingComps && competitions.length === 0) {
-            <div class="text-center py-8 text-zinc-500">
+            <div class="text-center py-8 text-white/35">
               <mat-icon class="text-4xl mb-2 opacity-30">emoji_events</mat-icon>
               <p class="text-xs">Brak rozgrywek. Utwórz pierwszą powyżej.</p>
             </div>
@@ -126,10 +127,10 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
       <!-- TEAMS TAB -->
       @if (activeTab === 'teams') {
         <div class="space-y-4">
-          <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
-            <label class="block text-zinc-400 text-xs font-medium mb-2">Wybierz rozgrywki</label>
+          <div class="bg-[#262220] border border-white/[0.06] rounded-2xl p-4">
+            <label class="block text-[10px] font-bold text-white/35 uppercase tracking-widest mb-2">Wybierz rozgrywki</label>
             <select [(ngModel)]="selectedCompId" (ngModelChange)="onCompSelected()"
-                    class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-all">
+                    class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
               <option [ngValue]="null">-- Wybierz --</option>
               @for (comp of competitions; track comp.id) {
                 <option [ngValue]="comp.id">{{ comp.name }} {{ comp.season ? '(' + comp.season + ')' : '' }}</option>
@@ -138,47 +139,47 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
           </div>
 
           @if (selectedCompId) {
-            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
-              <h3 class="text-white font-semibold text-sm mb-3 flex items-center gap-2">
+            <div class="bg-[#262220] border border-white/[0.06] rounded-2xl p-4">
+              <h3 class="text-white font-black uppercase tracking-tight text-sm mb-3 flex items-center gap-2">
                 <mat-icon class="text-emerald-400 text-[18px] w-[18px] h-[18px]">group_add</mat-icon>
                 Dodaj drużyny
               </h3>
               <div class="space-y-3">
                 <textarea [(ngModel)]="newTeamsText" placeholder="Wpisz nazwy drużyn, każda w nowej linii"
                           rows="4"
-                          class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-all placeholder-zinc-600 resize-none"></textarea>
+                          class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all placeholder:text-white/20 resize-none"></textarea>
                 <button (click)="addTeams()" [disabled]="!newTeamsText.trim()"
-                        class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95">
+                        class="w-full py-3 bg-emerald-500/15 hover:bg-emerald-500/25 disabled:opacity-40 text-emerald-400 text-sm font-bold uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95">
                   <mat-icon class="text-[18px] w-[18px] h-[18px]">add</mat-icon> Dodaj drużyny
                 </button>
               </div>
             </div>
 
             @if (loadingTeams) {
-              <div class="text-center text-zinc-400 py-6">
+              <div class="text-center text-white/50 py-6">
                 <mat-icon class="text-3xl mb-1 opacity-50 animate-spin">refresh</mat-icon>
               </div>
             }
 
             <div class="space-y-2">
               @for (team of selectedCompTeams; track team.id; let i = $index) {
-                <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-4 py-3 flex items-center gap-3">
-                  <span class="text-zinc-600 text-xs font-mono w-5 text-right">{{ i + 1 }}</span>
+                <div class="bg-white/[0.03] rounded-xl px-4 py-3 flex items-center gap-3">
+                  <span class="text-white/35 text-xs font-mono w-5 text-right">{{ i + 1 }}</span>
                   @if (editingTeamId === team.id) {
                     <input type="text" [(ngModel)]="editTeamName" (keyup.enter)="saveTeam(team.id)"
-                           class="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-all">
+                           class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
                     <button (click)="saveTeam(team.id)" class="p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors">
                       <mat-icon class="text-[16px] w-4 h-4">check</mat-icon>
                     </button>
-                    <button (click)="editingTeamId = null" class="p-1.5 text-zinc-500 hover:bg-white/5 rounded-lg transition-colors">
+                    <button (click)="editingTeamId = null" class="p-1.5 text-white/25 hover:bg-white/5 rounded-lg transition-colors">
                       <mat-icon class="text-[16px] w-4 h-4">close</mat-icon>
                     </button>
                   } @else {
-                    <span class="flex-1 text-white text-sm font-medium">{{ team.name }}</span>
-                    <button (click)="editingTeamId = team.id; editTeamName = team.name" class="p-1.5 text-zinc-500 hover:text-blue-400 rounded-lg transition-colors hover:bg-white/5">
+                    <span class="flex-1 text-white text-sm font-bold">{{ team.name }}</span>
+                    <button (click)="editingTeamId = team.id; editTeamName = team.name" class="p-1.5 text-white/25 hover:text-[#FEF400]/70 rounded-lg transition-colors">
                       <mat-icon class="text-[16px] w-4 h-4">edit</mat-icon>
                     </button>
-                    <button (click)="confirmDeleteTeam = team" class="p-1.5 text-zinc-500 hover:text-red-400 rounded-lg transition-colors hover:bg-white/5">
+                    <button (click)="confirmDeleteTeam = team" class="p-1.5 text-white/25 hover:text-red-400 rounded-lg transition-colors">
                       <mat-icon class="text-[16px] w-4 h-4">delete</mat-icon>
                     </button>
                   }
@@ -187,13 +188,13 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
             </div>
 
             @if (!loadingTeams && selectedCompTeams.length === 0) {
-              <div class="text-center py-8 text-zinc-500">
+              <div class="text-center py-8 text-white/35">
                 <mat-icon class="text-4xl mb-2 opacity-30">groups</mat-icon>
                 <p class="text-xs">Brak drużyn. Dodaj je powyżej.</p>
               </div>
             }
           } @else {
-            <div class="text-center py-10 text-zinc-500">
+            <div class="text-center py-10 text-white/35">
               <mat-icon class="text-4xl mb-2 opacity-30">arrow_upward</mat-icon>
               <p class="text-xs">Wybierz rozgrywki, aby zarządzać drużynami</p>
             </div>
@@ -204,10 +205,10 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
       <!-- MATCHES TAB -->
       @if (activeTab === 'matches') {
         <div class="space-y-4">
-          <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
-            <label class="block text-zinc-400 text-xs font-medium mb-2">Wybierz rozgrywki</label>
+          <div class="bg-[#262220] border border-white/[0.06] rounded-2xl p-4">
+            <label class="block text-[10px] font-bold text-white/35 uppercase tracking-widest mb-2">Wybierz rozgrywki</label>
             <select [(ngModel)]="selectedCompId" (ngModelChange)="onCompSelected()"
-                    class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-all">
+                    class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
               <option [ngValue]="null">-- Wybierz --</option>
               @for (comp of competitions; track comp.id) {
                 <option [ngValue]="comp.id">{{ comp.name }} {{ comp.season ? '(' + comp.season + ')' : '' }}</option>
@@ -216,23 +217,23 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
           </div>
 
           @if (selectedCompId && selectedCompTeams.length >= 2) {
-            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
-              <h3 class="text-white font-semibold text-sm mb-3 flex items-center gap-2">
-                <mat-icon class="text-amber-400 text-[18px] w-[18px] h-[18px]">add_circle</mat-icon>
+            <div class="bg-[#262220] border border-white/[0.06] rounded-2xl p-4">
+              <h3 class="text-white font-black uppercase tracking-tight text-sm mb-3 flex items-center gap-2">
+                <mat-icon class="text-[#FEF400] text-[18px] w-[18px] h-[18px]">add_circle</mat-icon>
                 Nowy mecz
               </h3>
               <div class="space-y-3">
                 <div class="flex gap-2 items-center">
                   <select [(ngModel)]="newMatch.homeTeamId"
-                          class="flex-1 bg-black/20 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-all">
+                          class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
                     <option [ngValue]="null">Gospodarz</option>
                     @for (team of selectedCompTeams; track team.id) {
                       <option [ngValue]="team.id">{{ team.name }}</option>
                     }
                   </select>
-                  <span class="text-zinc-500 font-bold text-xs">vs</span>
+                  <span class="text-white/35 font-bold text-xs">vs</span>
                   <select [(ngModel)]="newMatch.awayTeamId"
-                          class="flex-1 bg-black/20 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-all">
+                          class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
                     <option [ngValue]="null">Gość</option>
                     @for (team of selectedCompTeams; track team.id) {
                       <option [ngValue]="team.id">{{ team.name }}</option>
@@ -240,39 +241,39 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
                   </select>
                 </div>
                 <div>
-                  <label class="block text-zinc-400 text-[10px] font-medium mb-1">Deadline (opcjonalnie)</label>
+                  <label class="block text-[10px] font-bold text-white/35 uppercase tracking-widest mb-1">Deadline (opcjonalnie)</label>
                   <input type="datetime-local" [(ngModel)]="newMatch.deadline"
-                         class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-all">
+                         class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
                 </div>
                 <button (click)="addMatch()" [disabled]="!newMatch.homeTeamId || !newMatch.awayTeamId || newMatch.homeTeamId === newMatch.awayTeamId"
-                        class="w-full py-3 bg-amber-600 hover:bg-amber-500 disabled:opacity-40 text-white text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95">
+                        class="w-full py-3 bg-[#FEF400] hover:bg-[#e5dc00] disabled:opacity-40 text-[#1E1A17] text-sm font-bold uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95">
                   <mat-icon class="text-[18px] w-[18px] h-[18px]">add</mat-icon> Dodaj mecz
                 </button>
               </div>
 
               @if (matchError) {
-                <div class="mt-3 bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-xs text-center">{{ matchError }}</div>
+                <div class="mt-3 bg-red-500/10 border border-red-500/15 rounded-xl p-3 text-red-400 text-xs text-center">{{ matchError }}</div>
               }
               @if (matchSuccess) {
-                <div class="mt-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-emerald-400 text-xs text-center">{{ matchSuccess }}</div>
+                <div class="mt-3 bg-emerald-500/10 border border-emerald-500/15 rounded-xl p-3 text-emerald-400 text-xs text-center">{{ matchSuccess }}</div>
               }
             </div>
 
             @if (loadingMatches) {
-              <div class="text-center text-zinc-400 py-6">
+              <div class="text-center text-white/50 py-6">
                 <mat-icon class="text-3xl mb-1 opacity-50 animate-spin">refresh</mat-icon>
               </div>
             }
 
             @if (selectedCompMatches.length > 0) {
               <div class="space-y-2">
-                <h3 class="text-zinc-100 font-semibold text-xs uppercase tracking-wider">Mecze ({{ selectedCompMatches.length }})</h3>
+                <h3 class="text-zinc-100 font-black text-xs uppercase tracking-widest">Mecze ({{ selectedCompMatches.length }})</h3>
                 @for (match of selectedCompMatches; track match.id) {
-                  <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-3"
-                       [ngClass]="{'border-emerald-500/20 bg-emerald-500/5': match.isPlayed}">
+                  <div class="bg-[#262220] border border-white/[0.06] rounded-xl p-3"
+                       [ngClass]="{'border-emerald-400/15': match.isPlayed}">
                     <div class="flex items-center gap-2">
                       <div class="flex-1 text-right">
-                        <span class="text-white text-xs font-medium">{{ match.homeTeam.name }}</span>
+                        <span class="text-white text-xs font-bold">{{ match.homeTeam.name }}</span>
                       </div>
                       @if (match.isPlayed) {
                         <div class="px-2 py-1 bg-emerald-500/20 rounded-lg">
@@ -280,37 +281,37 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
                         </div>
                       } @else {
                         <div class="px-2 py-1 bg-white/5 rounded-lg">
-                          <span class="text-zinc-500 text-xs font-bold">vs</span>
+                          <span class="text-white/35 text-xs font-bold">vs</span>
                         </div>
                       }
                       <div class="flex-1">
-                        <span class="text-white text-xs font-medium">{{ match.awayTeam.name }}</span>
+                        <span class="text-white text-xs font-bold">{{ match.awayTeam.name }}</span>
                       </div>
-                      <button (click)="confirmDeleteMatch = match" class="p-1.5 text-zinc-500 hover:text-red-400 rounded-lg transition-colors hover:bg-white/5 shrink-0">
+                      <button (click)="confirmDeleteMatch = match" class="p-1.5 text-white/25 hover:text-red-400 rounded-lg transition-colors shrink-0">
                         <mat-icon class="text-[14px] w-3.5 h-3.5">delete</mat-icon>
                       </button>
                     </div>
                     @if (match.deadline) {
                       <div class="text-center mt-1.5">
-                        <span class="text-zinc-500 text-[10px]">Deadline: {{ formatDate(match.deadline) }}</span>
+                        <span class="text-white/35 text-[10px]">Deadline: {{ formatDate(match.deadline) }}</span>
                       </div>
                     }
                   </div>
                 }
               </div>
             } @else if (!loadingMatches) {
-              <div class="text-center py-8 text-zinc-500">
+              <div class="text-center py-8 text-white/35">
                 <mat-icon class="text-4xl mb-2 opacity-30">sports_soccer</mat-icon>
                 <p class="text-xs">Brak meczów. Dodaj pierwszy powyżej.</p>
               </div>
             }
           } @else if (selectedCompId && selectedCompTeams.length < 2) {
-            <div class="text-center py-10 text-zinc-500">
+            <div class="text-center py-10 text-white/35">
               <mat-icon class="text-4xl mb-2 opacity-30">warning</mat-icon>
               <p class="text-xs">Najpierw dodaj min. 2 drużyny w zakładce Drużyny</p>
             </div>
           } @else {
-            <div class="text-center py-10 text-zinc-500">
+            <div class="text-center py-10 text-white/35">
               <mat-icon class="text-4xl mb-2 opacity-30">arrow_upward</mat-icon>
               <p class="text-xs">Wybierz rozgrywki, aby zarządzać meczami</p>
             </div>
@@ -321,7 +322,7 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
       <!-- RESULTS TAB -->
       @if (activeTab === 'results') {
         @if (loadingComps) {
-          <div class="text-center text-zinc-400 py-10">
+          <div class="text-center text-white/50 py-10">
             <mat-icon class="text-4xl mb-2 opacity-50 animate-spin">refresh</mat-icon>
             <p class="text-sm">Ładowanie rozgrywek...</p>
           </div>
@@ -329,32 +330,32 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
           @for (comp of competitions; track comp.id) {
             <div class="mb-6">
               <div class="flex items-center gap-2 mb-4">
-                <mat-icon class="text-blue-400 text-[20px] w-5 h-5">emoji_events</mat-icon>
-                <h2 class="text-white font-bold text-sm">{{ comp.name }}</h2>
-                <span class="text-zinc-500 text-[10px] ml-auto">{{ comp.season }}</span>
+                <mat-icon class="text-[#FEF400] text-[20px] w-5 h-5">emoji_events</mat-icon>
+                <h2 class="text-white font-black uppercase tracking-tight text-sm">{{ comp.name }}</h2>
+                <span class="text-white/35 text-[10px] ml-auto">{{ comp.season }}</span>
               </div>
 
               @if (resultsComp && resultsComp.id === comp.id) {
                 <div class="space-y-4">
                   @for (round of resultsComp.rounds; track round.id) {
-                    <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                    <div class="bg-[#262220] border border-white/[0.06] rounded-2xl overflow-hidden">
                       <button (click)="toggleRound(round.id)" class="w-full px-4 py-3 flex justify-between items-center">
                         <div class="flex items-center gap-2">
-                          <h4 class="text-white text-xs font-semibold">{{ round.name || 'Runda ' + round.number }}</h4>
+                          <h4 class="text-white text-xs font-black uppercase tracking-tight">{{ round.name || 'Runda ' + round.number }}</h4>
                           @if (round.isCompleted) {
-                            <span class="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-[9px] font-bold">OK</span>
+                            <span class="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-lg text-[9px] font-bold">OK</span>
                           } @else if (hasPlayedMatches(round)) {
-                            <span class="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded text-[9px] font-bold">W trakcie</span>
+                            <span class="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded-lg text-[9px] font-bold">W trakcie</span>
                           }
                         </div>
-                        <mat-icon class="text-zinc-500 text-[18px] w-[18px] h-[18px] transition-transform"
+                        <mat-icon class="text-white/35 text-[18px] w-[18px] h-[18px] transition-transform"
                                   [ngClass]="{'rotate-180': expandedRoundId === round.id}">expand_more</mat-icon>
                       </button>
 
                       @if (expandedRoundId === round.id) {
-                        <div class="border-t border-white/10 p-4">
+                        <div class="border-t border-white/[0.06] p-4">
                           @if (round.matches.length === 0) {
-                            <div class="text-zinc-500 text-xs text-center py-4">
+                            <div class="text-white/35 text-xs text-center py-4">
                               <mat-icon class="text-2xl mb-1 opacity-30">help_outline</mat-icon>
                               <p>Brak meczów</p>
                             </div>
@@ -363,22 +364,22 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
                           <div class="space-y-3">
                             @for (match of round.matches; track match.id) {
                               <div class="rounded-xl p-3 border transition-all"
-                                   [ngClass]="{'bg-emerald-500/5 border-emerald-500/20': match.isPlayed, 'bg-black/20 border-white/5': !match.isPlayed}">
+                                   [ngClass]="{'bg-[#262220] border-emerald-400/15': match.isPlayed, 'bg-black/20 border-white/[0.06]': !match.isPlayed}">
                                 <div class="flex items-center gap-2">
-                                  <span class="text-white text-xs font-medium flex-1 text-right truncate">{{ match.homeTeam.name }}</span>
+                                  <span class="text-white text-xs font-bold flex-1 text-right truncate">{{ match.homeTeam.name }}</span>
                                   <div class="flex items-center gap-1 shrink-0">
                                     <input type="number" min="0" [(ngModel)]="matchScores[match.id].home" placeholder="-"
-                                           class="w-10 h-9 bg-black/40 border border-white/15 rounded-lg text-center text-sm font-bold text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
-                                    <span class="text-zinc-500 text-xs font-bold">:</span>
+                                           class="w-10 h-9 bg-black/20 border border-white/[0.08] rounded-xl text-center text-sm font-bold text-white focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 outline-none transition-all">
+                                    <span class="text-white/35 text-xs font-bold">:</span>
                                     <input type="number" min="0" [(ngModel)]="matchScores[match.id].away" placeholder="-"
-                                           class="w-10 h-9 bg-black/40 border border-white/15 rounded-lg text-center text-sm font-bold text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
+                                           class="w-10 h-9 bg-black/20 border border-white/[0.08] rounded-xl text-center text-sm font-bold text-white focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 outline-none transition-all">
                                   </div>
-                                  <span class="text-white text-xs font-medium flex-1 truncate">{{ match.awayTeam.name }}</span>
+                                  <span class="text-white text-xs font-bold flex-1 truncate">{{ match.awayTeam.name }}</span>
                                 </div>
                                 @if (match.isPlayed) {
                                   <div class="flex items-center justify-center gap-1 mt-2">
                                     <mat-icon class="text-emerald-400 text-[12px] w-3 h-3">check_circle</mat-icon>
-                                    <span class="text-emerald-400 text-[10px] font-semibold">Zapisano {{ match.homeScore }}:{{ match.awayScore }}</span>
+                                    <span class="text-emerald-400 text-[10px] font-bold">Zapisano {{ match.homeScore }}:{{ match.awayScore }}</span>
                                   </div>
                                 }
                               </div>
@@ -387,7 +388,7 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
 
                           @if (round.matches.length > 0) {
                             <button (click)="saveResults(comp.id, round)" [disabled]="savingRoundId === round.id"
-                                    class="w-full mt-4 py-3 px-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95">
+                                    class="w-full mt-4 py-3 px-4 bg-[#FEF400] hover:bg-[#e5dc00] disabled:opacity-50 text-[#1E1A17] text-sm font-bold uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95">
                               @if (savingRoundId === round.id) {
                                 <mat-icon class="animate-spin text-[18px] w-[18px] h-[18px]">refresh</mat-icon>
                                 Zapisuję...
@@ -399,14 +400,14 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
                           }
 
                           @if (savedRoundId === round.id) {
-                            <div class="mt-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-emerald-400 text-xs text-center font-medium flex items-center justify-center gap-2">
+                            <div class="mt-3 bg-emerald-500/10 border border-emerald-500/15 rounded-xl p-3 text-emerald-400 text-xs text-center font-bold flex items-center justify-center gap-2">
                               <mat-icon class="text-[16px] w-4 h-4">done_all</mat-icon>
-                              Punkty naliczone we wszystkich ligach!
+                              Punkty naliczone we wszystkich typligach!
                             </div>
                           }
 
                           @if (saveError && errorRoundId === round.id) {
-                            <div class="mt-3 bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-xs text-center">
+                            <div class="mt-3 bg-red-500/10 border border-red-500/15 rounded-xl p-3 text-red-400 text-xs text-center">
                               {{ saveError }}
                             </div>
                           }
@@ -417,7 +418,7 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
                 </div>
               } @else {
                 <button (click)="loadResults(comp.id)"
-                        class="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-zinc-400 text-xs font-medium transition-all flex items-center justify-center gap-2">
+                        class="w-full py-3 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.06] rounded-xl text-white/50 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2">
                   <mat-icon class="text-[16px] w-4 h-4">visibility</mat-icon>
                   Pokaż mecze i wpisz wyniki
                 </button>
@@ -426,7 +427,7 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
           }
 
           @if (competitions.length === 0) {
-            <div class="text-center py-10 text-zinc-500">
+            <div class="text-center py-10 text-white/35">
               <mat-icon class="text-4xl mb-2 opacity-30">sports_soccer</mat-icon>
               <p class="text-xs">Brak rozgrywek</p>
             </div>
@@ -436,14 +437,14 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
 
       <!-- Delete competition modal -->
       @if (confirmDeleteComp) {
-        <div class="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div class="bg-zinc-900/90 backdrop-blur-2xl p-6 rounded-2xl max-w-sm w-full border border-white/10 shadow-2xl">
-            <h3 class="text-lg font-semibold text-white mb-2">Usuń rozgrywki</h3>
-            <p class="text-zinc-400 text-sm mb-1">Czy na pewno chcesz usunąć <span class="text-white font-medium">{{ confirmDeleteComp.name }}</span>?</p>
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div class="bg-[#2a2520] p-6 rounded-3xl max-w-sm w-full border border-white/[0.08] shadow-2xl">
+            <h3 class="text-lg font-black uppercase tracking-tight text-white mb-2">Usuń rozgrywki</h3>
+            <p class="text-white/50 text-sm mb-1">Czy na pewno chcesz usunąć <span class="text-white font-bold">{{ confirmDeleteComp.name }}</span>?</p>
             <p class="text-red-400 text-xs mb-6">Spowoduje to usunięcie wszystkich drużyn, meczów i typowań.</p>
             <div class="flex gap-3">
-              <button (click)="confirmDeleteComp = null" class="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl transition-all border border-white/5">Anuluj</button>
-              <button (click)="deleteCompetition()" class="flex-1 py-3 px-4 bg-red-500/80 hover:bg-red-500 text-white text-sm font-semibold rounded-xl transition-all">Usuń</button>
+              <button (click)="confirmDeleteComp = null" class="flex-1 py-3 px-4 bg-white/[0.06] hover:bg-white/[0.1] text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Anuluj</button>
+              <button (click)="deleteCompetition()" class="flex-1 py-3 px-4 bg-red-500/15 hover:bg-red-500/25 text-red-400 text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Usuń</button>
             </div>
           </div>
         </div>
@@ -451,14 +452,14 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
 
       <!-- Delete team modal -->
       @if (confirmDeleteTeam) {
-        <div class="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div class="bg-zinc-900/90 backdrop-blur-2xl p-6 rounded-2xl max-w-sm w-full border border-white/10 shadow-2xl">
-            <h3 class="text-lg font-semibold text-white mb-2">Usuń drużynę</h3>
-            <p class="text-zinc-400 text-sm mb-1">Czy na pewno chcesz usunąć <span class="text-white font-medium">{{ confirmDeleteTeam.name }}</span>?</p>
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div class="bg-[#2a2520] p-6 rounded-3xl max-w-sm w-full border border-white/[0.08] shadow-2xl">
+            <h3 class="text-lg font-black uppercase tracking-tight text-white mb-2">Usuń drużynę</h3>
+            <p class="text-white/50 text-sm mb-1">Czy na pewno chcesz usunąć <span class="text-white font-bold">{{ confirmDeleteTeam.name }}</span>?</p>
             <p class="text-red-400 text-xs mb-6">Usunięte zostaną też mecze tej drużyny.</p>
             <div class="flex gap-3">
-              <button (click)="confirmDeleteTeam = null" class="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl transition-all border border-white/5">Anuluj</button>
-              <button (click)="deleteTeam()" class="flex-1 py-3 px-4 bg-red-500/80 hover:bg-red-500 text-white text-sm font-semibold rounded-xl transition-all">Usuń</button>
+              <button (click)="confirmDeleteTeam = null" class="flex-1 py-3 px-4 bg-white/[0.06] hover:bg-white/[0.1] text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Anuluj</button>
+              <button (click)="deleteTeam()" class="flex-1 py-3 px-4 bg-red-500/15 hover:bg-red-500/25 text-red-400 text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Usuń</button>
             </div>
           </div>
         </div>
@@ -466,13 +467,13 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
 
       <!-- Delete match modal -->
       @if (confirmDeleteMatch) {
-        <div class="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div class="bg-zinc-900/90 backdrop-blur-2xl p-6 rounded-2xl max-w-sm w-full border border-white/10 shadow-2xl">
-            <h3 class="text-lg font-semibold text-white mb-2">Usuń mecz</h3>
-            <p class="text-zinc-400 text-sm mb-6">{{ confirmDeleteMatch.homeTeam.name }} vs {{ confirmDeleteMatch.awayTeam.name }}</p>
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div class="bg-[#2a2520] p-6 rounded-3xl max-w-sm w-full border border-white/[0.08] shadow-2xl">
+            <h3 class="text-lg font-black uppercase tracking-tight text-white mb-2">Usuń mecz</h3>
+            <p class="text-white/50 text-sm mb-6">{{ confirmDeleteMatch.homeTeam.name }} vs {{ confirmDeleteMatch.awayTeam.name }}</p>
             <div class="flex gap-3">
-              <button (click)="confirmDeleteMatch = null" class="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl transition-all border border-white/5">Anuluj</button>
-              <button (click)="deleteMatch()" class="flex-1 py-3 px-4 bg-red-500/80 hover:bg-red-500 text-white text-sm font-semibold rounded-xl transition-all">Usuń</button>
+              <button (click)="confirmDeleteMatch = null" class="flex-1 py-3 px-4 bg-white/[0.06] hover:bg-white/[0.1] text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Anuluj</button>
+              <button (click)="deleteMatch()" class="flex-1 py-3 px-4 bg-red-500/15 hover:bg-red-500/25 text-red-400 text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Usuń</button>
             </div>
           </div>
         </div>
@@ -495,13 +496,11 @@ export class AdminComponent implements OnInit {
   competitions: any[] = [];
   loadingComps = true;
 
-  // Competitions
   newComp = { name: '', type: 'tournament', season: '' };
   editingCompId: number | null = null;
   editComp = { name: '', type: 'tournament', season: '', isFinished: false };
   confirmDeleteComp: any = null;
 
-  // Teams
   selectedCompId: number | null = null;
   selectedCompTeams: any[] = [];
   newTeamsText = '';
@@ -510,7 +509,6 @@ export class AdminComponent implements OnInit {
   confirmDeleteTeam: any = null;
   loadingTeams = false;
 
-  // Matches
   selectedCompMatches: any[] = [];
   newMatch = { homeTeamId: null as number | null, awayTeamId: null as number | null, deadline: '' };
   confirmDeleteMatch: any = null;
@@ -518,7 +516,6 @@ export class AdminComponent implements OnInit {
   matchError = '';
   matchSuccess = '';
 
-  // Results
   resultsComp: any = null;
   expandedRoundId: number | null = null;
   matchScores: Record<number, { home: number | null; away: number | null }> = {};
@@ -549,8 +546,6 @@ export class AdminComponent implements OnInit {
       }
     }
   }
-
-  // --- Competitions ---
 
   async createCompetition() {
     if (!this.newComp.name.trim()) return;
@@ -600,8 +595,6 @@ export class AdminComponent implements OnInit {
     } catch {}
     this.confirmDeleteComp = null;
   }
-
-  // --- Teams ---
 
   async onCompSelected() {
     if (!this.selectedCompId) {
@@ -668,8 +661,6 @@ export class AdminComponent implements OnInit {
     } catch {}
   }
 
-  // --- Matches ---
-
   async addMatch() {
     if (!this.selectedCompId || !this.newMatch.homeTeamId || !this.newMatch.awayTeamId) return;
     this.matchError = '';
@@ -708,8 +699,6 @@ export class AdminComponent implements OnInit {
       hour: '2-digit', minute: '2-digit',
     });
   }
-
-  // --- Results ---
 
   async loadResults(compId: number) {
     try {

@@ -13,78 +13,88 @@ import { toObservable } from '@angular/core/rxjs-interop';
   imports: [MatIconModule, NgClass, PageHeaderComponent, RouterLink],
   template: `
     <div class="p-4 max-w-md mx-auto pb-24">
-      <app-page-header title="Ranking Typerów" subtitle="Porównaj swoje punkty z innymi"></app-page-header>
+      <app-page-header title="Ranking graczy" subtitle="Porównaj swoje punkty z innymi"></app-page-header>
 
       @if (!leagueState.activeLeague()) {
-        <div class="text-center text-zinc-400 py-10">
-          <mat-icon class="text-4xl mb-2 opacity-50">sports_soccer</mat-icon>
-          <p>Nie masz aktywnej ligi.</p>
-          <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg">Przejdź do kokpitu</button>
+        <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-2xl text-center text-white/35 py-10 px-4">
+          <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">sports_soccer</mat-icon>
+          <div class="relative z-[1]">
+            <mat-icon class="text-4xl mb-2 opacity-50">sports_soccer</mat-icon>
+            <p class="font-black uppercase tracking-tight">Nie masz aktywnej typligi.</p>
+            <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-3 bg-[#FEF400] hover:bg-[#e5dc00] text-[#1E1A17] rounded-xl font-black uppercase tracking-wider text-sm">Przejdź do kokpitu</button>
+          </div>
         </div>
       } @else if (loading) {
-        <div class="text-center text-zinc-400 py-10">
+        <div class="text-center text-white/35 py-10">
           <mat-icon class="text-4xl mb-2 opacity-50 animate-spin">refresh</mat-icon>
           <p>Ładowanie rankingu...</p>
         </div>
       } @else {
         @if (isLimited) {
-          <div class="mb-4 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-start gap-3">
+          <div class="mb-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3 flex items-start gap-3">
             <mat-icon class="text-amber-400 text-[20px]">lock</mat-icon>
             <div>
-              <p class="text-xs text-amber-200/80 leading-relaxed">Widzisz tylko top 3 i swoją pozycję. <a routerLink="/subscription" class="text-amber-400 font-semibold underline">Ulepsz plan</a> aby zobaczyć pełny ranking.</p>
+              <p class="text-xs text-amber-200/80 leading-relaxed">Widzisz tylko top 3 i swoją pozycję. <a routerLink="/subscription" class="text-[#FEF400]/70 font-semibold underline">Ulepsz plan</a> aby zobaczyć pełny ranking.</p>
             </div>
           </div>
         }
 
         <div class="space-y-3">
           @for (tipster of ranking; track tipster.user_id) {
-            <div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-sm overflow-hidden flex items-center gap-4"
-                 [ngClass]="{'border-blue-500/30 bg-blue-900/10': tipster.isUser}">
+            <div class="relative overflow-hidden rounded-2xl border p-4 flex items-center gap-4"
+                 [ngClass]="{
+                   'bg-[#FEF400]/[0.06] border-[#FEF400]/15': tipster.position === 1,
+                   'bg-zinc-500/[0.06] border-zinc-400/15': tipster.position === 2,
+                   'bg-amber-800/[0.06] border-amber-700/15': tipster.position === 3,
+                   'bg-[#262220] border-white/[0.06]': tipster.position > 3 && !tipster.isUser,
+                   'bg-[#262220] border-[#FEF400]/15': tipster.isUser && tipster.position > 3
+                 }">
 
-              @if (tipster.position === 1) {
-                <div class="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-full blur-xl -mr-4 -mt-4"></div>
-              } @else if (tipster.position === 2) {
-                <div class="absolute top-0 right-0 w-16 h-16 bg-zinc-400/10 rounded-full blur-xl -mr-4 -mt-4"></div>
-              } @else if (tipster.position === 3) {
-                <div class="absolute top-0 right-0 w-16 h-16 bg-amber-700/10 rounded-full blur-xl -mr-4 -mt-4"></div>
+              @if (tipster.position <= 3) {
+                <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">military_tech</mat-icon>
               }
 
-              <div class="w-8 text-center font-bold text-xl"
-                   [ngClass]="{
-                     'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]': tipster.position === 1,
-                     'text-zinc-300': tipster.position === 2,
-                     'text-amber-700': tipster.position === 3,
-                     'text-zinc-500': tipster.position > 3
-                   }">
-                {{ tipster.position }}
-              </div>
-
-              <div class="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-inner"
-                   [ngClass]="{'bg-gradient-to-br from-blue-400 to-indigo-600': tipster.isUser, 'bg-gradient-to-br from-zinc-600 to-zinc-800': !tipster.isUser}">
-                <mat-icon>{{ tipster.avatar }}</mat-icon>
-              </div>
-
-              <div class="flex-1">
-                <div class="font-semibold text-white text-base flex items-center gap-2">
-                  {{ tipster.username }}
-                  @if (tipster.isUser) {
-                    <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-[10px] uppercase tracking-wider font-bold">Ty</span>
-                  }
+              <div class="relative z-[1] flex items-center gap-4 w-full">
+                <div class="w-8 text-center font-black"
+                     [ngClass]="{
+                       'text-2xl text-[#FEF400] drop-shadow-[0_0_8px_rgba(254,244,0,0.3)]': tipster.position === 1,
+                       'text-2xl text-zinc-300 drop-shadow-[0_0_6px_rgba(161,161,170,0.4)]': tipster.position === 2,
+                       'text-2xl text-amber-700 drop-shadow-[0_0_6px_rgba(180,83,9,0.4)]': tipster.position === 3,
+                       'text-xl text-white/35': tipster.position > 3
+                     }">
+                  {{ tipster.position }}
                 </div>
-                <div class="text-zinc-400 text-xs mt-0.5">
-                  {{ tipster.role === 'owner' ? 'Właściciel ligi' : 'Uczestnik' }}
-                </div>
-              </div>
 
-              <div class="text-right">
-                <div class="text-2xl font-bold text-white tracking-tight">{{ tipster.totalPoints }}</div>
-                <div class="text-[10px] text-zinc-500 uppercase font-medium">pkt</div>
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white"
+                     [ngClass]="{'bg-[#FEF400] !text-[#1E1A17]': tipster.isUser, 'bg-white/[0.08]': !tipster.isUser}">
+                  <mat-icon>{{ tipster.avatar }}</mat-icon>
+                </div>
+
+                <div class="flex-1">
+                  <div class="font-black text-white text-base flex items-center gap-2">
+                    {{ tipster.username }}
+                    @if (tipster.isUser) {
+                      <span class="px-2 py-0.5 rounded-xl bg-[#FEF400]/[0.08] text-[#FEF400]/70 text-[10px] uppercase tracking-wider font-bold">Ty</span>
+                    }
+                  </div>
+                  <div class="text-white/35 text-xs mt-0.5">
+                    {{ tipster.role === 'owner' ? 'Właściciel typligi' : 'Uczestnik' }}
+                  </div>
+                </div>
+
+                <div class="text-right">
+                  <div class="text-2xl font-black text-white tracking-tight">{{ tipster.totalPoints }}</div>
+                  <div class="text-[10px] text-white/25 uppercase tracking-widest font-bold">pkt</div>
+                </div>
               </div>
             </div>
           }
 
           @if (ranking.length === 0) {
-            <div class="text-center text-zinc-500 py-6 text-sm">Brak danych rankingowych.</div>
+            <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-2xl text-center text-white/35 py-6 px-4">
+              <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">leaderboard</mat-icon>
+              <p class="relative z-[1] font-black uppercase tracking-tight text-sm">Brak danych rankingowych.</p>
+            </div>
           }
         </div>
       }
