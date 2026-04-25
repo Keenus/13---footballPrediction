@@ -3,6 +3,14 @@
   "outputDirectory": "dist/app/browser",
   "rewrites": [
     {
+      "source": "/landing",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
