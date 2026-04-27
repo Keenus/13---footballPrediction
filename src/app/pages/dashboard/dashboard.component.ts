@@ -32,7 +32,7 @@ import { ToastService } from '../../services/toast.service';
                   @if (!activeLeague.isFinished) { Na żywo } @else { Zakończona }
                 </div>
                 <h2 class="text-base font-black text-white leading-tight">
-                  @if (!activeLeague.isFinished) { Typuj Teraz } @else { TypLiga Zakończona }
+                  @if (!activeLeague.isFinished) { Typuj Teraz } @else { Liga Zakończona }
                 </h2>
                 <p class="text-white/35 text-[11px] mt-1 leading-snug">{{ activeLeague.name }}</p>
                 @if (activeLeague.competitions.length > 0) {
@@ -61,9 +61,9 @@ import { ToastService } from '../../services/toast.service';
             <div class="relative z-[1] p-4 flex flex-col justify-between flex-1">
               <div>
                 <h2 class="text-base font-black text-white leading-tight">Typuj</h2>
-                <p class="text-white/35 text-[11px] mt-1">Wybierz lub stwórz typligę aby zacząć</p>
+                <p class="text-white/35 text-[11px] mt-1">Wybierz lub stwórz ligę aby zacząć</p>
               </div>
-              <span class="text-white/20 text-[10px] font-semibold">Brak aktywnej typligi</span>
+                <span class="text-white/20 text-[10px] font-semibold">Brak aktywnej ligi</span>
             </div>
           </div>
         }
@@ -113,7 +113,7 @@ import { ToastService } from '../../services/toast.service';
           <mat-icon class="tile-icon text-[90px] w-[90px] h-[90px] text-emerald-400/20">stadium</mat-icon>
           <div class="relative z-[1] p-4 flex flex-col flex-1">
             <div class="flex justify-between items-start mb-3">
-              <h3 class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Moje typligi</h3>
+              <h3 class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Moje ligi</h3>
               @if (auth.canCreateLeagues()) {
                 <button (click)="openCreateLeague()" class="text-emerald-400/70 hover:text-emerald-400 transition-colors">
                   <mat-icon class="text-[18px] w-[18px] h-[18px]">add_circle</mat-icon>
@@ -141,7 +141,7 @@ import { ToastService } from '../../services/toast.service';
                 </div>
               }
               @if (leagueState.myLeagues().length === 0) {
-                <p class="text-white/20 text-[10px] py-2">Brak typlig</p>
+                <p class="text-white/20 text-[10px] py-2">Brak lig</p>
               }
             </div>
           </div>
@@ -276,10 +276,10 @@ import { ToastService } from '../../services/toast.service';
       @if (showCreateLeague) {
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div class="bg-[#2a2520] rounded-3xl max-w-sm w-full border border-white/[0.08] shadow-2xl shadow-black/50 p-6">
-            <h3 class="text-lg font-black text-white mb-5">Nowa TypLiga</h3>
+            <h3 class="text-lg font-black text-white mb-5">Nowa liga</h3>
             <div class="mb-4">
-              <label class="block text-white/35 text-[10px] font-bold uppercase tracking-widest mb-2">Nazwa typligi</label>
-              <input type="text" [(ngModel)]="newLeagueName" placeholder="np. Firmowa typliga"
+              <label class="block text-white/35 text-[10px] font-bold uppercase tracking-widest mb-2">Nazwa ligi</label>
+              <input type="text" [(ngModel)]="newLeagueName" placeholder="np. Firmowa liga"
                      class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all placeholder:text-white/20">
             </div>
             <div class="mb-6">
@@ -320,8 +320,8 @@ import { ToastService } from '../../services/toast.service';
       @if (leagueToDelete) {
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div class="bg-[#2a2520] rounded-3xl max-w-sm w-full border border-white/[0.08] shadow-2xl shadow-black/50 p-6">
-            <h3 class="text-lg font-black text-white mb-2">{{ leagueToDelete.isOwner ? 'Usuń TypLigę' : 'Opuść TypLigę' }}</h3>
-            <p class="text-white/50 text-sm mb-6">Czy na pewno chcesz {{ leagueToDelete.isOwner ? 'usunąć' : 'opuścić' }} typligę "{{ leagueToDelete.name }}"?</p>
+            <h3 class="text-lg font-black text-white mb-2">{{ leagueToDelete.isOwner ? 'Usuń ligę' : 'Opuść ligę' }}</h3>
+            <p class="text-white/50 text-sm mb-6">Czy na pewno chcesz {{ leagueToDelete.isOwner ? 'usunąć' : 'opuścić' }} ligę "{{ leagueToDelete.name }}"?</p>
             <div class="flex gap-3">
               <button (click)="leagueToDelete = null" class="flex-1 py-3 px-4 bg-white/[0.06] hover:bg-white/[0.1] text-white text-sm font-bold rounded-xl transition-all">Anuluj</button>
               <button (click)="executeDeleteOrLeave()" class="flex-1 py-3 px-4 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-sm font-bold rounded-xl transition-all">
@@ -470,12 +470,12 @@ export class DashboardComponent implements OnInit {
       );
       await this.leagueState.loadLeagues();
       this.leagueState.setActiveLeague(result.id);
-      this.toast.success('TypLiga utworzona pomyślnie');
+      this.toast.success('Liga utworzona pomyślnie');
       this.newLeagueName = '';
       this.selectedCompetitionIds.clear();
       this.showCreateLeague = false;
     } catch (e: any) {
-      this.createError = e?.error?.error || 'Nie udało się stworzyć typligi';
+      this.createError = e?.error?.error || 'Nie udało się stworzyć ligi';
     }
   }
 
@@ -489,7 +489,7 @@ export class DashboardComponent implements OnInit {
       if (wasOwner) { await this.api.deleteLeague(this.leagueToDelete.id); }
       else { await this.api.leaveLeague(this.leagueToDelete.id); }
       await this.leagueState.loadLeagues();
-      this.toast.success(wasOwner ? 'TypLiga usunięta' : 'Opuszczono typligę');
+      this.toast.success(wasOwner ? 'Liga usunięta' : 'Opuszczono ligę');
     } catch {}
     this.leagueToDelete = null;
   }

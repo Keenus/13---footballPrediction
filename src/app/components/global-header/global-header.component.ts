@@ -16,7 +16,7 @@ import { LeagueStateService } from '../../services/league-state.service';
           <mat-icon class="text-[#1E1A17] text-[20px] w-5 h-5">sports_soccer</mat-icon>
         </div>
         <div>
-          <h1 class="text-white font-black text-[15px] leading-tight tracking-wide uppercase">Typ<span class="text-[#FEF400]">Liga</span></h1>
+          <h1 class="text-white font-black text-[15px] leading-tight tracking-wide uppercase">pro<span class="text-[#FEF400]">typer</span></h1>
           @if (auth.isAdmin()) {
             <p class="text-red-400/80 text-[10px] uppercase tracking-widest font-semibold">Panel Admina</p>
           } @else {
@@ -31,7 +31,7 @@ import { LeagueStateService } from '../../services/league-state.service';
             <button (click)="dropdownOpen = !dropdownOpen"
                     class="flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.1] rounded-xl px-3 py-2 transition-all">
               <div class="text-right">
-                <div class="text-[8px] text-white/30 uppercase tracking-[0.15em] font-bold leading-none mb-0.5">TypLiga</div>
+                <div class="text-[8px] text-white/30 uppercase tracking-[0.15em] font-bold leading-none mb-0.5">protyper</div>
                 <div class="text-white/90 text-xs font-semibold leading-none max-w-[100px] truncate">
                   {{ leagueState.activeLeague()?.name || 'Wybierz' }}
                 </div>
@@ -43,7 +43,7 @@ import { LeagueStateService } from '../../services/league-state.service';
               <div class="absolute top-full right-0 mt-2 w-64 bg-[#2a2520] backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden z-50">
                 <div class="p-2">
                   @if (leagueState.myLeagues().length > 0) {
-                    <div class="text-[10px] text-white/30 uppercase tracking-widest font-bold px-3 py-1.5">Moje typligi</div>
+                    <div class="text-[10px] text-white/30 uppercase tracking-widest font-bold px-3 py-1.5">Moje ligi</div>
                     @for (league of leagueState.myLeagues(); track league.id) {
                       <button (click)="selectLeague(league.id)"
                               class="w-full text-left px-3 py-2.5 rounded-xl flex items-center justify-between transition-colors"
@@ -71,7 +71,7 @@ import { LeagueStateService } from '../../services/league-state.service';
                   }
 
                   @if (leagueState.leagues().length === 0) {
-                    <div class="px-3 py-4 text-white/30 text-xs text-center">Brak typlig</div>
+                    <div class="px-3 py-4 text-white/30 text-xs text-center">Brak lig</div>
                   }
                 </div>
               </div>

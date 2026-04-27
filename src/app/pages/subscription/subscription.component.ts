@@ -59,13 +59,13 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
                     {{ plan.can_create_leagues ? 'check_circle' : 'cancel' }}
                   </mat-icon>
                   <span [ngClass]="plan.can_create_leagues ? 'text-white/60' : 'text-white/25'">
-                    Tworzenie typlig {{ plan.max_created_leagues !== null ? '(max ' + plan.max_created_leagues + ')' : '(bez limitu)' }}
+                    Tworzenie lig {{ plan.max_created_leagues !== null ? '(max ' + plan.max_created_leagues + ')' : '(bez limitu)' }}
                   </span>
                 </li>
                 <li class="flex items-center gap-2">
                   <mat-icon class="text-[16px] w-4 h-4 text-emerald-400">check_circle</mat-icon>
                   <span class="text-white/60">
-                    Dołączanie do typlig {{ plan.max_joined_leagues !== null ? '(max ' + plan.max_joined_leagues + ')' : '(bez limitu)' }}
+                    Dołączanie do lig {{ plan.max_joined_leagues !== null ? '(max ' + plan.max_joined_leagues + ')' : '(bez limitu)' }}
                   </span>
                 </li>
                 <li class="flex items-center gap-2">

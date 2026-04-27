@@ -18,7 +18,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
       @if (!leagueState.activeLeague()) {
         <div class="text-center text-white/50 py-10">
           <mat-icon class="text-4xl mb-2 opacity-50">sports_soccer</mat-icon>
-          <p>Nie masz aktywnej typligi.</p>
+          <p>Nie masz aktywnej ligi.</p>
           <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-2 bg-[#FEF400]/20 text-[#FEF400] rounded-xl font-bold uppercase tracking-wider">Przejdź do kokpitu</button>
         </div>
       } @else if (loading) {

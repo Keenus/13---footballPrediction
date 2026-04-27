@@ -20,7 +20,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
           <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">sports_soccer</mat-icon>
           <div class="relative z-[1]">
             <mat-icon class="text-4xl mb-2 opacity-50">sports_soccer</mat-icon>
-            <p class="font-black uppercase tracking-tight">Nie masz aktywnej typligi.</p>
+            <p class="font-black uppercase tracking-tight">Nie masz aktywnej ligi.</p>
             <button (click)="router.navigate(['/dashboard'])" class="mt-4 px-4 py-3 bg-[#FEF400] hover:bg-[#e5dc00] text-[#1E1A17] rounded-xl font-black uppercase tracking-wider text-sm">Przejdź do kokpitu</button>
           </div>
         </div>
@@ -78,7 +78,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
                     }
                   </div>
                   <div class="text-white/35 text-xs mt-0.5">
-                    {{ tipster.role === 'owner' ? 'Właściciel typligi' : 'Uczestnik' }}
+                    {{ tipster.role === 'owner' ? 'Właściciel ligi' : 'Uczestnik' }}
                   </div>
                 </div>
 

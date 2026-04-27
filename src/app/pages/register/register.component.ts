@@ -17,7 +17,7 @@ import { ToastService } from '../../services/toast.service';
           <div class="w-16 h-16 rounded-2xl bg-[#FEF400]/[0.08] flex items-center justify-center mx-auto mb-4 border border-[#FEF400]/15">
             <mat-icon class="text-[#FEF400]/70 text-[32px] w-8 h-8">sports_soccer</mat-icon>
           </div>
-          <h1 class="text-2xl font-black text-white uppercase tracking-tight">Typ<span class="text-[#FEF400]">Liga</span></h1>
+          <h1 class="text-2xl font-black text-white uppercase tracking-tight">pro<span class="text-[#FEF400]">typer</span></h1>
           <p class="text-white/35 text-sm mt-1 tracking-wide">Stwórz konto i zacznij typować</p>
         </div>
 

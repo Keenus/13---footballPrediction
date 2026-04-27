@@ -1,0 +1,409 @@
+<!-- NAV -->
+<nav class="lp-nav" [class.scrolled]="navScrolled()">
+  <a class="logo" routerLink="/landing">
+    <div class="logo-icon"><mat-icon>sports_soccer</mat-icon></div>
+    <div class="logo-text">pro<span>typer</span></div>
+  </a>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <a routerLink="/login" class="nav-login">Zaloguj się</a>
+    <a routerLink="/register" class="nav-cta">Dołącz do rozgrzewki</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="position:relative;overflow:hidden;">
+  <div class="hero-bg"><div class="hb1"></div><div class="hb2"></div></div>
+  <div class="hero" style="padding-left:0;padding-right:0;">
+    <div class="hero-inner" style="padding:0 40px;">
+      <div>
+        <div class="hero-tag"><mat-icon class="hero-tag-icon">sports_soccer</mat-icon> Rozgrzewka przed Mundialem 2026</div>
+        <h1 class="hero-headline">
+          <span class="line"><span>Typuj.</span></span>
+          <span class="line"><span>Rywalizuj.</span></span>
+          <span class="line"><span>Wygraj.</span></span>
+        </h1>
+        <p class="hero-sub">protyper to aplikacja do typowania wyników meczów piłkarskich. Zakładaj własne ligi, zapraszaj znajomych i sprawdź, kto najlepiej czyta grę.</p>
+        <div class="hero-actions">
+          <a routerLink="/register" class="lp-btn-primary">Dołącz do rozgrzewki przed Mundialem →</a>
+          <span class="lp-cta-note">Startujemy już teraz — pełna wersja rusza na Mistrzostwa Świata 2026.</span>
+        </div>
+      </div>
+      <div class="hero-phone">
+        <div class="phone-glow"></div>
+        <div class="phone-wrap">
+          <div class="phone-shell">
+            <div>
+              <div class="app-nav">
+                <div class="app-logo-row">
+                  <div class="app-logo-box"><mat-icon>sports_soccer</mat-icon></div>
+                  <div class="app-name">pro<span>typer</span></div>
+                </div>
+                <div class="league-badge">Liga Firmowa <mat-icon class="league-caret">expand_more</mat-icon></div>
+              </div>
+              <div class="app-content">
+                <div class="live-card">
+                  <div>
+                    <div class="live-label"><span class="live-dot"></span> NA ŻYWO</div>
+                    <div class="live-title">Typuj Teraz</div>
+                    <div class="live-sub">Liga Firmowa<br>Liga Mistrzów 2025/26</div>
+                  </div>
+                  <div>
+                    <div style="font-size:8px;color:#555;margin-bottom:4px;font-weight:700;letter-spacing:.06em;">STATYSTYKI</div>
+                    <div class="stat-row"><span>Punkty</span><span class="val-w">23</span></div>
+                    <div class="stat-row"><span>Dokładne</span><span class="val-g">3</span></div>
+                    <div class="stat-row"><span>Trafione</span><span class="val-y">9</span></div>
+                  </div>
+                </div>
+                <div class="matches-label"><span>NADCHODZĄCE MECZE</span><span style="color:#444;">Półfinały</span></div>
+                <div class="match-row">
+                  <div class="match-time">21:00<br><span style="color:#444;">28.04</span></div>
+                  <div style="width:1px;height:26px;background:rgba(255,255,255,.08);"></div>
+                  <div class="match-teams">PSG<br>Bayern Monachium</div>
+                  <div class="match-score">3:1</div>
+                </div>
+                <div class="match-row">
+                  <div class="match-time">21:00<br><span style="color:#444;">29.04</span></div>
+                  <div style="width:1px;height:26px;background:rgba(255,255,255,.08);"></div>
+                  <div class="match-teams">Atletico Madryt<br>Arsenal</div>
+                  <div class="match-score">1:2</div>
+                </div>
+              </div>
+              <div class="app-tabs">
+                <div class="tab active"><mat-icon class="tab-icon">home</mat-icon>START</div>
+                <div class="tab"><mat-icon class="tab-icon">sports_soccer</mat-icon>TYPUJ</div>
+                <div class="tab"><mat-icon class="tab-icon">emoji_events</mat-icon>RANKING</div>
+                <div class="tab"><mat-icon class="tab-icon">history</mat-icon>HISTORIA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MUNDIAL BANNER -->
+<div class="mundial-banner">
+  <div class="mundial-inner">
+    <div>
+      <div class="mundial-tag reveal"><mat-icon class="hero-tag-icon">public</mat-icon> Mundial 2026</div>
+      <h2 class="mundial-title reveal d1">Rozgrzewka przed Mundialem już trwa</h2>
+      <div class="mundial-body reveal d2">
+        <p>Nie czekaj do pierwszego gwizdka. Już teraz możesz typować mecze ligowe i towarzyskie, zakładać ligi ze znajomymi i sprawdzić swoją formę przed największą imprezą piłkarską na świecie.</p>
+        <p>Kiedy w czerwcu 2026 wystartują Mistrzostwa Świata w USA, Meksyku i Kanadzie — protyper będzie gotowy. Z pełną obsługą fazy grupowej, pucharowej i finału.</p>
+      </div>
+      <a routerLink="/register" class="mundial-btn reveal d3">Zacznij rozgrzewkę za darmo →</a>
+    </div>
+    <div class="timeline reveal d2">
+      <div class="tl-item">
+        <div class="tl-line"></div>
+        <div class="tl-dot active"><mat-icon class="tl-icon">play_arrow</mat-icon></div>
+        <div class="tl-content">
+          <div class="tl-label active">TERAZ — Rozgrzewka</div>
+          <div class="tl-text">Typuj mecze ligowe</div>
+          <div class="tl-desc">Zakładaj ligi, zapraszaj znajomych, testuj swoje umiejętności na bieżących rozgrywkach.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-line"></div>
+        <div class="tl-dot"><mat-icon class="tl-icon">public</mat-icon></div>
+        <div class="tl-content">
+          <div class="tl-label">Czerwiec 2026 — Start Mundialu</div>
+          <div class="tl-text">Pełna obsługa MŚ 2026</div>
+          <div class="tl-desc">Faza grupowa, 1/8 finału, ćwierćfinały, półfinały i wielki finał.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"><mat-icon class="tl-icon">emoji_events</mat-icon></div>
+        <div class="tl-content">
+          <div class="tl-label">Lipiec 2026 — Finał</div>
+          <div class="tl-text">Kto zostanie mistrzem?</div>
+          <div class="tl-desc">Kto w Twojej lidze zgarnie tytuł najlepszego gracza Mundialu?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-bg">
+  <div class="section-wrap">
+    <div class="section-label reveal">Jak to działa</div>
+    <div class="section-title reveal d1">Trzy kroki do <em>rywalizacji</em></div>
+    <div class="steps">
+      <div class="step reveal d1">
+        <div class="step-num">1</div>
+        <div class="step-title">Stwórz ligę</div>
+        <div class="step-desc">Wymyśl nazwę, wybierz rozgrywki i zaproś znajomych unikalnym kodem. Wystarczy kilka sekund.</div>
+      </div>
+      <div class="step reveal d2">
+        <div class="step-num">2</div>
+        <div class="step-title">Typuj wyniki</div>
+        <div class="step-desc">Przed każdą kolejką wpisz swoje przewidywania. Masz czas do 15 minut przed pierwszym gwizdkiem.</div>
+      </div>
+      <div class="step reveal d3">
+        <div class="step-num">3</div>
+        <div class="step-title">Sprawdź ranking</div>
+        <div class="step-desc">Po każdej kolejce system automatycznie nalicza punkty. Śledź, kto prowadzi w Twojej lidze.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="section-wrap">
+  <div class="section-label reveal">Funkcje aplikacji</div>
+  <div class="section-title reveal d1">Wszystko, czego potrzebuje <em>prawdziwy gracz</em></div>
+  <div class="features-grid">
+
+    <div class="feat-card reveal d1">
+      <mat-icon class="feat-icon">stadium</mat-icon>
+      <div class="feat-name">Własne ligi</div>
+      <div class="feat-desc">Zakładaj własne ligi i zapraszaj znajomych kodem. Ty ustalasz zasady, Ty zarządzasz rozgrywką.</div>
+    </div>
+    <div class="feat-card reveal d2">
+      <mat-icon class="feat-icon">public</mat-icon>
+      <div class="feat-name">Wiele rozgrywek</div>
+      <div class="feat-desc">protyper może obejmować jedną lub kilka rozgrywek jednocześnie — od Ekstraklasy po Ligę Mistrzów i MŚ.</div>
+    </div>
+    <div class="feat-card reveal d3">
+      <mat-icon class="feat-icon">gps_fixed</mat-icon>
+      <div class="feat-name">Inteligentny scoring</div>
+      <div class="feat-desc">Dokładny wynik, trafiona różnica bramek, prawidłowy zwycięzca — każdy poziom trafienia to inne punkty.</div>
+    </div>
+    <div class="feat-card reveal d1">
+      <mat-icon class="feat-icon">leaderboard</mat-icon>
+      <div class="feat-name">Ranking na żywo</div>
+      <div class="feat-desc">Po każdej kolejce ranking w lidze aktualizuje się automatycznie. Sprawdzaj swoją pozycję i śledź rywali.</div>
+    </div>
+    <div class="feat-card reveal d2">
+      <mat-icon class="feat-icon">history</mat-icon>
+      <div class="feat-name">Historia typów</div>
+      <div class="feat-desc">Pełny przegląd poprzednich kolejek — Twoje typy, rzeczywiste wyniki i zdobyte punkty w jednym miejscu.</div>
+    </div>
+    <div class="feat-card reveal d3">
+      <mat-icon class="feat-icon">settings</mat-icon>
+      <div class="feat-name">Custom scoring</div>
+      <div class="feat-desc">Sam definiujesz zasady punktacji swojej ligi. Chcesz 5 pkt za dokładny wynik? Żaden problem.</div>
+      <span class="feat-badge">Plan Gold</span>
+    </div>
+  </div>
+</div>
+
+<!-- SCORING TABLE -->
+<div class="scoring-bg">
+  <div class="section-wrap">
+    <div class="section-label reveal">Punktacja</div>
+    <div class="section-title reveal d1">Przejrzysta <em>punktacja</em></div>
+    <p class="section-sub reveal d2">Żadnych ukrytych zasad. Wiesz dokładnie, za co dostajesz punkty.</p>
+    <div class="score-table-wrap reveal d2">
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Trafienie</th>
+            <th>Punkty</th>
+            <th>Przykład</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Dokładny wynik</strong></td>
+            <td><span class="pts-badge pts-3">3 pkt</span></td>
+            <td style="color:#888;font-size:13px;">Typujesz 2:1 — pada 2:1</td>
+          </tr>
+          <tr>
+            <td><strong>Różnica bramek</strong></td>
+            <td><span class="pts-badge pts-2">2 pkt</span></td>
+            <td style="color:#888;font-size:13px;">Typujesz 3:1 — pada 2:0</td>
+          </tr>
+          <tr>
+            <td><strong>Zwycięzca / remis</strong></td>
+            <td><span class="pts-badge pts-1">1 pkt</span></td>
+            <td style="color:#888;font-size:13px;">Typujesz 3:0 — pada 1:0</td>
+          </tr>
+          <tr>
+            <td><strong>Pudło</strong></td>
+            <td><span class="pts-badge pts-0">0 pkt</span></td>
+            <td style="color:#888;font-size:13px;">Typujesz 2:0 — pada 0:1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="score-note reveal d3">W planie <strong>Gold</strong> możesz zmienić wartości punktowe i dopasować reguły do swojej ligi.</p>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="section-wrap">
+  <div class="section-label reveal">Plany</div>
+  <div class="section-title reveal d1">Wybierz swój <em>plan</em></div>
+  <p class="section-sub reveal d2">Zacznij za darmo. Ulepsz, kiedy poczujesz, że chcesz więcej.</p>
+  <div class="pricing-grid">
+    <div class="plan-card reveal d1">
+      <div class="plan-name">LIGHT</div>
+      <div class="plan-tagline">Na start</div>
+      <div class="plan-price">0 <span>zł</span></div>
+      <div class="plan-period">/ miesiąc · na zawsze</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Stworzenie 1 ligi</li>
+        <li>Dołączenie do 3 lig</li>
+        <li>Typowanie bez ograniczeń</li>
+        <li>Ranking: top 3 + Twoja pozycja</li>
+      </ul>
+      <p class="plan-desc">Idealny na start — załóż ligę ze znajomymi i sprawdź, jak działa typowanie.</p>
+      <a routerLink="/register" class="plan-btn outline">Zacznij za darmo</a>
+    </div>
+    <div class="plan-card featured reveal d2">
+      <div class="plan-name">STANDARD</div>
+      <div class="plan-tagline">Dla aktywnych graczy</div>
+      <div class="plan-price">20 <span>zł</span></div>
+      <div class="plan-period">/ miesiąc</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Tworzenie do 3 lig</li>
+        <li>Dołączanie do lig bez limitu</li>
+        <li>Typowanie bez ograniczeń</li>
+        <li>Pełny ranking i statystyki</li>
+      </ul>
+      <p class="plan-desc">Widzisz pełny ranking, śledzisz statystyki wszystkich graczy i tworzysz więcej lig.</p>
+      <a routerLink="/register" class="plan-btn filled">Wybierz Standard</a>
+    </div>
+    <div class="plan-card reveal d3">
+      <div class="plan-name">GOLD</div>
+      <div class="plan-tagline">Pełna kontrola</div>
+      <div class="plan-price">25 <span>zł</span></div>
+      <div class="plan-period">/ miesiąc</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Tworzenie lig bez limitu</li>
+        <li>Dołączanie do lig bez limitu</li>
+        <li>Typowanie bez ograniczeń</li>
+        <li>Pełny ranking i statystyki</li>
+        <li>Custom scoring — własne zasady punktacji</li>
+      </ul>
+      <p class="plan-desc">Definiujesz reguły gry. Twoje ligi, Twoje zasady.</p>
+      <a routerLink="/register" class="plan-btn outline">Wybierz Gold</a>
+    </div>
+  </div>
+</div>
+
+<!-- APP SCREENSHOTS -->
+<div class="screens-section">
+  <div class="screens-head">
+    <div class="section-label reveal">Aplikacja</div>
+    <div class="section-title reveal d1">Zaprojektowana dla <em>pasjonatów</em> futbolu</div>
+  </div>
+  <div style="overflow:hidden;padding:8px 0;">
+    <div class="screens-track" id="screensTrack">
+      <div class="screen-card"><div style="background:#262220;padding:10px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);">
+          <div style="width:22px;height:22px;background:#FEF400;border-radius:6px;display:flex;align-items:center;justify-content:center;"><mat-icon style="font-size:13px;width:13px;height:13px;color:#000;">sports_soccer</mat-icon></div>
+          <span style="font-size:9px;font-weight:700;"><span style="color:#FEF400;">pro</span>typer</span>
+          <div style="margin-left:auto;background:rgba(255,255,255,.07);border-radius:5px;font-size:7px;padding:3px 7px;color:#aaa;">Liga Firmowa <mat-icon style="font-size:7px;width:7px;height:7px;vertical-align:middle;">expand_more</mat-icon></div>
+        </div>
+        <div style="background:#2a2520;border-radius:8px;padding:8px;margin-bottom:7px;display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+          <div><div style="display:flex;align-items:center;gap:3px;font-size:7px;font-weight:700;color:#0cce6b;margin-bottom:3px;"><div style="width:4px;height:4px;background:#0cce6b;border-radius:50%;"></div>NA ŻYWO</div><div style="font-size:9px;font-weight:700;">Typuj Teraz</div><div style="font-size:7px;color:#555;margin-top:2px;line-height:1.3;">Liga Firmowa<br>Liga Mistrzów</div></div>
+          <div><div style="font-size:7px;color:#444;font-weight:700;letter-spacing:.06em;margin-bottom:3px;">STATYSTYKI</div><div style="display:flex;justify-content:space-between;font-size:7px;padding:1px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span>Punkty</span><span style="font-weight:800;">23</span></div><div style="display:flex;justify-content:space-between;font-size:7px;padding:1px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span>Dokładne</span><span style="font-weight:800;color:#0cce6b;">3</span></div><div style="display:flex;justify-content:space-between;font-size:7px;padding:1px 0;"><span>Trafione</span><span style="font-weight:800;color:#FEF400;">9</span></div></div>
+        </div>
+        <div style="font-size:7px;color:#555;font-weight:700;letter-spacing:.07em;margin-bottom:5px;display:flex;justify-content:space-between;"><span>NADCHODZĄCE MECZE</span></div>
+        <div style="background:#2a2520;border-radius:7px;padding:7px 8px;display:flex;align-items:center;gap:5px;margin-bottom:4px;"><div style="font-size:7px;color:#555;min-width:22px;line-height:1.3;">21:00<br>28.04</div><div style="width:1px;height:22px;background:rgba(255,255,255,.08);"></div><div style="flex:1;font-size:8px;font-weight:600;line-height:1.4;">PSG<br>Bayern Monachium</div><div style="background:rgba(254,244,0,.15);color:#FEF400;font-weight:800;font-size:8px;padding:2px 5px;border-radius:4px;">3:1</div></div>
+        <div style="background:#2a2520;border-radius:7px;padding:7px 8px;display:flex;align-items:center;gap:5px;"><div style="font-size:7px;color:#555;min-width:22px;line-height:1.3;">21:00<br>29.04</div><div style="width:1px;height:22px;background:rgba(255,255,255,.08);"></div><div style="flex:1;font-size:8px;font-weight:600;line-height:1.4;">Atletico Madryt<br>Arsenal</div><div style="background:rgba(254,244,0,.15);color:#FEF400;font-weight:800;font-size:8px;padding:2px 5px;border-radius:4px;">1:2</div></div>
+        <div class="mock-tabs"><div class="mock-tab active"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
+      </div></div>
+      <div class="screen-card"><div style="background:#262220;padding:10px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><div style="width:22px;height:22px;background:#FEF400;border-radius:6px;display:flex;align-items:center;justify-content:center;"><mat-icon style="font-size:13px;width:13px;height:13px;color:#000;">sports_soccer</mat-icon></div><span style="font-size:9px;font-weight:700;"><span style="color:#FEF400;">pro</span>typer</span></div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Półfinały - 1. mecz</div>
+        <div style="font-size:8px;color:#555;margin-bottom:12px;">Liga Mistrzów 2025/26 - Faza pucharowa</div>
+        <div style="background:#2a2520;border-radius:9px;padding:10px;margin-bottom:7px;">
+          <div style="display:flex;align-items:center;gap:4px;font-size:8px;color:#aaa;margin-bottom:7px;"><mat-icon style="font-size:10px;width:10px;height:10px;">schedule</mat-icon> TYPUJ DO 24.04 20:45</div>
+          <div style="text-align:center;font-size:9px;font-weight:700;margin-bottom:8px;">PSG — Bayern Monachium</div>
+          <div style="font-size:7px;color:#555;text-align:center;letter-spacing:.06em;margin-bottom:5px;">TWÓJ TYP</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;"><div style="width:34px;height:34px;background:#352f29;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;border:1px solid rgba(255,255,255,.1);">3</div><span style="color:#555;font-size:14px;">:</span><div style="width:34px;height:34px;background:#352f29;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;border:1px solid rgba(255,255,255,.1);">1</div></div>
+        </div>
+        <div style="background:#2a2520;border-radius:9px;padding:10px;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:4px;font-size:8px;color:#aaa;margin-bottom:7px;"><mat-icon style="font-size:10px;width:10px;height:10px;">schedule</mat-icon> TYPUJ DO 06.05 20:45</div>
+          <div style="text-align:center;font-size:9px;font-weight:700;margin-bottom:8px;">Bayern Monachium — PSG</div>
+          <div style="font-size:7px;color:#555;text-align:center;letter-spacing:.06em;margin-bottom:5px;">TWÓJ TYP</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;"><div style="width:34px;height:34px;background:#352f29;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;border:1px solid rgba(255,255,255,.1);">1</div><span style="color:#555;font-size:14px;">:</span><div style="width:34px;height:34px;background:#352f29;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;border:1px solid rgba(255,255,255,.1);">2</div></div>
+        </div>
+        <div style="background:#FEF400;border-radius:9px;padding:10px;text-align:center;font-size:11px;font-weight:800;color:#000;display:flex;align-items:center;justify-content:center;gap:4px;"><mat-icon style="font-size:12px;width:12px;height:12px;">save</mat-icon> ZAPISZ TYPY</div>
+        <div class="mock-tabs"><div class="mock-tab"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab active"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
+      </div></div>
+      <div class="screen-card"><div style="background:#262220;padding:10px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><div style="width:22px;height:22px;background:#FEF400;border-radius:6px;display:flex;align-items:center;justify-content:center;"><mat-icon style="font-size:13px;width:13px;height:13px;color:#000;">sports_soccer</mat-icon></div><span style="font-size:9px;font-weight:700;"><span style="color:#FEF400;">pro</span>typer</span></div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Historia</div>
+        <div style="font-size:8px;color:#555;margin-bottom:12px;">Rozegrane kolejki</div>
+        <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><span style="font-size:10px;font-weight:700;">KOLEJKA 2</span><span style="background:rgba(254,244,0,.15);color:#FEF400;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;">+0 pkt</span></div><div style="background:#2a2520;border-radius:7px;overflow:hidden;"><div style="padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;"><span style="font-size:8px;font-weight:700;">Liverpool</span><div style="text-align:center;"><div style="font-size:6px;color:#555;margin-bottom:1px;">Typ: Brak</div><div style="font-size:10px;font-weight:800;">1:2</div></div><span style="font-size:8px;font-weight:700;">PSG</span></div><div style="padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;"><span style="font-size:8px;font-weight:700;">Atletico Ma...</span><div style="text-align:center;"><div style="font-size:6px;color:#555;margin-bottom:1px;">Typ: Brak</div><div style="font-size:10px;font-weight:800;">1:2</div></div><span style="font-size:8px;font-weight:700;">FC Barcelona</span></div><div style="padding:7px 9px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:8px;font-weight:700;">Bayern Mon...</span><div style="text-align:center;"><div style="font-size:6px;color:#555;margin-bottom:1px;">Typ: Brak</div><div style="font-size:10px;font-weight:800;">4:3</div></div><span style="font-size:8px;font-weight:700;">Real Madryt</span></div></div></div>
+        <div class="mock-tabs"><div class="mock-tab"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab active"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
+      </div></div>
+      <div class="screen-card"><div style="background:#262220;padding:10px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><div style="width:22px;height:22px;background:#FEF400;border-radius:6px;display:flex;align-items:center;justify-content:center;"><mat-icon style="font-size:13px;width:13px;height:13px;color:#000;">sports_soccer</mat-icon></div><span style="font-size:9px;font-weight:700;"><span style="color:#FEF400;">pro</span>typer</span></div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;">Ranking · Liga Firmowa</div>
+        <div style="background:rgba(254,244,0,.07);border:1px solid rgba(254,244,0,.15);border-radius:9px;padding:9px;margin-bottom:5px;display:flex;align-items:center;gap:7px;"><span style="color:#FEF400;font-weight:800;font-size:12px;">1</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#FEF400;">emoji_events</mat-icon><span style="flex:1;font-size:10px;font-weight:700;">Marek K.</span><span style="color:#FEF400;font-weight:800;font-size:13px;">47</span></div>
+        <div style="background:#2a2520;border-radius:9px;padding:9px;margin-bottom:5px;display:flex;align-items:center;gap:7px;"><span style="color:#aaa;font-size:10px;">2</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#aaa;">sentiment_satisfied</mat-icon><span style="flex:1;font-size:10px;font-weight:600;">Ania W.</span><span style="font-weight:800;font-size:12px;">41</span></div>
+        <div style="background:#2a2520;border-radius:9px;padding:9px;margin-bottom:5px;display:flex;align-items:center;gap:7px;"><span style="color:#aaa;font-size:10px;">3</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#aaa;">pets</mat-icon><span style="flex:1;font-size:10px;font-weight:600;">Piotr M.</span><span style="font-weight:800;font-size:12px;">38</span></div>
+        <div style="background:#2a2520;border-radius:9px;padding:9px;margin-bottom:5px;display:flex;align-items:center;gap:7px;"><span style="color:#aaa;font-size:10px;">4</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#aaa;">bolt</mat-icon><span style="flex:1;font-size:10px;font-weight:600;">Kasia L.</span><span style="font-weight:800;font-size:12px;">33</span></div>
+        <div style="background:#2a2520;border-radius:9px;padding:9px;display:flex;align-items:center;gap:7px;"><span style="color:#aaa;font-size:10px;">5</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#aaa;">gps_fixed</mat-icon><span style="flex:1;font-size:10px;font-weight:600;">Tomek R.</span><span style="font-weight:800;font-size:12px;">29</span></div>
+        <div class="mock-tabs"><div class="mock-tab"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab active"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="section-wrap">
+  <div class="section-label reveal">FAQ</div>
+  <div class="section-title reveal d1">Najczęściej zadawane <em>pytania</em></div>
+  <div class="faq-list">
+    <div class="faq-item reveal" [class.open]="openFaq() === 0">
+      <button class="faq-q" (click)="toggleFaq(0)">Czy aplikacja jest darmowa? <span class="faq-arrow"><mat-icon>expand_more</mat-icon></span></button>
+      <div class="faq-a"><p>Tak. Plan Light jest całkowicie darmowy i pozwala stworzyć jedną ligę, dołączyć do trzech oraz typować mecze bez ograniczeń.</p></div>
+    </div>
+    <div class="faq-item reveal d1" [class.open]="openFaq() === 1">
+      <button class="faq-q" (click)="toggleFaq(1)">Kiedy rusza pełna wersja? <span class="faq-arrow"><mat-icon>expand_more</mat-icon></span></button>
+      <div class="faq-a"><p>Rozgrzewka trwa już teraz. Pełna obsługa Mistrzostw Świata 2026 ruszy wraz ze startem turnieju w czerwcu 2026.</p></div>
+    </div>
+    <div class="faq-item reveal d2" [class.open]="openFaq() === 2">
+      <button class="faq-q" (click)="toggleFaq(2)">Jak zaprosić znajomych do ligi? <span class="faq-arrow"><mat-icon>expand_more</mat-icon></span></button>
+      <div class="faq-a"><p>Po stworzeniu ligi otrzymujesz unikalny kod zaproszeniowy. Wystarczy go wysłać znajomym — wpisują kod w aplikacji i dołączają do Twojej ligi.</p></div>
+    </div>
+    <div class="faq-item reveal d3" [class.open]="openFaq() === 3">
+      <button class="faq-q" (click)="toggleFaq(3)">Do kiedy mogę typować mecz? <span class="faq-arrow"><mat-icon>expand_more</mat-icon></span></button>
+      <div class="faq-a"><p>Do 15 minut przed planowanym rozpoczęciem meczu. Po tym czasie typ jest automatycznie blokowany. Możesz edytować typy dowolną liczbę razy przed zamknięciem.</p></div>
+    </div>
+    <div class="faq-item reveal d4" [class.open]="openFaq() === 4">
+      <button class="faq-q" (click)="toggleFaq(4)">Ile osób może być w jednej lidze? <span class="faq-arrow"><mat-icon>expand_more</mat-icon></span></button>
+      <div class="faq-a"><p>Nie ma limitu uczestników. Do jednej ligi może dołączyć dowolna liczba osób.</p></div>
+    </div>
+    <div class="faq-item reveal d5" [class.open]="openFaq() === 5">
+      <button class="faq-q" (click)="toggleFaq(5)">Co się stanie, gdy anuluję subskrypcję? <span class="faq-arrow"><mat-icon>expand_more</mat-icon></span></button>
+      <div class="faq-a"><p>Twoje konto wróci do planu Light. Zachowasz dostęp do lig, w których jesteś, ale limity tworzenia i dołączania będą odpowiadać darmowemu planowi.</p></div>
+    </div>
+    <div class="faq-item reveal d6" [class.open]="openFaq() === 6">
+      <button class="faq-q" (click)="toggleFaq(6)">Jak działają plany płatne? <span class="faq-arrow"><mat-icon>expand_more</mat-icon></span></button>
+      <div class="faq-a"><p>Subskrypcja jest miesięczna. Płacisz kartą, BLIK-iem lub Przelewy24. Możesz anulować w dowolnym momencie przez portal klienta.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA FOOTER -->
+<div class="cta-section">
+  <div class="reveal">
+    <div class="cta-title">Nie czekaj na <em>pierwszy gwizdek</em></div>
+    <p class="cta-sub">Rozgrzewka przed Mundialem trwa. Stwórz ligę, zaproś znajomych i zacznij typować już dziś.</p>
+    <div class="cta-actions">
+      <a routerLink="/register" class="lp-btn-primary" style="font-size:16px;padding:18px 40px;">Dołącz za darmo →</a>
+      <span class="cta-note">Bezpłatna · Bez reklam · Graj od razu</span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="lp-footer">
+  <a class="logo" routerLink="/landing">
+    <div class="logo-icon"><mat-icon>sports_soccer</mat-icon></div>
+    <div class="logo-text">pro<span>typer</span></div>
+  </a>
+  <span>© 2026 protyper · Twoja liga, Twoje zasady.</span>
+</footer>

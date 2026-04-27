@@ -31,7 +31,7 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ]
           },
           "configurations": {
@@ -48,7 +48,13 @@
                   "maximumError": "25kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/app/environment.ts",
+                  "with": "src/app/environment.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,

@@ -13,7 +13,7 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
   imports: [FormsModule, MatIconModule, PageHeaderComponent],
   template: `
     <div class="p-4 max-w-md mx-auto pb-24">
-      <app-page-header title="Dołącz do typligi" subtitle="Wpisz kod zaproszenia"></app-page-header>
+      <app-page-header title="Dołącz do ligi" subtitle="Wpisz kod zaproszenia"></app-page-header>
 
       <div class="bg-[#262220] border border-white/[0.06] rounded-2xl p-6 space-y-4">
         @if (error) {
@@ -31,7 +31,7 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 
         <button (click)="join()" [disabled]="loading || !inviteCode.trim()"
                 class="w-full py-3.5 bg-[#FEF400] hover:bg-[#e5dc00] disabled:opacity-50 text-[#1E1A17] font-bold uppercase tracking-wider rounded-xl transition-all">
-          Dołącz do typligi
+          Dołącz do ligi
         </button>
       </div>
     </div>
@@ -54,8 +54,8 @@ export class JoinLeagueComponent {
     this.loading = true;
     try {
       const result = await this.api.joinLeague(this.inviteCode.trim());
-      this.success = `Dołączyłeś do typligi "${result.name}"!`;
-      this.toast.success(`Dołączono do typligi "${result.name}"`);
+      this.success = `Dołączyłeś do ligi "${result.name}"!`;
+      this.toast.success(`Dołączono do ligi "${result.name}"`);
       await this.leagueState.loadLeagues();
       this.leagueState.setActiveLeague(result.id);
       setTimeout(() => this.router.navigate(['/dashboard']), 1500);

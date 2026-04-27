@@ -402,7 +402,7 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
                           @if (savedRoundId === round.id) {
                             <div class="mt-3 bg-emerald-500/10 border border-emerald-500/15 rounded-xl p-3 text-emerald-400 text-xs text-center font-bold flex items-center justify-center gap-2">
                               <mat-icon class="text-[16px] w-4 h-4">done_all</mat-icon>
-                              Punkty naliczone we wszystkich typligach!
+                              Punkty naliczone we wszystkich ligach!
                             </div>
                           }
 
