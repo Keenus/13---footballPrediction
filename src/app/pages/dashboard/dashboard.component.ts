@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService, LeagueSummary } from '../../services/league-state.service';
 import { ToastService } from '../../services/toast.service';
+import { APP_LOGO_URL } from '../../branding';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +25,7 @@ import { ToastService } from '../../services/toast.service';
             @if (tileImages.hero) {
               <img [src]="tileImages.hero" class="tile-img tile-img-lg" alt="">
             }
-            <mat-icon class="tile-icon text-[120px] w-[120px] h-[120px] text-white">sports_soccer</mat-icon>
+            <img [src]="logoUrl" alt="" class="tile-icon-img" />
             <div class="relative z-[1] p-4 flex flex-col justify-between flex-1">
               <div>
                 <div class="inline-flex items-center gap-1.5 bg-[#FEF400]/[0.08] text-[#FEF400] text-[9px] font-bold uppercase tracking-widest rounded-full px-2.5 py-1 mb-2">
@@ -57,7 +58,7 @@ import { ToastService } from '../../services/toast.service';
             @if (tileImages.hero) {
               <img [src]="tileImages.hero" class="tile-img tile-img-lg" alt="">
             }
-            <mat-icon class="tile-icon text-[120px] w-[120px] h-[120px] text-white">sports_soccer</mat-icon>
+            <img [src]="logoUrl" alt="" class="tile-icon-img" />
             <div class="relative z-[1] p-4 flex flex-col justify-between flex-1">
               <div>
                 <h2 class="text-base font-black text-white leading-tight">Typuj</h2>
@@ -348,6 +349,8 @@ import { ToastService } from '../../services/toast.service';
   `
 })
 export class DashboardComponent implements OnInit {
+  readonly logoUrl = APP_LOGO_URL;
+
   auth = inject(AuthService);
   leagueState = inject(LeagueStateService);
   private api = inject(ApiService);

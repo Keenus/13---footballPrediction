@@ -8,6 +8,7 @@ import {
     signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { APP_LOGO_URL } from '../../branding';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -19,6 +20,8 @@ import { MatIconModule } from '@angular/material/icon';
     templateUrl: './landing.component.html',
 })
 export class LandingComponent {
+    readonly logoSrc = APP_LOGO_URL;
+
     navScrolled = signal(false);
     openFaq = signal<number | null>(null);
 

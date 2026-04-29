@@ -1,8 +1,7 @@
 <!-- NAV -->
 <nav class="lp-nav" [class.scrolled]="navScrolled()">
   <a class="logo" routerLink="/landing">
-    <div class="logo-icon"><mat-icon>sports_soccer</mat-icon></div>
-    <div class="logo-text">pro<span>typer</span></div>
+    <img [src]="logoSrc" alt="protyper" class="logo-img" />
   </a>
   <div style="display:flex;align-items:center;gap:16px;">
     <a routerLink="/login" class="nav-login">Zaloguj się</a>
@@ -35,8 +34,7 @@
             <div>
               <div class="app-nav">
                 <div class="app-logo-row">
-                  <div class="app-logo-box"><mat-icon>sports_soccer</mat-icon></div>
-                  <div class="app-name">pro<span>typer</span></div>
+                  <img [src]="logoSrc" alt="" class="app-logo-img" />
                 </div>
                 <div class="league-badge">Liga Firmowa <mat-icon class="league-caret">expand_more</mat-icon></div>
               </div>
@@ -298,8 +296,7 @@
     <div class="screens-track" id="screensTrack">
       <div class="screen-card"><div style="background:#262220;padding:10px;">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);">
-          <div style="width:22px;height:22px;background:#FEF400;border-radius:6px;display:flex;align-items:center;justify-content:center;"><mat-icon style="font-size:13px;width:13px;height:13px;color:#000;">sports_soccer</mat-icon></div>
-          <span style="font-size:9px;font-weight:700;"><span style="color:#FEF400;">pro</span>typer</span>
+          <img [src]="logoSrc" alt="" style="height:11px;width:auto;max-width:76px;object-fit:contain;flex-shrink:0;" />
           <div style="margin-left:auto;background:rgba(255,255,255,.07);border-radius:5px;font-size:7px;padding:3px 7px;color:#aaa;">Liga Firmowa <mat-icon style="font-size:7px;width:7px;height:7px;vertical-align:middle;">expand_more</mat-icon></div>
         </div>
         <div style="background:#2a2520;border-radius:8px;padding:8px;margin-bottom:7px;display:grid;grid-template-columns:1fr 1fr;gap:7px;">
@@ -312,7 +309,7 @@
         <div class="mock-tabs"><div class="mock-tab active"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
       </div></div>
       <div class="screen-card"><div style="background:#262220;padding:10px;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><div style="width:22px;height:22px;background:#FEF400;border-radius:6px;display:flex;align-items:center;justify-content:center;"><mat-icon style="font-size:13px;width:13px;height:13px;color:#000;">sports_soccer</mat-icon></div><span style="font-size:9px;font-weight:700;"><span style="color:#FEF400;">pro</span>typer</span></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><img [src]="logoSrc" alt="" style="height:12px;width:auto;max-width:88px;object-fit:contain;" /></div>
         <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Półfinały - 1. mecz</div>
         <div style="font-size:8px;color:#555;margin-bottom:12px;">Liga Mistrzów 2025/26 - Faza pucharowa</div>
         <div style="background:#2a2520;border-radius:9px;padding:10px;margin-bottom:7px;">
@@ -331,14 +328,14 @@
         <div class="mock-tabs"><div class="mock-tab"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab active"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
       </div></div>
       <div class="screen-card"><div style="background:#262220;padding:10px;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><div style="width:22px;height:22px;background:#FEF400;border-radius:6px;display:flex;align-items:center;justify-content:center;"><mat-icon style="font-size:13px;width:13px;height:13px;color:#000;">sports_soccer</mat-icon></div><span style="font-size:9px;font-weight:700;"><span style="color:#FEF400;">pro</span>typer</span></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><img [src]="logoSrc" alt="" style="height:12px;width:auto;max-width:88px;object-fit:contain;" /></div>
         <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Historia</div>
         <div style="font-size:8px;color:#555;margin-bottom:12px;">Rozegrane kolejki</div>
         <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><span style="font-size:10px;font-weight:700;">KOLEJKA 2</span><span style="background:rgba(254,244,0,.15);color:#FEF400;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;">+0 pkt</span></div><div style="background:#2a2520;border-radius:7px;overflow:hidden;"><div style="padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;"><span style="font-size:8px;font-weight:700;">Liverpool</span><div style="text-align:center;"><div style="font-size:6px;color:#555;margin-bottom:1px;">Typ: Brak</div><div style="font-size:10px;font-weight:800;">1:2</div></div><span style="font-size:8px;font-weight:700;">PSG</span></div><div style="padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;"><span style="font-size:8px;font-weight:700;">Atletico Ma...</span><div style="text-align:center;"><div style="font-size:6px;color:#555;margin-bottom:1px;">Typ: Brak</div><div style="font-size:10px;font-weight:800;">1:2</div></div><span style="font-size:8px;font-weight:700;">FC Barcelona</span></div><div style="padding:7px 9px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:8px;font-weight:700;">Bayern Mon...</span><div style="text-align:center;"><div style="font-size:6px;color:#555;margin-bottom:1px;">Typ: Brak</div><div style="font-size:10px;font-weight:800;">4:3</div></div><span style="font-size:8px;font-weight:700;">Real Madryt</span></div></div></div>
         <div class="mock-tabs"><div class="mock-tab"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab active"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
       </div></div>
       <div class="screen-card"><div style="background:#262220;padding:10px;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><div style="width:22px;height:22px;background:#FEF400;border-radius:6px;display:flex;align-items:center;justify-content:center;"><mat-icon style="font-size:13px;width:13px;height:13px;color:#000;">sports_soccer</mat-icon></div><span style="font-size:9px;font-weight:700;"><span style="color:#FEF400;">pro</span>typer</span></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><img [src]="logoSrc" alt="" style="height:12px;width:auto;max-width:88px;object-fit:contain;" /></div>
         <div style="font-size:13px;font-weight:700;margin-bottom:12px;">Ranking · Liga Firmowa</div>
         <div style="background:rgba(254,244,0,.07);border:1px solid rgba(254,244,0,.15);border-radius:9px;padding:9px;margin-bottom:5px;display:flex;align-items:center;gap:7px;"><span style="color:#FEF400;font-weight:800;font-size:12px;">1</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#FEF400;">emoji_events</mat-icon><span style="flex:1;font-size:10px;font-weight:700;">Marek K.</span><span style="color:#FEF400;font-weight:800;font-size:13px;">47</span></div>
         <div style="background:#2a2520;border-radius:9px;padding:9px;margin-bottom:5px;display:flex;align-items:center;gap:7px;"><span style="color:#aaa;font-size:10px;">2</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#aaa;">sentiment_satisfied</mat-icon><span style="flex:1;font-size:10px;font-weight:600;">Ania W.</span><span style="font-weight:800;font-size:12px;">41</span></div>
@@ -402,8 +399,7 @@
 <!-- FOOTER -->
 <footer class="lp-footer">
   <a class="logo" routerLink="/landing">
-    <div class="logo-icon"><mat-icon>sports_soccer</mat-icon></div>
-    <div class="logo-text">pro<span>typer</span></div>
+    <img [src]="logoSrc" alt="protyper" class="logo-img" />
   </a>
   <span>© 2026 protyper · Twoja liga, Twoje zasady.</span>
 </footer>

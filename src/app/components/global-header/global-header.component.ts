@@ -4,19 +4,19 @@ import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { LeagueStateService } from '../../services/league-state.service';
+import { APP_LOGO_URL } from '../../branding';
 
 @Component({
   selector: 'app-global-header',
   standalone: true,
   imports: [MatIconModule, NgClass, RouterLink],
   template: `
-    <header class="sticky top-0 z-40 bg-[#1E1A17]/80 backdrop-blur-2xl border-b border-white/[0.06] px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-[#FEF400] flex items-center justify-center shadow-lg shadow-[#FEF400]/10">
-          <mat-icon class="text-[#1E1A17] text-[20px] w-5 h-5">sports_soccer</mat-icon>
-        </div>
-        <div>
-          <h1 class="text-white font-black text-[15px] leading-tight tracking-wide uppercase">pro<span class="text-[#FEF400]">typer</span></h1>
+    <header class="sticky top-0 z-40 bg-[#1E1A17]/80 backdrop-blur-2xl border-b border-white/[0.06] px-4  flex justify-between items-center">
+      <div class="flex items-center gap-3 min-w-0">
+        <a routerLink="/dashboard" class="flex shrink-0 min-w-0">
+          <img [src]="logoUrl" alt="protyper" class="h-9 max-h-9 w-auto max-w-[min(220px,calc(100vw-240px))] object-contain object-left" />
+        </a>
+        <div class="min-w-0 hidden min-[380px]:block">
           @if (auth.isAdmin()) {
             <p class="text-red-400/80 text-[10px] uppercase tracking-widest font-semibold">Panel Admina</p>
           } @else {
@@ -25,7 +25,7 @@ import { LeagueStateService } from '../../services/league-state.service';
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 py-3">
         @if (!auth.isAdmin()) {
           <div class="relative">
             <button (click)="dropdownOpen = !dropdownOpen"
@@ -88,6 +88,8 @@ import { LeagueStateService } from '../../services/league-state.service';
   `
 })
 export class GlobalHeaderComponent implements OnInit {
+  readonly logoUrl = APP_LOGO_URL;
+
   auth = inject(AuthService);
   leagueState = inject(LeagueStateService);
   dropdownOpen = false;

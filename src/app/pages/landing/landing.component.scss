@@ -27,21 +27,16 @@
 }
 
 .logo {
-  display: flex; align-items: center; gap: 10px;
-  font-weight: 700; font-size: 17px; letter-spacing: .02em;
+  display: flex; align-items: center;
   text-decoration: none; color: var(--text);
 }
 
-.logo-icon {
-  width: 36px; height: 36px; background: var(--y);
-  border-radius: 10px; display: flex; align-items: center;
-  justify-content: center; font-size: 18px; color: #000;
-  mat-icon { font-size: 20px; width: 20px; height: 20px; }
-}
-
-.logo-text {
-  span { color: var(--y); }
-  sub { font-size: 10px; letter-spacing: .12em; color: var(--muted); display: block; font-weight: 400; }
+.logo-img {
+  height: 36px;
+  width: auto;
+  max-width: min(220px, 42vw);
+  display: block;
+  object-fit: contain;
 }
 
 .nav-login {
@@ -67,21 +62,33 @@
 
 .hero-bg {
   position: absolute; inset: 0; pointer-events: none;
+  &::before {
+    content: ''; position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(180deg, rgba(30, 26, 23, 0.55) 0%, rgba(30, 26, 23, 0.35) 45%, rgba(30, 26, 23, 0.78) 100%),
+      url('/assets/hero-bg.png');
+    background-position: center, center;
+    background-size: auto, cover;
+    background-repeat: no-repeat;
+  }
   &::after {
-    content: ''; position: absolute; inset: 0;
+    content: ''; position: absolute; inset: 0; z-index: 2;
     background-image: radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px);
     background-size: 28px 28px;
+    pointer-events: none;
   }
 }
 
 .hb1 {
-  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  position: absolute; z-index: 1;
+  width: 700px; height: 700px; border-radius: 50%;
   background: var(--y); top: -200px; left: -100px;
   filter: blur(130px); opacity: .14;
 }
 
 .hb2 {
-  position: absolute; width: 500px; height: 500px; border-radius: 50%;
+  position: absolute; z-index: 1;
+  width: 500px; height: 500px; border-radius: 50%;
   background: oklch(0.75 0.2 40); top: 40%; right: -100px;
   filter: blur(120px); opacity: .08;
 }
@@ -172,19 +179,14 @@
   padding: 14px 14px 10px; border-bottom: 1px solid rgba(255,255,255,.06);
 }
 
-.app-logo-row { display: flex; align-items: center; gap: 8px; }
+.app-logo-row { display: flex; align-items: center; }
 
-.app-logo-box {
-  width: 26px; height: 26px; background: var(--y);
-  border-radius: 7px; font-size: 13px; color: #000;
-  display: flex; align-items: center; justify-content: center;
-  mat-icon { font-size: 15px; width: 15px; height: 15px; }
-}
-
-.app-name {
-  font-size: 11px; font-weight: 700;
-  span { color: var(--y); }
-  sub { display: block; font-size: 8px; color: var(--muted); font-weight: 400; }
+.app-logo-img {
+  height: 22px;
+  width: auto;
+  max-width: 130px;
+  object-fit: contain;
+  display: block;
 }
 
 .league-badge {
@@ -596,6 +598,11 @@
   border-top: 1px solid rgba(255,255,255,.06);
   padding: 32px 40px; display: flex; align-items: center;
   justify-content: space-between; font-size: 13px; color: var(--muted);
+
+  .logo-img {
+    height: 28px;
+    max-width: 180px;
+  }
 }
 
 /* SCREENS CAROUSEL */

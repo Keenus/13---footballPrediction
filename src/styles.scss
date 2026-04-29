@@ -84,6 +84,20 @@ input[type="number"] {
   pointer-events: none;
 }
 
+.tile-icon-img {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  opacity: 0.05;
+  z-index: 0 !important;
+  pointer-events: none;
+  height: 120px;
+  width: auto;
+  max-width: 55%;
+  object-fit: contain;
+  object-position: bottom right;
+}
+
 .tile-img {
   position: absolute;
   right: -4px;

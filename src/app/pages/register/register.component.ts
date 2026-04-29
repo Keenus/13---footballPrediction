@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { APP_LOGO_URL } from '../../branding';
 
 @Component({
   selector: 'app-register',
@@ -14,15 +15,12 @@ import { ToastService } from '../../services/toast.service';
     <div class="min-h-screen flex items-center justify-center p-4">
       <div class="w-full max-w-sm">
         <div class="text-center mb-8">
-          <div class="w-16 h-16 rounded-2xl bg-[#FEF400]/[0.08] flex items-center justify-center mx-auto mb-4 border border-[#FEF400]/15">
-            <mat-icon class="text-[#FEF400]/70 text-[32px] w-8 h-8">sports_soccer</mat-icon>
-          </div>
-          <h1 class="text-2xl font-black text-white uppercase tracking-tight">pro<span class="text-[#FEF400]">typer</span></h1>
+          <img [src]="logoUrl" alt="protyper" class="mx-auto mb-6 h-14 max-h-[64px] w-auto max-w-[min(260px,88vw)] object-contain" />
           <p class="text-white/35 text-sm mt-1 tracking-wide">Stwórz konto i zacznij typować</p>
         </div>
 
         <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-3xl p-6 space-y-4">
-          <mat-icon class="absolute right-[-10px] bottom-[-10px] text-[120px] w-[120px] h-[120px] opacity-[0.03] pointer-events-none text-white">sports_soccer</mat-icon>
+          <img [src]="logoUrl" alt="" class="absolute right-[-10px] bottom-[-10px] h-[120px] w-auto max-w-[60%] object-contain object-bottom-right opacity-[0.035] pointer-events-none select-none" />
           <div class="relative z-[1] space-y-4">
             @if (error) {
               <div class="bg-red-500/10 border border-red-500/15 rounded-xl p-3 text-red-400 text-sm">{{ error }}</div>
@@ -83,6 +81,8 @@ import { ToastService } from '../../services/toast.service';
   `
 })
 export class RegisterComponent {
+  readonly logoUrl = APP_LOGO_URL;
+
   private auth = inject(AuthService);
   private router = inject(Router);
   private toast = inject(ToastService);
