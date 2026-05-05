@@ -1,67 +1,124 @@
 <!-- NAV -->
 <nav class="lp-nav" [class.scrolled]="navScrolled()">
   <a class="logo" routerLink="/landing">
-    <img [src]="logoSrc" alt="protyper" class="logo-img" />
+    <img [src]="logoSrc" alt="protyper" class="logo-img app-logo-mark" />
   </a>
-  <div style="display:flex;align-items:center;gap:16px;">
+  <div class="lp-nav-actions">
     <a routerLink="/login" class="nav-login">Zaloguj się</a>
-    <a routerLink="/register" class="nav-cta">Dołącz do rozgrzewki</a>
+    <a routerLink="/register" class="nav-cta">Załóż ligę za darmo</a>
   </div>
 </nav>
 
 <!-- HERO -->
-<div style="position:relative;overflow:hidden;">
+<div class="hero-outer">
   <div class="hero-bg"><div class="hb1"></div><div class="hb2"></div></div>
-  <div class="hero" style="padding-left:0;padding-right:0;">
-    <div class="hero-inner" style="padding:0 40px;">
-      <div>
-        <div class="hero-tag"><mat-icon class="hero-tag-icon">sports_soccer</mat-icon> Rozgrzewka przed Mundialem 2026</div>
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="hero-tag hero-eyebrow"><mat-icon>groups</mat-icon> Rywalizuj ze znajomymi w prywatnych ligach</div>
         <h1 class="hero-headline">
-          <span class="line"><span>Typuj.</span></span>
-          <span class="line"><span>Rywalizuj.</span></span>
-          <span class="line"><span>Wygraj.</span></span>
+          <span class="line"><span>Typuj mecze.</span></span>
+          <span class="line"><span>Wygrywaj ligi ze znajomymi.</span></span>
         </h1>
-        <p class="hero-sub">protyper to aplikacja do typowania wyników meczów piłkarskich. Zakładaj własne ligi, zapraszaj znajomych i sprawdź, kto najlepiej czyta grę.</p>
+        <p class="hero-sub">Załóż własną ligę, zaproś znajomych i sprawdź, kto naprawdę zna się na piłce. Analizuj swoje typy i wygrywaj dzięki lepszym decyzjom.</p>
+        <p class="hero-trust-strip">Prywatne ligi <span class="hero-trust-dot" aria-hidden="true">•</span> Ranking na żywo <span class="hero-trust-dot" aria-hidden="true">•</span> Statystyki typów</p>
         <div class="hero-actions">
-          <a routerLink="/register" class="lp-btn-primary">Dołącz do rozgrzewki przed Mundialem →</a>
-          <span class="lp-cta-note">Startujemy już teraz — pełna wersja rusza na Mistrzostwa Świata 2026.</span>
+          <a routerLink="/register" class="lp-btn-primary lp-btn-hero-primary">Załóż ligę za darmo →</a>
+          <a routerLink="/login" class="hero-secondary-cta">Mam już konto</a>
         </div>
+        <p class="hero-microcopy">Bez karty. 30 sekund do pierwszej ligi.</p>
       </div>
-      <div class="hero-phone">
-        <div class="phone-glow"></div>
-        <div class="phone-wrap">
-          <div class="phone-shell">
-            <div>
+      <div class="hero-phone" aria-hidden="true">
+        <div class="hero-visual">
+          <div class="phone-glow" aria-hidden="true"></div>
+
+          <div class="hero-ui-card hero-ui-card--ranking">
+            <div class="hero-ui-card__head">Ranking ligi</div>
+            <div class="hero-ui-card__meta">Liga ze znajomymi</div>
+            <ul class="hero-rank-list">
+              <li><span class="hero-rank-list__name">Michał</span><span class="hero-rank-list__pts">124 pkt</span></li>
+              <li class="hero-rank-list__you">
+                <span class="hero-rank-list__name">Ty</span><span class="hero-rank-list__pts">118 pkt</span>
+              </li>
+              <li><span class="hero-rank-list__name">Kuba</span><span class="hero-rank-list__pts">111 pkt</span></li>
+            </ul>
+            <div class="hero-ui-card__status">Awans +2 pozycje</div>
+          </div>
+
+          <div class="hero-ui-card hero-ui-card--predict">
+            <div class="hero-ui-card__head">Typuj teraz</div>
+            <div class="hero-ui-card__meta">Najbliższe mecze</div>
+            <ul class="hero-predict-list">
+              <li>
+                <span class="hero-predict-list__pair">PSG — Bayern</span>
+                <span class="hero-score-pill hero-score-pill--accent">3:1</span>
+              </li>
+              <li>
+                <span class="hero-predict-list__pair">Atletico — Arsenal</span>
+                <span class="hero-score-pill hero-score-pill--accent">1:2</span>
+              </li>
+              <li>
+                <span class="hero-predict-list__pair">Inter — City</span>
+                <span class="hero-score-pill hero-score-pill--muted">?:?</span>
+              </li>
+            </ul>
+            <div class="hero-ui-card__foot">Zamknięcie: 21:00</div>
+          </div>
+
+          <div class="hero-ui-card hero-ui-card--forma">
+            <div class="hero-ui-card__head">Twoja forma</div>
+            <div class="hero-forma-block">
+              <div class="hero-forma-block__big">
+                <span class="hero-forma-block__big-label">Skuteczność</span>
+                <span class="hero-forma-block__big-val">68%</span>
+              </div>
+              <div class="hero-forma-block__rows">
+                <div class="hero-forma-block__row">
+                  <span>Dokładne wyniki</span><span>7</span>
+                </div>
+                <div class="hero-forma-block__row">
+                  <span>Punkty w kolejce</span><span class="hero-forma-block__accent">+23</span>
+                </div>
+              </div>
+            </div>
+            <p class="hero-ui-card__hint">Analizuj typy po każdej kolejce</p>
+          </div>
+
+          <span class="hero-emo-badge">Awans na #2</span>
+
+          <div class="phone-wrap">
+            <div class="phone-shell">
+              <div class="phone-screen">
               <div class="app-nav">
                 <div class="app-logo-row">
-                  <img [src]="logoSrc" alt="" class="app-logo-img" />
+                  <img [src]="logoSrc" alt="" class="app-logo-img app-logo-mark" />
                 </div>
-                <div class="league-badge">Liga Firmowa <mat-icon class="league-caret">expand_more</mat-icon></div>
+                <div class="league-badge">Liga ze znajomymi <mat-icon class="league-caret">expand_more</mat-icon></div>
               </div>
               <div class="app-content">
                 <div class="live-card">
                   <div>
                     <div class="live-label"><span class="live-dot"></span> NA ŻYWO</div>
                     <div class="live-title">Typuj Teraz</div>
-                    <div class="live-sub">Liga Firmowa<br>Liga Mistrzów 2025/26</div>
+                    <div class="live-sub">Twoja prywatna liga<br>Liga Mistrzów 2025/26</div>
                   </div>
                   <div>
-                    <div style="font-size:8px;color:#555;margin-bottom:4px;font-weight:700;letter-spacing:.06em;">STATYSTYKI</div>
+                    <div class="live-stats-head">STATYSTYKI</div>
                     <div class="stat-row"><span>Punkty</span><span class="val-w">23</span></div>
                     <div class="stat-row"><span>Dokładne</span><span class="val-g">3</span></div>
                     <div class="stat-row"><span>Trafione</span><span class="val-y">9</span></div>
                   </div>
                 </div>
-                <div class="matches-label"><span>NADCHODZĄCE MECZE</span><span style="color:#444;">Półfinały</span></div>
+                <div class="matches-label"><span>NADCHODZĄCE MECZE</span><span class="matches-label-meta">Analiza kolejki</span></div>
                 <div class="match-row">
-                  <div class="match-time">21:00<br><span style="color:#444;">28.04</span></div>
-                  <div style="width:1px;height:26px;background:rgba(255,255,255,.08);"></div>
+                  <div class="match-time">21:00<br><span class="match-date">28.04</span></div>
+                  <div class="match-divider" aria-hidden="true"></div>
                   <div class="match-teams">PSG<br>Bayern Monachium</div>
                   <div class="match-score">3:1</div>
                 </div>
                 <div class="match-row">
-                  <div class="match-time">21:00<br><span style="color:#444;">29.04</span></div>
-                  <div style="width:1px;height:26px;background:rgba(255,255,255,.08);"></div>
+                  <div class="match-time">21:00<br><span class="match-date">29.04</span></div>
+                  <div class="match-divider" aria-hidden="true"></div>
                   <div class="match-teams">Atletico Madryt<br>Arsenal</div>
                   <div class="match-score">1:2</div>
                 </div>
@@ -292,11 +349,12 @@
     <div class="section-label reveal">Aplikacja</div>
     <div class="section-title reveal d1">Zaprojektowana dla <em>pasjonatów</em> futbolu</div>
   </div>
-  <div style="overflow:hidden;padding:8px 0;">
+  <div class="screens-viewport" aria-label="Podgląd ekranów aplikacji">
+    <div class="screens-marquee">
     <div class="screens-track" id="screensTrack">
       <div class="screen-card"><div style="background:#262220;padding:10px;">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);">
-          <img [src]="logoSrc" alt="" style="height:11px;width:auto;max-width:76px;object-fit:contain;flex-shrink:0;" />
+          <img [src]="logoSrc" alt="" class="app-logo-mark" style="height:11px;width:auto;max-width:76px;object-fit:contain;flex-shrink:0;" />
           <div style="margin-left:auto;background:rgba(255,255,255,.07);border-radius:5px;font-size:7px;padding:3px 7px;color:#aaa;">Liga Firmowa <mat-icon style="font-size:7px;width:7px;height:7px;vertical-align:middle;">expand_more</mat-icon></div>
         </div>
         <div style="background:#2a2520;border-radius:8px;padding:8px;margin-bottom:7px;display:grid;grid-template-columns:1fr 1fr;gap:7px;">
@@ -309,7 +367,7 @@
         <div class="mock-tabs"><div class="mock-tab active"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
       </div></div>
       <div class="screen-card"><div style="background:#262220;padding:10px;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><img [src]="logoSrc" alt="" style="height:12px;width:auto;max-width:88px;object-fit:contain;" /></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><img [src]="logoSrc" alt="" class="app-logo-mark" style="height:12px;width:auto;max-width:88px;object-fit:contain;" /></div>
         <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Półfinały - 1. mecz</div>
         <div style="font-size:8px;color:#555;margin-bottom:12px;">Liga Mistrzów 2025/26 - Faza pucharowa</div>
         <div style="background:#2a2520;border-radius:9px;padding:10px;margin-bottom:7px;">
@@ -328,14 +386,14 @@
         <div class="mock-tabs"><div class="mock-tab"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab active"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
       </div></div>
       <div class="screen-card"><div style="background:#262220;padding:10px;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><img [src]="logoSrc" alt="" style="height:12px;width:auto;max-width:88px;object-fit:contain;" /></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><img [src]="logoSrc" alt="" class="app-logo-mark" style="height:12px;width:auto;max-width:88px;object-fit:contain;" /></div>
         <div style="font-size:13px;font-weight:700;margin-bottom:2px;">Historia</div>
         <div style="font-size:8px;color:#555;margin-bottom:12px;">Rozegrane kolejki</div>
         <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><span style="font-size:10px;font-weight:700;">KOLEJKA 2</span><span style="background:rgba(254,244,0,.15);color:#FEF400;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;">+0 pkt</span></div><div style="background:#2a2520;border-radius:7px;overflow:hidden;"><div style="padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;"><span style="font-size:8px;font-weight:700;">Liverpool</span><div style="text-align:center;"><div style="font-size:6px;color:#555;margin-bottom:1px;">Typ: Brak</div><div style="font-size:10px;font-weight:800;">1:2</div></div><span style="font-size:8px;font-weight:700;">PSG</span></div><div style="padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;"><span style="font-size:8px;font-weight:700;">Atletico Ma...</span><div style="text-align:center;"><div style="font-size:6px;color:#555;margin-bottom:1px;">Typ: Brak</div><div style="font-size:10px;font-weight:800;">1:2</div></div><span style="font-size:8px;font-weight:700;">FC Barcelona</span></div><div style="padding:7px 9px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:8px;font-weight:700;">Bayern Mon...</span><div style="text-align:center;"><div style="font-size:6px;color:#555;margin-bottom:1px;">Typ: Brak</div><div style="font-size:10px;font-weight:800;">4:3</div></div><span style="font-size:8px;font-weight:700;">Real Madryt</span></div></div></div>
         <div class="mock-tabs"><div class="mock-tab"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab active"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
       </div></div>
       <div class="screen-card"><div style="background:#262220;padding:10px;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><img [src]="logoSrc" alt="" style="height:12px;width:auto;max-width:88px;object-fit:contain;" /></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><img [src]="logoSrc" alt="" class="app-logo-mark" style="height:12px;width:auto;max-width:88px;object-fit:contain;" /></div>
         <div style="font-size:13px;font-weight:700;margin-bottom:12px;">Ranking · Liga Firmowa</div>
         <div style="background:rgba(254,244,0,.07);border:1px solid rgba(254,244,0,.15);border-radius:9px;padding:9px;margin-bottom:5px;display:flex;align-items:center;gap:7px;"><span style="color:#FEF400;font-weight:800;font-size:12px;">1</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#FEF400;">emoji_events</mat-icon><span style="flex:1;font-size:10px;font-weight:700;">Marek K.</span><span style="color:#FEF400;font-weight:800;font-size:13px;">47</span></div>
         <div style="background:#2a2520;border-radius:9px;padding:9px;margin-bottom:5px;display:flex;align-items:center;gap:7px;"><span style="color:#aaa;font-size:10px;">2</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#aaa;">sentiment_satisfied</mat-icon><span style="flex:1;font-size:10px;font-weight:600;">Ania W.</span><span style="font-weight:800;font-size:12px;">41</span></div>
@@ -344,6 +402,7 @@
         <div style="background:#2a2520;border-radius:9px;padding:9px;display:flex;align-items:center;gap:7px;"><span style="color:#aaa;font-size:10px;">5</span><mat-icon style="font-size:14px;width:14px;height:14px;color:#aaa;">gps_fixed</mat-icon><span style="flex:1;font-size:10px;font-weight:600;">Tomek R.</span><span style="font-weight:800;font-size:12px;">29</span></div>
         <div class="mock-tabs"><div class="mock-tab"><mat-icon class="mock-tab-icon">home</mat-icon>START</div><div class="mock-tab"><mat-icon class="mock-tab-icon">sports_soccer</mat-icon>TYPUJ</div><div class="mock-tab active"><mat-icon class="mock-tab-icon">emoji_events</mat-icon>RANKING</div><div class="mock-tab"><mat-icon class="mock-tab-icon">history</mat-icon>HISTORIA</div></div>
       </div></div>
+    </div>
     </div>
   </div>
 </div>
@@ -399,7 +458,7 @@
 <!-- FOOTER -->
 <footer class="lp-footer">
   <a class="logo" routerLink="/landing">
-    <img [src]="logoSrc" alt="protyper" class="logo-img" />
+    <img [src]="logoSrc" alt="protyper" class="logo-img app-logo-mark" />
   </a>
   <span>© 2026 protyper · Twoja liga, Twoje zasady.</span>
 </footer>

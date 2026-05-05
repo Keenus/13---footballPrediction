@@ -47,11 +47,12 @@ export class LandingComponent {
             this.destroyRef.onDestroy(() => observer.disconnect());
 
             const track = this.el.nativeElement.querySelector('#screensTrack');
-            if (track?.parentNode) {
+            const marquee = track?.parentElement;
+            if (track && marquee?.classList.contains('screens-marquee')) {
                 const clone = track.cloneNode(true) as HTMLElement;
-                clone.setAttribute('aria-hidden', 'true');
                 clone.removeAttribute('id');
-                track.parentNode.appendChild(clone);
+                clone.setAttribute('aria-hidden', 'true');
+                marquee.appendChild(clone);
             }
         });
     }

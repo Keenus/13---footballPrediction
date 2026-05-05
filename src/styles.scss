@@ -96,6 +96,13 @@ input[type="number"] {
   max-width: 55%;
   object-fit: contain;
   object-position: bottom right;
+  filter: drop-shadow(0 0 4px white)
+  drop-shadow(0 0 8px white);
+}
+
+/* Logo protyper — subtelny żółty drop-shadow (klasa na <img> poza .tile-icon-img) */
+.app-logo-mark {
+  filter: drop-shadow(0 0 2px #FEF400);
 }
 
 .tile-img {

@@ -14,7 +14,7 @@ import { APP_LOGO_URL } from '../../branding';
     <header class="sticky top-0 z-40 bg-[#1E1A17]/80 backdrop-blur-2xl border-b border-white/[0.06] px-4  flex justify-between items-center">
       <div class="flex items-center gap-3 min-w-0">
         <a routerLink="/dashboard" class="flex shrink-0 min-w-0">
-          <img [src]="logoUrl" alt="protyper" class="h-9 max-h-9 w-auto max-w-[min(220px,calc(100vw-240px))] object-contain object-left" />
+          <img [src]="logoUrl" alt="protyper" class="app-logo-mark h-9 max-h-9 w-auto max-w-[min(220px,calc(100vw-240px))] object-contain object-left" />
         </a>
         <div class="min-w-0 hidden min-[380px]:block">
           @if (auth.isAdmin()) {
