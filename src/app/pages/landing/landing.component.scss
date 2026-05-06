@@ -70,6 +70,7 @@
 .hero-outer {
   position: relative;
   overflow-x: hidden;
+  overflow-y: clip;
 }
 
 /* HERO */
@@ -86,7 +87,6 @@
   position: fixed;
   inset: 0;
   width: 100%;
-  min-height: 100vh;
   min-height: 100dvh;
   pointer-events: none;
   z-index: 0;
@@ -153,6 +153,14 @@
     background-repeat: repeat;
     pointer-events: none;
     mask-image: linear-gradient(180deg, rgba(0,0,0,.9) 0%, rgba(0,0,0,.35) 50%, rgba(0,0,0,.85) 100%);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    position: fixed;
+
+    &::before, &::after {
+      background-attachment: fixed;
+    }
   }
 }
 

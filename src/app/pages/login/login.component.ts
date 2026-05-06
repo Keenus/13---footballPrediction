@@ -14,12 +14,12 @@ import { APP_LOGO_URL } from '../../branding';
     <div class="min-h-screen flex items-center justify-center p-4">
       <div class="w-full max-w-sm">
         <div class="text-center mb-8">
-          <img [src]="logoUrl" alt="protyper" class="app-logo-mark mx-auto mb-6 h-14 max-h-[64px] w-auto max-w-[min(260px,88vw)] object-contain" />
+          <img routerLink="/landing" [src]="logoUrl" alt="protyper" class="app-logo-mark mx-auto mb-6 h-14 max-h-[64px] w-auto max-w-[min(260px,88vw)] object-contain cursor-pointer" />
           <p class="text-white/35 text-sm mt-1 tracking-wide">Zaloguj się aby typować</p>
         </div>
 
         <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-3xl p-6 space-y-4">
-          <img [src]="logoUrl" alt="" class="app-logo-mark absolute right-[-10px] bottom-[-10px] h-[120px] w-auto max-w-[60%] object-contain object-bottom-right opacity-[0.035] pointer-events-none select-none" />
+          <img routerLink="/landing" [src]="logoUrl" alt="" class="app-logo-mark absolute right-[-10px] bottom-[-10px] h-[120px] w-auto max-w-[60%] object-contain object-bottom-right opacity-[0.035] pointer-events-none select-none" />
           <div class="relative z-[1] space-y-4">
             @if (error) {
               <div class="bg-red-500/10 border border-red-500/15 rounded-xl p-3 text-red-400 text-sm">{{ error }}</div>
