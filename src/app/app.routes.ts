@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: 'predictions', loadComponent: () => import('./pages/predictions/predictions.component').then(m => m.PredictionsComponent), canActivate: [authGuard, userGuard] },
   { path: 'history', loadComponent: () => import('./pages/history/history.component').then(m => m.HistoryComponent), canActivate: [authGuard, userGuard] },
   { path: 'ranking', loadComponent: () => import('./pages/ranking/ranking.component').then(m => m.RankingComponent), canActivate: [authGuard, userGuard] },
+  { path: 'table', loadComponent: () => import('./pages/table/table.component').then(m => m.TableComponent), canActivate: [authGuard, userGuard] },
   { path: 'subscription', loadComponent: () => import('./pages/subscription/subscription.component').then(m => m.SubscriptionComponent), canActivate: [authGuard, userGuard] },
   { path: 'join-league', loadComponent: () => import('./pages/join-league/join-league.component').then(m => m.JoinLeagueComponent), canActivate: [authGuard, userGuard] },
   { path: 'payment-success', loadComponent: () => import('./pages/payment-success/payment-success.component').then(m => m.PaymentSuccessComponent), canActivate: [authGuard, userGuard] },

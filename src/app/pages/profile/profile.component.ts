@@ -95,6 +95,11 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
             Wyloguj się
           </button>
         </div>
+      } @else {
+        <div class="text-center text-white/35 py-16">
+          <mat-icon class="text-4xl mb-2 opacity-50 animate-spin">refresh</mat-icon>
+          <p class="text-sm">Ładowanie profilu...</p>
+        </div>
       }
     </div>
   `

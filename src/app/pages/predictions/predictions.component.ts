@@ -177,9 +177,14 @@ import { toObservable } from '@angular/core/rxjs-interop';
             </div>
 
             @if (leagueState.activeLeague()?.isOwner) {
-              <button (click)="nextRound()"
-                      class="w-full py-4 px-6 bg-white/10 hover:bg-white/20 text-white font-black uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95">
-                Następna Kolejka <mat-icon class="text-[20px] w-5 h-5">arrow_forward</mat-icon>
+              <button (click)="nextRound()" [disabled]="loadingNextRound"
+                      class="w-full py-4 px-6 bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white font-black uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95">
+                @if (loadingNextRound) {
+                  <mat-icon class="animate-spin text-[20px] w-5 h-5">refresh</mat-icon>
+                  Ładowanie...
+                } @else {
+                  Następna Kolejka <mat-icon class="text-[20px] w-5 h-5">arrow_forward</mat-icon>
+                }
               </button>
             } @else {
               <div class="text-center text-white/35 text-xs">Czekaj aż właściciel przejdzie do następnej kolejki.</div>
@@ -208,6 +213,7 @@ export class PredictionsComponent implements OnInit, OnDestroy {
   saved = false;
   dirty = false;
   error = '';
+  loadingNextRound = false;
 
   private lastLeagueId: number | null = null;
 
@@ -324,7 +330,9 @@ export class PredictionsComponent implements OnInit, OnDestroy {
 
   async nextRound() {
     const league = this.leagueState.activeLeague();
-    if (!league) return;
+    if (!league || this.loadingNextRound) return;
+    this.loadingNextRound = true;
+    this.cdr.markForCheck();
     try {
       await this.api.nextRound(league.id);
       await this.leagueState.loadLeagues();
@@ -333,6 +341,9 @@ export class PredictionsComponent implements OnInit, OnDestroy {
       window.scrollTo(0, 0);
     } catch {
       // error toast shown by interceptor
+    } finally {
+      this.loadingNextRound = false;
+      this.cdr.markForCheck();
     }
   }
 }

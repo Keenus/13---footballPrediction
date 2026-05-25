@@ -6,7 +6,7 @@ import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 
-type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
+type AdminTab = 'competitions' | 'teams' | 'rounds' | 'matches' | 'results';
 
 @Component({
   selector: 'app-admin',
@@ -20,10 +20,10 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
       <div class="flex gap-1.5 mb-6">
         @for (tab of tabs; track tab.id) {
           <button (click)="activeTab = tab.id; onTabChange()"
-                  class="flex-1 py-3 px-2 rounded-xl transition-all flex flex-col items-center gap-1.5 border"
+                  class="flex-1 py-3 px-1 rounded-xl transition-all flex flex-col items-center gap-1.5 border"
                   [ngClass]="{'bg-[#FEF400]/[0.08] border-[#FEF400]/15 text-[#FEF400]/80': activeTab === tab.id, 'bg-[#262220] border-white/[0.06] text-white/35 hover:text-white/50': activeTab !== tab.id}">
             <mat-icon class="text-[18px] w-[18px] h-[18px]">{{ tab.icon }}</mat-icon>
-            <span class="text-[10px] font-black uppercase tracking-widest">{{ tab.label }}</span>
+            <span class="text-[9px] font-black uppercase tracking-widest">{{ tab.label }}</span>
           </button>
         }
       </div>
@@ -202,6 +202,181 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
         </div>
       }
 
+      <!-- ROUNDS TAB -->
+      @if (activeTab === 'rounds') {
+        <div class="space-y-4">
+          <div class="bg-[#262220] border border-white/[0.06] rounded-2xl p-4">
+            <label class="block text-[10px] font-bold text-white/35 uppercase tracking-widest mb-2">Wybierz rozgrywki</label>
+            <select [(ngModel)]="selectedCompId" (ngModelChange)="onCompSelected()"
+                    class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
+              <option [ngValue]="null">-- Wybierz --</option>
+              @for (comp of competitions; track comp.id) {
+                <option [ngValue]="comp.id">{{ comp.name }} {{ comp.season ? '(' + comp.season + ')' : '' }}</option>
+              }
+            </select>
+          </div>
+
+          @if (selectedCompId) {
+            <!-- New round form -->
+            <div class="bg-[#262220] border border-white/[0.06] rounded-2xl p-4">
+              <h3 class="text-white font-black uppercase tracking-tight text-sm mb-3 flex items-center gap-2">
+                <mat-icon class="text-[#FEF400] text-[18px] w-[18px] h-[18px]">add_circle</mat-icon>
+                Nowa kolejka
+              </h3>
+              <div class="flex gap-2">
+                <input type="text" [(ngModel)]="newRoundName" placeholder="Nazwa kolejki (opcjonalnie)"
+                       (keyup.enter)="createRound()"
+                       class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all placeholder:text-white/20">
+                <button (click)="createRound()"
+                        class="shrink-0 px-4 py-3 bg-[#FEF400] hover:bg-[#e5dc00] text-[#1E1A17] text-sm font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 active:scale-95">
+                  <mat-icon class="text-[18px] w-[18px] h-[18px]">add</mat-icon> Dodaj
+                </button>
+              </div>
+            </div>
+
+            @if (loadingRounds) {
+              <div class="text-center text-white/50 py-6">
+                <mat-icon class="text-3xl mb-1 opacity-50 animate-spin">refresh</mat-icon>
+                <p class="text-xs">Ładowanie kolejek...</p>
+              </div>
+            }
+
+            @for (round of selectedCompRounds; track round.id) {
+              <div class="bg-[#262220] border border-white/[0.06] rounded-2xl overflow-hidden">
+                <!-- Round header -->
+                <div class="px-4 py-3 flex items-center gap-2">
+                  @if (editingRoundId === round.id) {
+                    <input type="text" [(ngModel)]="editRoundName" (keyup.enter)="saveRoundName(round.id)"
+                           class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
+                    <button (click)="saveRoundName(round.id)" class="p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors shrink-0">
+                      <mat-icon class="text-[16px] w-4 h-4">check</mat-icon>
+                    </button>
+                    <button (click)="editingRoundId = null" class="p-1.5 text-white/25 hover:bg-white/5 rounded-lg transition-colors shrink-0">
+                      <mat-icon class="text-[16px] w-4 h-4">close</mat-icon>
+                    </button>
+                  } @else {
+                    <button (click)="toggleAdminRound(round.id)" class="flex-1 flex items-center gap-2 text-left min-w-0">
+                      <span class="text-white/35 text-xs font-mono shrink-0">{{ round.number }}.</span>
+                      <span class="text-white font-black text-sm truncate">{{ round.name || 'Kolejka ' + round.number }}</span>
+                      <span class="text-white/25 text-[10px] shrink-0">{{ round.matches.length }} meczów</span>
+                      @if (round.isCompleted) {
+                        <span class="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-lg text-[9px] font-bold shrink-0">OK</span>
+                      }
+                      <mat-icon class="text-white/35 text-[18px] w-[18px] h-[18px] ml-auto shrink-0 transition-transform"
+                                [ngClass]="{'rotate-180': expandedAdminRoundId === round.id}">expand_more</mat-icon>
+                    </button>
+                    <button (click)="editingRoundId = round.id; editRoundName = round.name || ''" class="p-1.5 text-white/25 hover:text-[#FEF400]/70 rounded-lg transition-colors shrink-0">
+                      <mat-icon class="text-[16px] w-4 h-4">edit</mat-icon>
+                    </button>
+                    <button (click)="confirmDeleteRound = round" class="p-1.5 text-white/25 hover:text-red-400 rounded-lg transition-colors shrink-0">
+                      <mat-icon class="text-[16px] w-4 h-4">delete</mat-icon>
+                    </button>
+                  }
+                </div>
+
+                @if (expandedAdminRoundId === round.id) {
+                  <div class="border-t border-white/[0.06] p-4 space-y-2">
+                    <!-- Matches in this round -->
+                    @for (match of round.matches; track match.id) {
+                      <div class="bg-black/20 rounded-xl px-3 py-2.5 flex items-center gap-2"
+                           [ngClass]="{'border border-emerald-400/15': match.isPlayed}">
+                        <div class="flex-1 min-w-0">
+                          <div class="flex items-center gap-1.5">
+                            <span class="text-white text-xs font-bold truncate">{{ match.homeTeam.name }}</span>
+                            @if (match.isPlayed) {
+                              <span class="text-emerald-400 text-xs font-bold shrink-0">{{ match.homeScore }}:{{ match.awayScore }}</span>
+                            } @else {
+                              <span class="text-white/25 text-xs shrink-0">vs</span>
+                            }
+                            <span class="text-white text-xs font-bold truncate">{{ match.awayTeam.name }}</span>
+                          </div>
+                          @if (match.deadline) {
+                            <div class="text-white/25 text-[10px] mt-0.5">{{ formatDate(match.deadline) }}</div>
+                          }
+                        </div>
+                        @if (!match.isPlayed) {
+                          <button (click)="confirmDeleteRoundMatch = match" class="p-1.5 text-white/25 hover:text-red-400 rounded-lg transition-colors shrink-0">
+                            <mat-icon class="text-[14px] w-3.5 h-3.5">delete</mat-icon>
+                          </button>
+                        }
+                      </div>
+                    }
+
+                    @if (round.matches.length === 0) {
+                      <div class="text-white/25 text-xs text-center py-3">
+                        <mat-icon class="text-2xl mb-1 opacity-30">sports_soccer</mat-icon>
+                        <p>Brak meczów w tej kolejce</p>
+                      </div>
+                    }
+
+                    <!-- Add match to round -->
+                    @if (addingMatchToRoundId === round.id) {
+                      <div class="mt-3 bg-black/20 rounded-xl p-3 space-y-2 border border-white/[0.06]">
+                        <div class="text-[10px] font-bold text-white/35 uppercase tracking-widest mb-1">Dodaj mecz do kolejki</div>
+                        <div class="flex gap-2 items-center">
+                          <select [(ngModel)]="newRoundMatch.homeTeamId"
+                                  class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
+                            <option [ngValue]="null">Gospodarz</option>
+                            @for (team of selectedCompTeams; track team.id) {
+                              <option [ngValue]="team.id">{{ team.name }}</option>
+                            }
+                          </select>
+                          <span class="text-white/25 font-bold text-[10px] shrink-0">vs</span>
+                          <select [(ngModel)]="newRoundMatch.awayTeamId"
+                                  class="flex-1 bg-black/20 border border-white/[0.08] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
+                            <option [ngValue]="null">Gość</option>
+                            @for (team of selectedCompTeams; track team.id) {
+                              <option [ngValue]="team.id">{{ team.name }}</option>
+                            }
+                          </select>
+                        </div>
+                        <div>
+                          <label class="block text-[10px] font-bold text-white/25 uppercase tracking-widest mb-1">Deadline (opcjonalnie)</label>
+                          <input type="datetime-local" [(ngModel)]="newRoundMatch.deadline"
+                                 class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
+                        </div>
+                        @if (roundMatchError) {
+                          <div class="bg-red-500/10 border border-red-500/15 rounded-xl p-2 text-red-400 text-xs text-center">{{ roundMatchError }}</div>
+                        }
+                        <div class="flex gap-2">
+                          <button (click)="addMatchToRound(round.id)"
+                                  [disabled]="!newRoundMatch.homeTeamId || !newRoundMatch.awayTeamId || newRoundMatch.homeTeamId === newRoundMatch.awayTeamId"
+                                  class="flex-1 py-2.5 bg-[#FEF400] hover:bg-[#e5dc00] disabled:opacity-40 text-[#1E1A17] text-xs font-bold uppercase tracking-wider rounded-xl transition-all">
+                            Dodaj mecz
+                          </button>
+                          <button (click)="addingMatchToRoundId = null; roundMatchError = ''"
+                                  class="flex-1 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all">
+                            Anuluj
+                          </button>
+                        </div>
+                      </div>
+                    } @else {
+                      <button (click)="startAddMatchToRound(round.id)"
+                              [disabled]="selectedCompTeams.length < 2"
+                              class="w-full mt-1 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-30 border border-dashed border-white/[0.1] rounded-xl text-white/40 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5">
+                        <mat-icon class="text-[16px] w-4 h-4">add</mat-icon> Dodaj mecz do kolejki
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            @if (!loadingRounds && selectedCompRounds.length === 0) {
+              <div class="text-center py-8 text-white/35">
+                <mat-icon class="text-4xl mb-2 opacity-30">format_list_numbered</mat-icon>
+                <p class="text-xs">Brak kolejek. Utwórz pierwszą powyżej.</p>
+              </div>
+            }
+          } @else {
+            <div class="text-center py-10 text-white/35">
+              <mat-icon class="text-4xl mb-2 opacity-30">arrow_upward</mat-icon>
+              <p class="text-xs">Wybierz rozgrywki, aby zarządzać kolejkami</p>
+            </div>
+          }
+        </div>
+      }
+
       <!-- MATCHES TAB -->
       @if (activeTab === 'matches') {
         <div class="space-y-4">
@@ -240,6 +415,18 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
                     }
                   </select>
                 </div>
+                @if (selectedCompRounds.length > 0) {
+                  <div>
+                    <label class="block text-[10px] font-bold text-white/35 uppercase tracking-widest mb-1">Kolejka</label>
+                    <select [(ngModel)]="newMatch.roundId"
+                            class="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#FEF400]/30 focus:ring-2 focus:ring-[#FEF400]/10 transition-all">
+                      <option [ngValue]="null">Automatycznie (pierwsza kolejka)</option>
+                      @for (round of selectedCompRounds; track round.id) {
+                        <option [ngValue]="round.id">{{ round.number }}. {{ round.name || 'Kolejka ' + round.number }}</option>
+                      }
+                    </select>
+                  </div>
+                }
                 <div>
                   <label class="block text-[10px] font-bold text-white/35 uppercase tracking-widest mb-1">Deadline (opcjonalnie)</label>
                   <input type="datetime-local" [(ngModel)]="newMatch.deadline"
@@ -291,11 +478,14 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
                         <mat-icon class="text-[14px] w-3.5 h-3.5">delete</mat-icon>
                       </button>
                     </div>
-                    @if (match.deadline) {
-                      <div class="text-center mt-1.5">
+                    <div class="flex items-center justify-center gap-3 mt-1.5">
+                      @if (match.roundName) {
+                        <span class="text-white/25 text-[10px]">{{ match.roundName }}</span>
+                      }
+                      @if (match.deadline) {
                         <span class="text-white/35 text-[10px]">Deadline: {{ formatDate(match.deadline) }}</span>
-                      </div>
-                    }
+                      }
+                    </div>
                   </div>
                 }
               </div>
@@ -478,6 +668,44 @@ type AdminTab = 'competitions' | 'teams' | 'matches' | 'results';
           </div>
         </div>
       }
+
+      <!-- Delete round modal -->
+      @if (confirmDeleteRound) {
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div class="bg-[#2a2520] p-6 rounded-3xl max-w-sm w-full border border-white/[0.08] shadow-2xl">
+            <h3 class="text-lg font-black uppercase tracking-tight text-white mb-2">Usuń kolejkę</h3>
+            <p class="text-white/50 text-sm mb-1">Czy na pewno chcesz usunąć
+              <span class="text-white font-bold">{{ confirmDeleteRound.name || 'Kolejkę ' + confirmDeleteRound.number }}</span>?
+            </p>
+            @if (confirmDeleteRound.matches?.length > 0) {
+              <p class="text-amber-400 text-xs mb-6">Usunięte zostaną też {{ confirmDeleteRound.matches.length }} mecze tej kolejki.</p>
+            } @else {
+              <p class="text-white/35 text-xs mb-6">Kolejka jest pusta.</p>
+            }
+            @if (deleteRoundError) {
+              <div class="mb-4 bg-red-500/10 border border-red-500/15 rounded-xl p-3 text-red-400 text-xs text-center">{{ deleteRoundError }}</div>
+            }
+            <div class="flex gap-3">
+              <button (click)="confirmDeleteRound = null; deleteRoundError = ''" class="flex-1 py-3 px-4 bg-white/[0.06] hover:bg-white/[0.1] text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Anuluj</button>
+              <button (click)="deleteRoundConfirmed()" class="flex-1 py-3 px-4 bg-red-500/15 hover:bg-red-500/25 text-red-400 text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Usuń</button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Delete match from round modal -->
+      @if (confirmDeleteRoundMatch) {
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div class="bg-[#2a2520] p-6 rounded-3xl max-w-sm w-full border border-white/[0.08] shadow-2xl">
+            <h3 class="text-lg font-black uppercase tracking-tight text-white mb-2">Usuń mecz</h3>
+            <p class="text-white/50 text-sm mb-6">{{ confirmDeleteRoundMatch.homeTeam.name }} vs {{ confirmDeleteRoundMatch.awayTeam.name }}</p>
+            <div class="flex gap-3">
+              <button (click)="confirmDeleteRoundMatch = null" class="flex-1 py-3 px-4 bg-white/[0.06] hover:bg-white/[0.1] text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Anuluj</button>
+              <button (click)="deleteRoundMatch()" class="flex-1 py-3 px-4 bg-red-500/15 hover:bg-red-500/25 text-red-400 text-sm font-bold uppercase tracking-wider rounded-xl transition-all">Usuń</button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   `
 })
@@ -488,6 +716,7 @@ export class AdminComponent implements OnInit {
   tabs: { id: AdminTab; label: string; icon: string }[] = [
     { id: 'competitions', label: 'Rozgrywki', icon: 'emoji_events' },
     { id: 'teams', label: 'Drużyny', icon: 'groups' },
+    { id: 'rounds', label: 'Kolejki', icon: 'format_list_numbered' },
     { id: 'matches', label: 'Mecze', icon: 'sports_soccer' },
     { id: 'results', label: 'Wyniki', icon: 'scoreboard' },
   ];
@@ -509,8 +738,26 @@ export class AdminComponent implements OnInit {
   confirmDeleteTeam: any = null;
   loadingTeams = false;
 
+  // Rounds tab
+  selectedCompRounds: any[] = [];
+  loadingRounds = false;
+  newRoundName = '';
+  expandedAdminRoundId: number | null = null;
+  editingRoundId: number | null = null;
+  editRoundName = '';
+  confirmDeleteRound: any = null;
+  deleteRoundError = '';
+  addingMatchToRoundId: number | null = null;
+  newRoundMatch: { homeTeamId: number | null; awayTeamId: number | null; deadline: string } = {
+    homeTeamId: null, awayTeamId: null, deadline: '',
+  };
+  roundMatchError = '';
+  confirmDeleteRoundMatch: any = null;
+
   selectedCompMatches: any[] = [];
-  newMatch = { homeTeamId: null as number | null, awayTeamId: null as number | null, deadline: '' };
+  newMatch: { homeTeamId: number | null; awayTeamId: number | null; deadline: string; roundId: number | null } = {
+    homeTeamId: null, awayTeamId: null, deadline: '', roundId: null,
+  };
   confirmDeleteMatch: any = null;
   loadingMatches = false;
   matchError = '';
@@ -540,7 +787,7 @@ export class AdminComponent implements OnInit {
   }
 
   onTabChange() {
-    if (this.activeTab === 'teams' || this.activeTab === 'matches') {
+    if (['teams', 'matches', 'rounds'].includes(this.activeTab)) {
       if (this.selectedCompId) {
         this.onCompSelected();
       }
@@ -589,6 +836,7 @@ export class AdminComponent implements OnInit {
         this.selectedCompId = null;
         this.selectedCompTeams = [];
         this.selectedCompMatches = [];
+        this.selectedCompRounds = [];
       }
       this.toast.success('Rozgrywki usunięte');
       await this.loadCompetitions();
@@ -600,6 +848,7 @@ export class AdminComponent implements OnInit {
     if (!this.selectedCompId) {
       this.selectedCompTeams = [];
       this.selectedCompMatches = [];
+      this.selectedCompRounds = [];
       return;
     }
     await this.loadTeamsAndMatches();
@@ -609,18 +858,22 @@ export class AdminComponent implements OnInit {
     if (!this.selectedCompId) return;
     this.loadingTeams = true;
     this.loadingMatches = true;
+    this.loadingRounds = true;
     try {
       const comp = await this.api.getCompetition(this.selectedCompId);
       this.selectedCompTeams = comp.teams || [];
+      this.selectedCompRounds = comp.rounds || [];
 
       const matches = await this.api.getMatches(this.selectedCompId);
       this.selectedCompMatches = matches;
     } catch {
       this.selectedCompTeams = [];
       this.selectedCompMatches = [];
+      this.selectedCompRounds = [];
     } finally {
       this.loadingTeams = false;
       this.loadingMatches = false;
+      this.loadingRounds = false;
     }
   }
 
@@ -661,6 +914,92 @@ export class AdminComponent implements OnInit {
     } catch {}
   }
 
+  // ---- Rounds management ----
+
+  async createRound() {
+    if (!this.selectedCompId) return;
+    const nextNumber = this.selectedCompRounds.length + 1;
+    try {
+      await this.api.addCompetitionRound(this.selectedCompId, {
+        number: nextNumber,
+        name: this.newRoundName.trim() || undefined,
+      });
+      this.newRoundName = '';
+      this.toast.success('Kolejka utworzona');
+      await this.loadTeamsAndMatches();
+    } catch {}
+  }
+
+  toggleAdminRound(roundId: number) {
+    this.expandedAdminRoundId = this.expandedAdminRoundId === roundId ? null : roundId;
+    this.addingMatchToRoundId = null;
+    this.roundMatchError = '';
+  }
+
+  async saveRoundName(roundId: number) {
+    if (!this.selectedCompId) return;
+    try {
+      await this.api.updateRound(this.selectedCompId, roundId, { name: this.editRoundName.trim() });
+      this.editingRoundId = null;
+      this.toast.success('Kolejka zaktualizowana');
+      await this.loadTeamsAndMatches();
+    } catch {}
+  }
+
+  async deleteRoundConfirmed() {
+    if (!this.selectedCompId || !this.confirmDeleteRound) return;
+    this.deleteRoundError = '';
+    try {
+      await this.api.deleteRound(this.selectedCompId, this.confirmDeleteRound.id);
+      if (this.expandedAdminRoundId === this.confirmDeleteRound.id) {
+        this.expandedAdminRoundId = null;
+      }
+      this.toast.success('Kolejka usunięta');
+      this.confirmDeleteRound = null;
+      await this.loadTeamsAndMatches();
+    } catch (e: any) {
+      this.deleteRoundError = e?.error?.error || 'Błąd usuwania kolejki';
+    }
+  }
+
+  startAddMatchToRound(roundId: number) {
+    this.addingMatchToRoundId = roundId;
+    this.newRoundMatch = { homeTeamId: null, awayTeamId: null, deadline: '' };
+    this.roundMatchError = '';
+  }
+
+  async addMatchToRound(roundId: number) {
+    if (!this.selectedCompId || !this.newRoundMatch.homeTeamId || !this.newRoundMatch.awayTeamId) return;
+    this.roundMatchError = '';
+    try {
+      await this.api.addMatch(this.selectedCompId, {
+        homeTeamId: this.newRoundMatch.homeTeamId,
+        awayTeamId: this.newRoundMatch.awayTeamId,
+        deadline: this.newRoundMatch.deadline || undefined,
+        roundId,
+      });
+      this.toast.success('Mecz dodany do kolejki');
+      this.newRoundMatch = { homeTeamId: null, awayTeamId: null, deadline: '' };
+      this.addingMatchToRoundId = null;
+      await this.loadTeamsAndMatches();
+    } catch (e: any) {
+      this.roundMatchError = e?.error?.error || 'Błąd dodawania meczu';
+    }
+  }
+
+  async deleteRoundMatch() {
+    if (!this.selectedCompId || !this.confirmDeleteRoundMatch) return;
+    const matchId = this.confirmDeleteRoundMatch.id;
+    this.confirmDeleteRoundMatch = null;
+    try {
+      await this.api.deleteMatch(this.selectedCompId, matchId);
+      this.toast.success('Mecz usunięty');
+      await this.loadTeamsAndMatches();
+    } catch {}
+  }
+
+  // ---- Matches management ----
+
   async addMatch() {
     if (!this.selectedCompId || !this.newMatch.homeTeamId || !this.newMatch.awayTeamId) return;
     this.matchError = '';
@@ -671,10 +1010,11 @@ export class AdminComponent implements OnInit {
         homeTeamId: this.newMatch.homeTeamId,
         awayTeamId: this.newMatch.awayTeamId,
         deadline: this.newMatch.deadline || undefined,
+        roundId: this.newMatch.roundId || undefined,
       });
       this.toast.success('Mecz dodany');
       this.matchSuccess = 'Mecz dodany!';
-      this.newMatch = { homeTeamId: null, awayTeamId: null, deadline: '' };
+      this.newMatch = { homeTeamId: null, awayTeamId: null, deadline: '', roundId: null };
       await this.loadTeamsAndMatches();
       setTimeout(() => { this.matchSuccess = ''; }, 3000);
     } catch (e: any) {
@@ -699,6 +1039,8 @@ export class AdminComponent implements OnInit {
       hour: '2-digit', minute: '2-digit',
     });
   }
+
+  // ---- Results management ----
 
   async loadResults(compId: number) {
     try {

@@ -77,20 +77,24 @@ import { APP_LOGO_URL } from '../../branding';
           <mat-icon class="tile-icon text-[70px] w-[70px] h-[70px] text-white">emoji_events</mat-icon>
           <div class="relative z-[1] p-4">
             <h3 class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Statystyki</h3>
-            <div class="space-y-2">
-              <div class="flex justify-between items-baseline">
-                <span class="text-white/40 text-[10px] font-medium">Punkty</span>
-                <span class="text-white font-black text-lg leading-none">{{ stats?.totalPoints || 0 }}</span>
+            @if (statsError) {
+              <p class="text-red-400/60 text-[10px]">Błąd ładowania</p>
+            } @else {
+              <div class="space-y-2">
+                <div class="flex justify-between items-baseline">
+                  <span class="text-white/40 text-[10px] font-medium">Punkty</span>
+                  <span class="text-white font-black text-lg leading-none">{{ stats?.totalPoints || 0 }}</span>
+                </div>
+                <div class="flex justify-between items-baseline">
+                  <span class="text-white/40 text-[10px] font-medium">Dokładne</span>
+                  <span class="text-emerald-400 font-black text-lg leading-none">{{ stats?.exactScores || 0 }}</span>
+                </div>
+                <div class="flex justify-between items-baseline">
+                  <span class="text-white/40 text-[10px] font-medium">Trafione</span>
+                  <span class="text-[#FEF400]/80 font-black text-lg leading-none">{{ stats?.correctResults || 0 }}</span>
+                </div>
               </div>
-              <div class="flex justify-between items-baseline">
-                <span class="text-white/40 text-[10px] font-medium">Dokładne</span>
-                <span class="text-emerald-400 font-black text-lg leading-none">{{ stats?.exactScores || 0 }}</span>
-              </div>
-              <div class="flex justify-between items-baseline">
-                <span class="text-white/40 text-[10px] font-medium">Trafione</span>
-                <span class="text-[#FEF400]/80 font-black text-lg leading-none">{{ stats?.correctResults || 0 }}</span>
-              </div>
-            </div>
+            }
           </div>
         </div>
 
@@ -264,6 +268,12 @@ import { APP_LOGO_URL } from '../../branding';
               <mat-icon class="text-white/15 text-[28px] mb-1">done_all</mat-icon>
               <p class="text-white/30 text-xs font-medium">Rozgrywki zakończone</p>
             </div>
+          } @else if (matchesError) {
+            <div class="bg-[#262220] border border-red-500/10 rounded-2xl p-6 text-center">
+              <mat-icon class="text-red-400/30 text-[28px] mb-1">error</mat-icon>
+              <p class="text-red-400/60 text-xs font-medium">Nie udało się załadować meczów</p>
+              <button (click)="loadUpcomingMatches()" class="mt-3 px-3 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all">Spróbuj ponownie</button>
+            </div>
           } @else {
             <div class="bg-[#262220] border border-white/[0.06] rounded-2xl p-6 text-center">
               <mat-icon class="text-white/15 text-[28px] mb-1">event_busy</mat-icon>
@@ -308,9 +318,12 @@ import { APP_LOGO_URL } from '../../branding';
               <div class="mb-4 bg-red-500/10 border border-red-500/15 rounded-xl p-3 text-red-400 text-sm">{{ createError }}</div>
             }
             <div class="flex gap-3">
-              <button (click)="showCreateLeague = false; createError = ''" class="flex-1 py-3 px-4 bg-white/[0.06] hover:bg-white/[0.1] text-white text-sm font-bold rounded-xl transition-all">Anuluj</button>
-              <button (click)="createLeague()" [disabled]="!newLeagueName.trim() || selectedCompetitionIds.size === 0"
-                      class="flex-1 py-3 px-4 bg-[#FEF400] hover:bg-[#e5dc00] disabled:opacity-40 text-[#1E1A17] text-sm font-bold rounded-xl transition-all">
+              <button (click)="showCreateLeague = false; createError = ''" [disabled]="creatingLeague" class="flex-1 py-3 px-4 bg-white/[0.06] hover:bg-white/[0.1] text-white text-sm font-bold rounded-xl transition-all disabled:opacity-40">Anuluj</button>
+              <button (click)="createLeague()" [disabled]="!newLeagueName.trim() || selectedCompetitionIds.size === 0 || creatingLeague"
+                      class="flex-1 py-3 px-4 bg-[#FEF400] hover:bg-[#e5dc00] disabled:opacity-40 text-[#1E1A17] text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                @if (creatingLeague) {
+                  <mat-icon class="animate-spin text-[18px] w-[18px] h-[18px]">refresh</mat-icon>
+                }
                 Stwórz
               </button>
             </div>
@@ -359,7 +372,10 @@ export class DashboardComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   stats: any = null;
+  statsError = false;
+  matchesError = false;
   showCreateLeague = false;
+  creatingLeague = false;
   newLeagueName = '';
   createError = '';
   availableCompetitions: any[] = [];
@@ -401,7 +417,10 @@ export class DashboardComponent implements OnInit {
     try {
       const data = await this.api.getMyStats();
       this.stats = data.stats;
-    } catch {}
+      this.statsError = false;
+    } catch {
+      this.statsError = true;
+    }
     await this.leagueState.loadLeagues();
     this.cdr.markForCheck();
   }
@@ -414,6 +433,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
     this.loadingMatches = true;
+    this.matchesError = false;
     this.cdr.markForCheck();
     try {
       const data = await this.api.getCurrentRound(league.id);
@@ -429,6 +449,7 @@ export class DashboardComponent implements OnInit {
       }
     } catch {
       this.upcomingMatches = [];
+      this.matchesError = true;
     } finally {
       this.loadingMatches = false;
       this.cdr.markForCheck();
@@ -464,8 +485,9 @@ export class DashboardComponent implements OnInit {
   }
 
   async createLeague() {
-    if (!this.newLeagueName.trim() || this.selectedCompetitionIds.size === 0) return;
+    if (!this.newLeagueName.trim() || this.selectedCompetitionIds.size === 0 || this.creatingLeague) return;
     this.createError = '';
+    this.creatingLeague = true;
     try {
       const result = await this.api.createLeague(
         this.newLeagueName.trim(),
@@ -479,6 +501,8 @@ export class DashboardComponent implements OnInit {
       this.showCreateLeague = false;
     } catch (e: any) {
       this.createError = e?.error?.error || 'Nie udało się stworzyć ligi';
+    } finally {
+      this.creatingLeague = false;
     }
   }
 

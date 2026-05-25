@@ -47,6 +47,7 @@ export async function handleStripeWebhook(req: Request, res: Response) {
 async function handleCheckoutCompleted(session: any) {
   const userId = session.metadata?.userId ? parseInt(session.metadata.userId, 10) : null;
   const planId = session.metadata?.planId ? parseInt(session.metadata.planId, 10) : null;
+  const previousSubscriptionId = session.metadata?.previousSubscriptionId || null;
 
   if (!userId || !planId) {
     console.error('Missing metadata in checkout session:', session.id);
@@ -70,6 +71,15 @@ async function handleCheckoutCompleted(session: any) {
       stripe_subscription_id: subscriptionId || null,
     },
   });
+
+  if (previousSubscriptionId && previousSubscriptionId !== subscriptionId) {
+    try {
+      const stripe = getStripe();
+      await stripe.subscriptions.cancel(previousSubscriptionId);
+    } catch {
+      // old subscription may already be canceled
+    }
+  }
 
   console.log(`User ${userId} upgraded to plan ${planId}`);
 }

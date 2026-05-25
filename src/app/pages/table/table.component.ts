@@ -4,7 +4,6 @@ import { Router, RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
 import { LeagueStateService } from '../../services/league-state.service';
-import { Subscription } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -25,6 +24,15 @@ import { toObservable } from '@angular/core/rxjs-interop';
         <div class="text-center text-white/50 py-10">
           <mat-icon class="text-4xl mb-2 opacity-50 animate-spin">refresh</mat-icon>
           <p>Ładowanie tabeli...</p>
+        </div>
+      } @else if (error) {
+        <div class="relative overflow-hidden bg-[#262220] border border-white/[0.06] rounded-2xl text-center py-10 px-4">
+          <mat-icon class="absolute right-[-8px] bottom-[-8px] text-[60px] w-[60px] h-[60px] opacity-[0.04] pointer-events-none text-white">error</mat-icon>
+          <div class="relative z-[1]">
+            <mat-icon class="text-4xl mb-2 text-red-400 opacity-50">error</mat-icon>
+            <p class="text-red-400 text-sm">{{ error }}</p>
+            <button (click)="retry()" class="mt-4 px-4 py-3 bg-[#FEF400] hover:bg-[#e5dc00] text-[#1E1A17] rounded-xl font-black uppercase tracking-wider text-sm">Spróbuj ponownie</button>
+          </div>
         </div>
       } @else {
         @if (isLimited) {
@@ -81,6 +89,7 @@ export class TableComponent implements OnInit, OnDestroy {
   table: any[] = [];
   isLimited = false;
   loading = false;
+  error = '';
 
   private sub = toObservable(this.leagueState.activeLeagueId).subscribe((id) => {
     if (id) this.loadTable(id);
@@ -92,15 +101,22 @@ export class TableComponent implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
+  retry() {
+    const id = this.leagueState.activeLeagueId();
+    if (id) this.loadTable(id);
+  }
+
   async loadTable(leagueId: number) {
     this.loading = true;
+    this.error = '';
     this.cdr.markForCheck();
     try {
       const data = await this.api.getTable(leagueId);
       this.table = data.table;
       this.isLimited = data.isLimited;
-    } catch (e) {
-      console.error('loadTable error:', e);
+    } catch {
+      this.table = [];
+      this.error = 'Nie udało się załadować tabeli';
     } finally {
       this.loading = false;
       this.cdr.markForCheck();

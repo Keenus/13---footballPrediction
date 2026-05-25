@@ -52,14 +52,6 @@ router.post('/create-checkout', authenticateToken, async (req: Request, res: Res
       });
     }
 
-    if (user.stripe_subscription_id) {
-      try {
-        await stripe.subscriptions.cancel(user.stripe_subscription_id);
-      } catch {
-        // old subscription may already be canceled
-      }
-    }
-
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -71,6 +63,7 @@ router.post('/create-checkout', authenticateToken, async (req: Request, res: Res
       metadata: {
         userId: String(userId),
         planId: String(planId),
+        previousSubscriptionId: user.stripe_subscription_id || '',
       },
     });
 

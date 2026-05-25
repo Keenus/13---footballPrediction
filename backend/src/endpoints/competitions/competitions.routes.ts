@@ -84,6 +84,7 @@ router.get('/:competitionId', authenticateToken, async (req: Request, res: Respo
           homeScore: m.home_score,
           awayScore: m.away_score,
           isPlayed: m.is_played,
+          deadline: m.deadline,
         })),
       })),
     });
@@ -289,7 +290,7 @@ router.get('/:competitionId/matches', authenticateToken, requireRole('admin'), a
 router.post('/:competitionId/matches', authenticateToken, requireRole('admin'), async (req: Request, res: Response) => {
   try {
     const competitionId = parseInt(req.params.competitionId, 10);
-    const { homeTeamId, awayTeamId, deadline } = req.body;
+    const { homeTeamId, awayTeamId, deadline, roundId: requestedRoundId } = req.body;
 
     if (!homeTeamId || !awayTeamId) {
       res.status(400).json({ error: 'Obie drużyny są wymagane' });
@@ -317,7 +318,19 @@ router.post('/:competitionId/matches', authenticateToken, requireRole('admin'), 
       return;
     }
 
-    const roundId = await getOrCreateDefaultRound(competitionId);
+    let roundId: number;
+    if (requestedRoundId) {
+      const round = await prisma.rounds.findFirst({
+        where: { id: requestedRoundId, competition_id: competitionId },
+      });
+      if (!round) {
+        res.status(400).json({ error: 'Kolejka nie należy do tych rozgrywek' });
+        return;
+      }
+      roundId = round.id;
+    } else {
+      roundId = await getOrCreateDefaultRound(competitionId);
+    }
 
     const match = await prisma.matches.create({
       data: {
@@ -352,7 +365,7 @@ router.put('/:competitionId/matches/:matchId', authenticateToken, requireRole('a
   try {
     const competitionId = parseInt(req.params.competitionId, 10);
     const matchId = parseInt(req.params.matchId, 10);
-    const { homeTeamId, awayTeamId, deadline } = req.body;
+    const { homeTeamId, awayTeamId, deadline, roundId } = req.body;
 
     const match = await prisma.matches.findFirst({
       where: { id: matchId, round: { competition_id: competitionId } },
@@ -368,12 +381,23 @@ router.put('/:competitionId/matches/:matchId', authenticateToken, requireRole('a
       return;
     }
 
+    if (roundId !== undefined) {
+      const round = await prisma.rounds.findFirst({
+        where: { id: roundId, competition_id: competitionId },
+      });
+      if (!round) {
+        res.status(400).json({ error: 'Kolejka nie należy do tych rozgrywek' });
+        return;
+      }
+    }
+
     const updated = await prisma.matches.update({
       where: { id: matchId },
       data: {
         ...(homeTeamId !== undefined && { home_team_id: homeTeamId }),
         ...(awayTeamId !== undefined && { away_team_id: awayTeamId }),
         ...(deadline !== undefined && { deadline: deadline ? new Date(deadline) : null }),
+        ...(roundId !== undefined && { round_id: roundId }),
       },
       include: {
         home_team: { select: { id: true, name: true } },
@@ -489,6 +513,69 @@ router.post('/:competitionId/rounds', authenticateToken, requireRole('admin'), a
   }
 });
 
+router.put('/:competitionId/rounds/:roundId', authenticateToken, requireRole('admin'), async (req: Request, res: Response) => {
+  try {
+    const competitionId = parseInt(req.params.competitionId, 10);
+    const roundId = parseInt(req.params.roundId, 10);
+    const { name, number } = req.body;
+
+    const round = await prisma.rounds.findFirst({
+      where: { id: roundId, competition_id: competitionId },
+    });
+
+    if (!round) {
+      res.status(404).json({ error: 'Kolejka nie znaleziona' });
+      return;
+    }
+
+    const updated = await prisma.rounds.update({
+      where: { id: roundId },
+      data: {
+        ...(name !== undefined && { name: name?.trim() || null }),
+        ...(number !== undefined && { number }),
+      },
+    });
+
+    res.json({
+      id: updated.id,
+      number: updated.number,
+      name: updated.name,
+      isCompleted: updated.is_completed,
+    });
+  } catch (error) {
+    console.error('Update round error:', error);
+    res.status(500).json({ error: 'Błąd serwera' });
+  }
+});
+
+router.delete('/:competitionId/rounds/:roundId', authenticateToken, requireRole('admin'), async (req: Request, res: Response) => {
+  try {
+    const competitionId = parseInt(req.params.competitionId, 10);
+    const roundId = parseInt(req.params.roundId, 10);
+
+    const round = await prisma.rounds.findFirst({
+      where: { id: roundId, competition_id: competitionId },
+      include: { matches: true },
+    });
+
+    if (!round) {
+      res.status(404).json({ error: 'Kolejka nie znaleziona' });
+      return;
+    }
+
+    if (round.matches.some((m) => m.is_played)) {
+      res.status(400).json({ error: 'Nie można usunąć kolejki z rozegranymi meczami' });
+      return;
+    }
+
+    await prisma.rounds.delete({ where: { id: roundId } });
+    res.json({ message: 'Kolejka usunięta' });
+  } catch (error) {
+    console.error('Delete round error:', error);
+    res.status(500).json({ error: 'Błąd serwera' });
+  }
+});
+
 router.put('/:competitionId/rounds/:roundId/results', authenticateToken, requireRole('admin'), async (req: Request, res: Response) => {
   try {
     const competitionId = parseInt(req.params.competitionId, 10);
@@ -526,6 +613,8 @@ router.put('/:competitionId/rounds/:roundId/results', authenticateToken, require
           });
 
           for (const pred of predictions) {
+            const oldPoints = pred.points_earned || 0;
+
             let points = 0;
             if (pred.home_score !== null && pred.away_score !== null) {
               points = calculatePoints(pred.home_score, pred.away_score, r.homeScore, r.awayScore, scoringConfig);
@@ -536,10 +625,13 @@ router.put('/:competitionId/rounds/:roundId/results', authenticateToken, require
               data: { points_earned: points },
             });
 
-            await tx.league_members.updateMany({
-              where: { league_id: lc.league_id, user_id: pred.user_id },
-              data: { total_points: { increment: points } },
-            });
+            const delta = points - oldPoints;
+            if (delta !== 0) {
+              await tx.league_members.updateMany({
+                where: { league_id: lc.league_id, user_id: pred.user_id },
+                data: { total_points: { increment: delta } },
+              });
+            }
           }
         }
       }

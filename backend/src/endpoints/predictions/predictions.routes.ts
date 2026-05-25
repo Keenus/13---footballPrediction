@@ -13,6 +13,7 @@ router.get('/:roundId', authenticateToken, requireLeagueMember('leagueId'), asyn
     const round = await prisma.rounds.findUnique({
       where: { id: roundId },
       include: {
+        competition: true,
         matches: {
           include: { home_team: true, away_team: true },
         },
@@ -21,6 +22,14 @@ router.get('/:roundId', authenticateToken, requireLeagueMember('leagueId'), asyn
 
     if (!round) {
       res.status(404).json({ error: 'Kolejka nie znaleziona' });
+      return;
+    }
+
+    const link = await prisma.league_competitions.findFirst({
+      where: { league_id: leagueId, competition_id: round.competition_id },
+    });
+    if (!link) {
+      res.status(403).json({ error: 'Ta kolejka nie należy do rozgrywek powiązanych z tą ligą' });
       return;
     }
 
@@ -92,9 +101,25 @@ router.post('/:roundId', authenticateToken, requireLeagueMember('leagueId'), asy
       return;
     }
 
+    const link = await prisma.league_competitions.findFirst({
+      where: { league_id: leagueId, competition_id: round.competition_id },
+    });
+    if (!link) {
+      res.status(403).json({ error: 'Ta kolejka nie należy do rozgrywek powiązanych z tą ligą' });
+      return;
+    }
+
     if (round.is_completed) {
       res.status(400).json({ error: 'Nie można typować po rozegraniu kolejki' });
       return;
+    }
+
+    const isValidScore = (v: any) => v === null || v === undefined || (Number.isInteger(v) && v >= 0 && v <= 99);
+    for (const pred of predictions) {
+      if (!isValidScore(pred.homeScore) || !isValidScore(pred.awayScore)) {
+        res.status(400).json({ error: 'Wynik musi być liczbą całkowitą od 0 do 99' });
+        return;
+      }
     }
 
     const now = new Date();

@@ -45,11 +45,11 @@ export class ApiService {
     return firstValueFrom(this.http.get<any[]>(`${this.base}/competitions/${competitionId}/matches`));
   }
 
-  addMatch(competitionId: number, data: { homeTeamId: number; awayTeamId: number; deadline?: string }) {
+  addMatch(competitionId: number, data: { homeTeamId: number; awayTeamId: number; deadline?: string; roundId?: number }) {
     return firstValueFrom(this.http.post<any>(`${this.base}/competitions/${competitionId}/matches`, data));
   }
 
-  updateMatch(competitionId: number, matchId: number, data: { homeTeamId?: number; awayTeamId?: number; deadline?: string | null }) {
+  updateMatch(competitionId: number, matchId: number, data: { homeTeamId?: number; awayTeamId?: number; deadline?: string | null; roundId?: number }) {
     return firstValueFrom(this.http.put<any>(`${this.base}/competitions/${competitionId}/matches/${matchId}`, data));
   }
 
@@ -59,6 +59,14 @@ export class ApiService {
 
   addCompetitionRound(competitionId: number, data: { number: number; name?: string; matches?: { homeTeamId: number; awayTeamId: number }[] }) {
     return firstValueFrom(this.http.post<any>(`${this.base}/competitions/${competitionId}/rounds`, data));
+  }
+
+  updateRound(competitionId: number, roundId: number, data: { name?: string; number?: number }) {
+    return firstValueFrom(this.http.put<any>(`${this.base}/competitions/${competitionId}/rounds/${roundId}`, data));
+  }
+
+  deleteRound(competitionId: number, roundId: number) {
+    return firstValueFrom(this.http.delete<any>(`${this.base}/competitions/${competitionId}/rounds/${roundId}`));
   }
 
   updateRoundResults(competitionId: number, roundId: number, results: { matchId: number; homeScore: number; awayScore: number }[]) {
