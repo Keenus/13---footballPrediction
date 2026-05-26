@@ -15,122 +15,28 @@
   <div class="hero">
     <div class="hero-inner">
       <div class="hero-copy">
-        <div class="hero-tag hero-eyebrow"><mat-icon>groups</mat-icon> Rywalizuj ze znajomymi w prywatnych ligach</div>
+        <p class="hero-eyebrow">Prywatne ligi &nbsp;·&nbsp; Ranking na żywo &nbsp;·&nbsp; Mundial 2026</p>
         <h1 class="hero-headline">
           <span class="line"><span>Typuj mecze.</span></span>
-          <span class="line"><span>Wygrywaj ligi ze znajomymi.</span></span>
+          <span class="line"><span>Wygrywaj ze znajomymi.</span></span>
         </h1>
-        <p class="hero-sub">Załóż własną ligę, zaproś znajomych i sprawdź, kto naprawdę zna się na piłce. Analizuj swoje typy i wygrywaj dzięki lepszym decyzjom.</p>
-        <p class="hero-trust-strip">Prywatne ligi <span class="hero-trust-dot" aria-hidden="true">•</span> Ranking na żywo <span class="hero-trust-dot" aria-hidden="true">•</span> Statystyki typów</p>
-        <div class="hero-actions">
-          <a routerLink="/register" class="lp-btn-primary lp-btn-hero-primary">Załóż ligę za darmo →</a>
-          <a routerLink="/login" class="hero-secondary-cta">Mam już konto</a>
-        </div>
-        <p class="hero-microcopy">Bez karty. 30 sekund do pierwszej ligi.</p>
-      </div>
-      <div class="hero-phone" aria-hidden="true">
-        <div class="hero-visual">
-          <div class="phone-glow" aria-hidden="true"></div>
-
-          <div class="hero-ui-card hero-ui-card--ranking">
-            <div class="hero-ui-card__head">Ranking ligi</div>
-            <div class="hero-ui-card__meta">Liga ze znajomymi</div>
-            <ul class="hero-rank-list">
-              <li><span class="hero-rank-list__name">Michał</span><span class="hero-rank-list__pts">124 pkt</span></li>
-              <li class="hero-rank-list__you">
-                <span class="hero-rank-list__name">Ty</span><span class="hero-rank-list__pts">118 pkt</span>
-              </li>
-              <li><span class="hero-rank-list__name">Kuba</span><span class="hero-rank-list__pts">111 pkt</span></li>
-            </ul>
-            <div class="hero-ui-card__status">Awans +2 pozycje</div>
-          </div>
-
-          <div class="hero-ui-card hero-ui-card--predict">
-            <div class="hero-ui-card__head">Typuj teraz</div>
-            <div class="hero-ui-card__meta">Najbliższe mecze</div>
-            <ul class="hero-predict-list">
-              <li>
-                <span class="hero-predict-list__pair">PSG — Bayern</span>
-                <span class="hero-score-pill hero-score-pill--accent">3:1</span>
-              </li>
-              <li>
-                <span class="hero-predict-list__pair">Atletico — Arsenal</span>
-                <span class="hero-score-pill hero-score-pill--accent">1:2</span>
-              </li>
-              <li>
-                <span class="hero-predict-list__pair">Inter — City</span>
-                <span class="hero-score-pill hero-score-pill--muted">?:?</span>
-              </li>
-            </ul>
-            <div class="hero-ui-card__foot">Zamknięcie: 21:00</div>
-          </div>
-
-          <div class="hero-ui-card hero-ui-card--forma">
-            <div class="hero-ui-card__head">Twoja forma</div>
-            <div class="hero-forma-block">
-              <div class="hero-forma-block__big">
-                <span class="hero-forma-block__big-label">Skuteczność</span>
-                <span class="hero-forma-block__big-val">68%</span>
-              </div>
-              <div class="hero-forma-block__rows">
-                <div class="hero-forma-block__row">
-                  <span>Dokładne wyniki</span><span>7</span>
-                </div>
-                <div class="hero-forma-block__row">
-                  <span>Punkty w kolejce</span><span class="hero-forma-block__accent">+23</span>
-                </div>
-              </div>
-            </div>
-            <p class="hero-ui-card__hint">Analizuj typy po każdej kolejce</p>
-          </div>
-
-          <span class="hero-emo-badge">Awans na #2</span>
-
-          <div class="phone-wrap">
-            <div class="phone-shell">
-              <div class="phone-screen">
-              <div class="app-nav">
-                <div class="app-logo-row">
-                  <img [src]="logoSrc" alt="" class="app-logo-img app-logo-mark" />
-                </div>
-                <div class="league-badge">Liga ze znajomymi <mat-icon class="league-caret">expand_more</mat-icon></div>
-              </div>
-              <div class="app-content">
-                <div class="live-card">
-                  <div>
-                    <div class="live-label"><span class="live-dot"></span> NA ŻYWO</div>
-                    <div class="live-title">Typuj Teraz</div>
-                    <div class="live-sub">Twoja prywatna liga<br>Liga Mistrzów 2025/26</div>
-                  </div>
-                  <div>
-                    <div class="live-stats-head">STATYSTYKI</div>
-                    <div class="stat-row"><span>Punkty</span><span class="val-w">23</span></div>
-                    <div class="stat-row"><span>Dokładne</span><span class="val-g">3</span></div>
-                    <div class="stat-row"><span>Trafione</span><span class="val-y">9</span></div>
-                  </div>
-                </div>
-                <div class="matches-label"><span>NADCHODZĄCE MECZE</span><span class="matches-label-meta">Analiza kolejki</span></div>
-                <div class="match-row">
-                  <div class="match-time">21:00<br><span class="match-date">28.04</span></div>
-                  <div class="match-divider" aria-hidden="true"></div>
-                  <div class="match-teams">PSG<br>Bayern Monachium</div>
-                  <div class="match-score">3:1</div>
-                </div>
-                <div class="match-row">
-                  <div class="match-time">21:00<br><span class="match-date">29.04</span></div>
-                  <div class="match-divider" aria-hidden="true"></div>
-                  <div class="match-teams">Atletico Madryt<br>Arsenal</div>
-                  <div class="match-score">1:2</div>
-                </div>
-              </div>
-              <div class="app-tabs">
-                <div class="tab active"><mat-icon class="tab-icon">home</mat-icon>START</div>
-                <div class="tab"><mat-icon class="tab-icon">sports_soccer</mat-icon>TYPUJ</div>
-                <div class="tab"><mat-icon class="tab-icon">emoji_events</mat-icon>RANKING</div>
-                <div class="tab"><mat-icon class="tab-icon">history</mat-icon>HISTORIA</div>
-              </div>
-            </div>
-          </div>
+        <form class="hero-email-form" (submit)="goToRegister(heroEmailInput.value); $event.preventDefault()">
+          <input
+            #heroEmailInput
+            type="email"
+            class="hero-email-input"
+            placeholder="Wpisz swój adres e-mail"
+            autocomplete="email"
+          />
+          <button type="submit" class="hero-email-btn" aria-label="Dołącz">→</button>
+        </form>
+        <p class="hero-footnote">Bez karty &nbsp;·&nbsp; 30 sekund &nbsp;·&nbsp; <a routerLink="/login" class="hero-footnote__link">Mam już konto</a></p>
+        <div class="hero-stats">
+          <div class="hero-stat"><span class="hero-stat__val">2 400+</span><span class="hero-stat__label">graczy</span></div>
+          <div class="hero-stat__divider"></div>
+          <div class="hero-stat"><span class="hero-stat__val">340+</span><span class="hero-stat__label">lig</span></div>
+          <div class="hero-stat__divider"></div>
+          <div class="hero-stat"><span class="hero-stat__val">bezpłatny</span><span class="hero-stat__label">start</span></div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { Component, inject, computed, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NgClass } from '@angular/common';
@@ -85,10 +85,11 @@ export class RegisterComponent {
 
   private auth = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private toast = inject(ToastService);
 
   username = signal('');
-  email = signal('');
+  email = signal(this.route.snapshot.queryParamMap.get('email') ?? '');
   password = signal('');
   error = '';
   loading = false;

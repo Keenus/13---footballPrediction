@@ -7,7 +7,7 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { APP_LOGO_URL } from '../../branding';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -27,6 +27,12 @@ export class LandingComponent {
 
     private el = inject(ElementRef);
     private destroyRef = inject(DestroyRef);
+    private router = inject(Router);
+
+    goToRegister(email: string = '') {
+        const extras = email.trim() ? { queryParams: { email: email.trim() } } : {};
+        this.router.navigate(['/register'], extras);
+    }
 
     constructor() {
         afterNextRender(() => {
