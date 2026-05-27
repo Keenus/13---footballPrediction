@@ -1,5 +1,4 @@
-import { Injectable, signal, computed, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -27,17 +26,13 @@ export interface CurrentUser {
 }
 
 interface AuthResponse {
-  token: string;
   user: CurrentUser;
 }
-
-const TOKEN_KEY = 'fp_token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private platformId = inject(PLATFORM_ID);
 
   currentUser = signal<CurrentUser | null>(null);
   isLoggedIn = computed(() => !!this.currentUser());
@@ -64,24 +59,14 @@ export class AuthService {
     return user.subscriptionPlan?.custom_scoring ?? false;
   });
 
-  getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(TOKEN_KEY);
-    }
-    return null;
-  }
-
   async init(): Promise<void> {
-    const token = this.getToken();
-    if (!token) return;
-
     try {
       const user = await firstValueFrom(
-        this.http.get<any>(`${environment.apiUrl}/auth/me`)
+        this.http.get<CurrentUser>(`${environment.apiUrl}/auth/me`)
       );
       this.currentUser.set(user);
     } catch {
-      this.logout();
+      // 401 = brak sesji, user pozostaje null
     }
   }
 
@@ -89,9 +74,6 @@ export class AuthService {
     const res = await firstValueFrom(
       this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
     );
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(TOKEN_KEY, res.token);
-    }
     this.currentUser.set(res.user);
   }
 
@@ -99,16 +81,20 @@ export class AuthService {
     const res = await firstValueFrom(
       this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { email, password, username })
     );
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(TOKEN_KEY, res.token);
-    }
     this.currentUser.set(res.user);
   }
 
-  logout(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(TOKEN_KEY);
+  async logout(): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.post<void>(`${environment.apiUrl}/auth/logout`, {})
+      );
+    } finally {
+      this.clearUser();
     }
+  }
+
+  clearUser(): void {
     this.currentUser.set(null);
     this.router.navigate(['/login']);
   }

@@ -1,11 +1,9 @@
 import Stripe from 'stripe';
 
-const secretKey = process.env.STRIPE_SECRET_KEY;
-
 let stripe: InstanceType<typeof Stripe> | null = null;
 
-if (secretKey && !secretKey.startsWith('sk_test_XXXX')) {
-  stripe = new Stripe(secretKey);
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
 export function getStripe(): InstanceType<typeof Stripe> {

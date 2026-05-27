@@ -4,6 +4,16 @@ import jwt from 'jsonwebtoken';
 import prisma from '../../config/prisma';
 import { authenticateToken } from '../../middleware/auth.middleware';
 
+
+const setAuthCookie = (res: Response, token: string) => {
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dni, zgodne z expiresIn JWT
+  });
+};
+
 const router = Router();
 
 router.post('/register', async (req: Request, res: Response) => {
@@ -56,12 +66,12 @@ router.post('/register', async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_SECRET || 'fallback-secret',
+        process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
 
+    setAuthCookie(res, token);
     res.status(201).json({
-      token,
       user: {
         id: user.id,
         email: user.email,
@@ -104,12 +114,12 @@ router.post('/login', async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_SECRET || 'fallback-secret',
-      { expiresIn: '7d' }
+        process.env.JWT_SECRET!,
+    { expiresIn: '7d' }
     );
 
+    setAuthCookie(res, token);
     res.json({
-      token,
       user: {
         id: user.id,
         email: user.email,
@@ -158,6 +168,15 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
     console.error('Me error:', error);
     res.status(500).json({ error: 'Błąd serwera' });
   }
+});
+
+router.post('/logout', (_req: Request, res: Response) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  });
+  res.json({ message: 'Wylogowano' });
 });
 
 export default router;

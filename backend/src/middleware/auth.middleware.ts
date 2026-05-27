@@ -26,17 +26,19 @@ declare global {
 }
 
 export function authenticateToken(req: Request, res: Response, next: NextFunction): void {
+  const cookieToken: string | undefined = req.cookies?.token;
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const headerToken = authHeader?.startsWith('Bearer ')
+    ? authHeader.split(' ')[1]
+    : undefined;
+  const token = cookieToken ?? headerToken;
 
   if (!token) {
     res.status(401).json({ error: 'Brak tokenu autoryzacji' });
     return;
   }
 
-  const secret = process.env.JWT_SECRET || 'fallback-secret';
-
-  jwt.verify(token, secret, async (err, decoded: any) => {
+  jwt.verify(token, process.env.JWT_SECRET!, async (err, decoded: any) => {
     if (err) {
       res.status(403).json({ error: 'Nieprawidłowy token' });
       return;

@@ -2,23 +2,29 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { ToastService } from '../services/toast.service';
+import { AuthService } from '../services/auth.service';
 
 const SILENT_URLS = ['/auth/me'];
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
+  const auth = inject(AuthService);
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (SILENT_URLS.some(u => req.url.includes(u))) {
-        return throwError(() => err);
+      const isSilent = SILENT_URLS.some(u => req.url.includes(u));
+
+      if (err.status === 401 && !isSilent) {
+        auth.clearUser();
       }
 
-      const message = err.error?.error
-        || err.error?.message
-        || fallbackMessage(err.status);
+      if (!isSilent) {
+        const message = err.error?.error
+          || err.error?.message
+          || fallbackMessage(err.status);
 
-      toast.error(message);
+        toast.error(message);
+      }
 
       return throwError(() => err);
     })
